@@ -1,5 +1,3 @@
-import axios from "axios";
-import { onAuthStateChanged } from "firebase/auth";
 import {
   addDoc,
   arrayUnion,
@@ -32,7 +30,7 @@ function Profile() {
     sender: string;
     avatar: string;
     content: string;
-    timestamp: any;
+    timestamp: string;
   }
 
   interface eachUserInt {
@@ -41,7 +39,7 @@ function Profile() {
     uid: string;
     friends: userInterface[];
     requests: userInterface[];
-    chats: { users: string[]; messages: chatInterface[] }[];
+    chats: { users: string[]; messages: chatInterface[]; id: number }[];
   }
 
   const getUsers = async () => {
@@ -150,15 +148,24 @@ function Profile() {
 
   const startChat = async (index: number) => {
     const currentUser = auth.currentUser?.displayName;
+    const id: number = Date.now();
     const currentUserDoc = doc(db, "eachUser", `${auth.currentUser?.uid}`);
     const friend: userInterface | undefined = eachUser?.friends[index];
     const friendDoc = doc(db, "eachUser", `${friend?.uid}`);
     await updateDoc(currentUserDoc, {
-      chats: arrayUnion({ users: [currentUser, friend?.name], messages: [] }),
+      chats: arrayUnion({
+        users: [currentUser, friend?.name],
+        messages: [],
+        id,
+      }),
     });
 
     await updateDoc(friendDoc, {
-      chats: arrayUnion({ users: [friend?.name, currentUser], messages: [] }),
+      chats: arrayUnion({
+        users: [friend?.name, currentUser],
+        messages: [],
+        id,
+      }),
     });
   };
 
@@ -167,47 +174,40 @@ function Profile() {
     const currentUserDoc = doc(db, "eachUser", `${auth.currentUser?.uid}`);
     const friend: userInterface | undefined = eachUser?.friends[index];
     const friendDoc = doc(db, "eachUser", `${friend?.uid}`);
-    const targetChat = eachUser?.chats.filter((item) =>
-      item.users.includes(`${friend?.name}`)
+    const targetChat = eachUser?.chats.filter(
+      (item) => item.id == eachUser.chats[index].id
     );
 
-    targetChat?.[0].messages.push({
+    const newChat = eachUser?.chats.slice();
+    newChat?.[index].messages.push({
       sender: currentUser?.displayName!,
       avatar: currentUser?.photoURL!,
       content: message,
-      timestamp: serverTimestamp(),
+      timestamp: new Date().toLocaleDateString(),
     });
 
-    console.log(targetChat);
-    /*  await updateDoc(currentUserDoc, {
-      chats: {
-        messages: arrayUnion({
-          sender: currentUser?.displayName,
-          avatar: currentUser?.photoURL,
-          content: message,
-          timestamp: serverTimestamp(),
-        }),
-      },
+    await updateDoc(currentUserDoc, {
+      chats: newChat,
     });
 
     await updateDoc(friendDoc, {
-      chats: {
-        messages: arrayUnion({
-          sender: currentUser?.displayName,
-          avatar: currentUser?.photoURL,
-          content: message,
-          timestamp: serverTimestamp(),
-        }),
-      },
-    }); */
+      chats: newChat,
+    });
   };
+
   const chatsMap = eachUser?.chats.map((item) =>
     item.messages.map((obj) => {
-      return <h1>{obj.sender}</h1>;
+      return (
+        <>
+          <h3>{obj.sender}:</h3>
+          <h4>{obj.content}</h4>
+        </>
+      );
     })
   );
 
   console.log(eachUser?.chats);
+  console.log(new Date().toLocaleDateString());
 
   return (
     <div>
@@ -271,7 +271,6 @@ function Profile() {
             </>
           ))}
       </div>
-      <div>{eachUser?.chats.length !== 0 && <div></div>}</div>
     </div>
   );
 }
