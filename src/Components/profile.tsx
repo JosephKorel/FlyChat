@@ -5,6 +5,7 @@ import {
   doc,
   DocumentData,
   getDoc,
+  query,
   serverTimestamp,
   setDoc,
   updateDoc,
@@ -12,6 +13,11 @@ import {
 import React, { useState, useEffect, useContext } from "react";
 import { AppContext } from "../Context/AuthContext";
 import { auth, db } from "../firebase-config";
+import {
+  useDocumentData,
+  useCollectionData,
+  useCollection,
+} from "react-firebase-hooks/firestore";
 
 function Profile() {
   const [searchFriend, setSearchFriend] = useState<string>("");
@@ -19,6 +25,21 @@ function Profile() {
   const [searchRes, setSearchRes] = useState<userInterface[]>([]);
   const [eachUser, setEachUser] = useState<eachUserInt | null>(null);
   const [message, setMessage] = useState<string>("");
+
+  //Atualização em tempo-real
+  const [eachUserDoc] = useDocumentData(
+    doc(db, "eachUser", `${auth.currentUser?.uid}`)
+  );
+
+  const docUpdate = async () => {
+    const userDoc = doc(db, "eachUser", `${auth.currentUser?.uid}`);
+    const data: DocumentData = await getDoc(userDoc);
+    setEachUser(data.data());
+  };
+
+  useEffect(() => {
+    docUpdate();
+  }, [eachUserDoc]);
 
   interface userInterface {
     name: string;
@@ -193,10 +214,13 @@ function Profile() {
     await updateDoc(friendDoc, {
       chats: newChat,
     });
+
+    console.log();
   };
 
+  //Mensagens do chat
   const chatsMap = eachUser?.chats.map((item) =>
-    item.messages.map((obj) => {
+    item.messages.map((obj: chatInterface) => {
       return (
         <>
           <h3>{obj.sender}:</h3>
@@ -205,8 +229,6 @@ function Profile() {
       );
     })
   );
-
-  console.log(eachUser?.chats);
   console.log(new Date().toLocaleDateString());
 
   return (
