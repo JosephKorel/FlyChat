@@ -1,29 +1,21 @@
 import {
-  addDoc,
   arrayUnion,
-  collection,
   doc,
   DocumentData,
   getDoc,
-  query,
-  serverTimestamp,
-  setDoc,
   updateDoc,
 } from "firebase/firestore";
 import React, { useState, useEffect, useContext } from "react";
 import { AppContext } from "../Context/AuthContext";
 import { auth, db } from "../firebase-config";
-import {
-  useDocumentData,
-  useCollectionData,
-  useCollection,
-} from "react-firebase-hooks/firestore";
+import { useDocumentData } from "react-firebase-hooks/firestore";
+import { Link } from "react-router-dom";
 
 function Profile() {
+  const { users, setUsers, eachUser, setEachUser, partner, setPartner } =
+    useContext(AppContext);
   const [searchFriend, setSearchFriend] = useState<string>("");
-  const { users, setUsers } = useContext(AppContext);
   const [searchRes, setSearchRes] = useState<userInterface[]>([]);
-  const [eachUser, setEachUser] = useState<eachUserInt | null>(null);
   const [message, setMessage] = useState<string>("");
 
   //Atualização em tempo-real
@@ -51,7 +43,7 @@ function Profile() {
     sender: string;
     avatar: string;
     content: string;
-    timestamp: string;
+    time: string;
   }
 
   interface eachUserInt {
@@ -105,6 +97,7 @@ function Profile() {
   };
 
   const acceptFriend = async (index: number) => {
+    const currentUser = auth.currentUser?.displayName;
     const docRef = doc(db, "eachUser", `${auth.currentUser?.uid}`);
     const friend: userInterface | undefined = eachUser?.requests[index];
     const friendDoc = doc(db, "eachUser", `${friend?.uid}`);
@@ -113,19 +106,30 @@ function Profile() {
     const filteredReq = currentDoc?.requests.filter(
       (item: userInterface) => item.name !== friend?.name
     );
+    const id: number = Date.now();
     await updateDoc(docRef, {
       friends: arrayUnion({
         name: friend?.name,
         uid: friend?.uid,
         avatar: friend?.avatar,
       }),
+      chats: arrayUnion({
+        users: [currentUser, friend?.name],
+        messages: [],
+        id,
+      }),
     });
 
     await updateDoc(friendDoc, {
       friends: arrayUnion({
-        name: friend?.name,
-        uid: friend?.uid,
-        avatar: friend?.avatar,
+        name: auth.currentUser?.displayName,
+        uid: auth.currentUser?.uid,
+        avatar: auth.currentUser?.photoURL,
+      }),
+      chats: arrayUnion({
+        users: [friend?.name, currentUser],
+        messages: [],
+        id,
       }),
     });
 
@@ -173,63 +177,16 @@ function Profile() {
     const currentUserDoc = doc(db, "eachUser", `${auth.currentUser?.uid}`);
     const friend: userInterface | undefined = eachUser?.friends[index];
     const friendDoc = doc(db, "eachUser", `${friend?.uid}`);
-    await updateDoc(currentUserDoc, {
-      chats: arrayUnion({
-        users: [currentUser, friend?.name],
-        messages: [],
-        id,
-      }),
-    });
+    const docData = await getDoc(currentUserDoc);
 
-    await updateDoc(friendDoc, {
-      chats: arrayUnion({
-        users: [friend?.name, currentUser],
-        messages: [],
-        id,
-      }),
-    });
+    console.log(docData.data());
+    setPartner(friend?.name!);
   };
 
   const sendMsg = async (index: number) => {
-    const currentUser = auth.currentUser;
-    const currentUserDoc = doc(db, "eachUser", `${auth.currentUser?.uid}`);
     const friend: userInterface | undefined = eachUser?.friends[index];
-    const friendDoc = doc(db, "eachUser", `${friend?.uid}`);
-    const targetChat = eachUser?.chats.filter(
-      (item) => item.id == eachUser.chats[index].id
-    );
-
-    const newChat = eachUser?.chats.slice();
-    newChat?.[index].messages.push({
-      sender: currentUser?.displayName!,
-      avatar: currentUser?.photoURL!,
-      content: message,
-      timestamp: new Date().toLocaleDateString(),
-    });
-
-    await updateDoc(currentUserDoc, {
-      chats: newChat,
-    });
-
-    await updateDoc(friendDoc, {
-      chats: newChat,
-    });
-
-    console.log();
+    setPartner(friend?.name!);
   };
-
-  //Mensagens do chat
-  const chatsMap = eachUser?.chats.map((item) =>
-    item.messages.map((obj: chatInterface) => {
-      return (
-        <>
-          <h3>{obj.sender}:</h3>
-          <h4>{obj.content}</h4>
-        </>
-      );
-    })
-  );
-  console.log(new Date().toLocaleDateString());
 
   return (
     <div>
@@ -270,26 +227,28 @@ function Profile() {
         </ul>
       </div>
       <div>
+        <h2>Amigos</h2>
         {eachUser?.friends &&
           eachUser.friends.map((item, index) => (
             <>
-              <h2>Amigos</h2>
               <ul>
                 <li>
                   <img src={item.avatar} alt="Avatar"></img>
                   <h1> {item.name}</h1>
-                  <button onClick={() => startChat(index)}>Conversar</button>
+                  <Link to="/chat" onClick={() => startChat(index)}>
+                    Conversar
+                  </Link>
+                  {/*  <button onClick={() => startChat(index)}>Conversar</button> */}
                   <button onClick={() => removeFriend(index)}>Remover</button>
                 </li>
               </ul>
-              <div>{chatsMap}</div>
-              <input
+              {/*   <input
                 type="text"
                 placeholder="Digite sua mensagem"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
               ></input>
-              <button onClick={() => sendMsg(index)}>Enviar</button>
+              <button onClick={() => sendMsg(index)}>Enviar</button> */}
             </>
           ))}
       </div>
