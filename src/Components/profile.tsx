@@ -12,11 +12,10 @@ import { useDocumentData } from "react-firebase-hooks/firestore";
 import { Link } from "react-router-dom";
 
 function Profile() {
-  const { users, setUsers, eachUser, setEachUser, partner, setPartner } =
+  const { users, setUsers, eachUser, setEachUser, setPartner } =
     useContext(AppContext);
   const [searchFriend, setSearchFriend] = useState<string>("");
   const [searchRes, setSearchRes] = useState<userInterface[]>([]);
-  const [message, setMessage] = useState<string>("");
 
   //Atualização em tempo-real
   const [eachUserDoc] = useDocumentData(
@@ -76,18 +75,29 @@ function Profile() {
   }, []);
 
   useEffect(() => {
-    const search: userInterface[] = users.filter((item) =>
+    const otherUsers = users.filter(
+      (item) => item.name !== auth.currentUser?.displayName
+    );
+    const search: userInterface[] = otherUsers.filter((item) =>
       item.name.toLowerCase().includes(searchFriend.toLowerCase())
     );
+    let results: userInterface[] = [];
 
-    setSearchRes(search);
+    if (eachUser?.friends.length !== 0) {
+      for (let i = 0; i < search.length; i++) {
+        eachUser?.friends.forEach((item) => {
+          if (item.name !== search[i].name) results.push(search[i]);
+        });
+      }
+      setSearchRes(results);
+    } else setSearchRes(search);
   }, [searchFriend]);
 
   const addFriend = async (index: number) => {
     const friendId = searchRes[index].uid;
-    const docRef = doc(db, "eachUser", `${friendId}`);
+    const friendDoc = doc(db, "eachUser", `${friendId}`);
 
-    await updateDoc(docRef, {
+    await updateDoc(friendDoc, {
       requests: arrayUnion({
         name: auth.currentUser?.displayName,
         uid: auth.currentUser?.uid,
@@ -157,34 +167,45 @@ function Profile() {
     const friend: userInterface | undefined = eachUser?.friends[index];
     const friendDoc = doc(db, "eachUser", `${friend?.uid}`);
     const docSnap: DocumentData = await getDoc(docRef);
+    const frDocSnap: DocumentData = await getDoc(friendDoc);
     const currentDoc = docSnap.data();
+    const currentFrdDoc: eachUserInt = frDocSnap.data();
     const filteredFr = currentDoc.friends.filter(
       (item: userInterface) => item.name !== friend?.name
     );
+    const filteredMe = currentFrdDoc.friends.filter(
+      (item: userInterface) => item.name !== auth.currentUser?.displayName
+    );
+
+    const friendIndex = eachUser?.chats.findIndex((item) =>
+      item.users.includes(friend?.name!)
+    );
+
+    const myIndex = currentFrdDoc.chats.findIndex((item) =>
+      item.users.includes(auth.currentUser?.displayName!)
+    );
+
+    const myNewChat = eachUser?.chats.slice();
+    myNewChat?.splice(friendIndex!, 1);
+
+    const newFrdChat = currentFrdDoc.chats.slice();
+    newFrdChat?.splice(myIndex!, 1);
 
     await updateDoc(docRef, {
       friends: filteredFr,
+      chats: myNewChat,
     });
 
     await updateDoc(friendDoc, {
-      friends: filteredFr,
+      friends: filteredMe,
+      chats: newFrdChat,
     });
   };
 
   const startChat = async (index: number) => {
-    const currentUser = auth.currentUser?.displayName;
-    const id: number = Date.now();
     const currentUserDoc = doc(db, "eachUser", `${auth.currentUser?.uid}`);
     const friend: userInterface | undefined = eachUser?.friends[index];
-    const friendDoc = doc(db, "eachUser", `${friend?.uid}`);
-    const docData = await getDoc(currentUserDoc);
 
-    console.log(docData.data());
-    setPartner(friend?.name!);
-  };
-
-  const sendMsg = async (index: number) => {
-    const friend: userInterface | undefined = eachUser?.friends[index];
     setPartner(friend?.name!);
   };
 

@@ -4,26 +4,11 @@ import { doc, DocumentData, getDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../firebase-config";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 
-interface eachUserInt {
-  avatar: string;
-  name: string;
-  uid: string;
-  friends: userInterface[];
-  requests: userInterface[];
-  chats: { users: string[]; messages: chatInterface[]; id: number }[];
-}
-
 interface userInterface {
   name: string;
   avatar: string;
   uid: string;
 }
-
-/* interface chatPageInterface {
-  message?: chatInterface;
-  eachUser?: eachUserInt;
-  index?: number;
-} */
 
 interface chatInterface {
   sender: string;
@@ -35,9 +20,23 @@ interface chatInterface {
 function ChatPage() {
   const { eachUser, setEachUser, partner } = useContext(AppContext);
   const [message, setMessage] = useState<string>("");
+  const [chat, setChat] = useState<
+    { users: string[]; messages: chatInterface[]; id: number }[] | undefined
+  >(undefined);
+
   const currentChat = eachUser?.chats.filter((item) =>
     item.users.includes(partner!)
   );
+
+  const retrieveDoc = async () => {
+    const userDoc = doc(db, "eachUser", `${auth.currentUser?.uid}`);
+    const data: DocumentData = await getDoc(userDoc);
+    setEachUser(data.data());
+  };
+
+  useEffect(() => {
+    retrieveDoc();
+  }, []);
 
   //Atualização em tempo-real
   const [eachUserDoc] = useDocumentData(
@@ -98,19 +97,20 @@ function ChatPage() {
     <div>
       <div>
         <h1>Conversando com {partner}</h1>
-        <ul>
-          {currentChat?.map((item) =>
-            item.messages.map((msg) => (
-              <>
-                <li>
-                  <strong>{msg.sender}:</strong>
-                  {msg.content} at:{msg.time}
-                </li>
-              </>
-            ))
-          )}
-          <li></li>
-        </ul>
+        {currentChat && (
+          <ul>
+            {currentChat.map((item) =>
+              item.messages.map((msg) => (
+                <>
+                  <li>
+                    <strong>{msg.sender}:</strong>
+                    {msg.content} at:{msg.time}
+                  </li>
+                </>
+              ))
+            )}
+          </ul>
+        )}
         <input
           type="text"
           placeholder="Digite sua mensagem"
