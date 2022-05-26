@@ -33,6 +33,7 @@ const Home: FC = () => {
       uid: userId,
       friends: [],
       requests: [],
+      sentReq: [],
       chats: [],
     });
   };

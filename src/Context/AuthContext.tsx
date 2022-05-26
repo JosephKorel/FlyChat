@@ -26,6 +26,7 @@ interface eachUserInt {
   uid: string;
   friends: userInterface[];
   requests: userInterface[];
+  sentReq: string[];
   chats: { users: string[]; messages: chatInterface[]; id: number }[];
 }
 

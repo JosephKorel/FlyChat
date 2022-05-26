@@ -1,4 +1,5 @@
 import {
+  arrayRemove,
   arrayUnion,
   doc,
   DocumentData,
@@ -16,6 +17,7 @@ function Profile() {
     useContext(AppContext);
   const [searchFriend, setSearchFriend] = useState<string>("");
   const [searchRes, setSearchRes] = useState<userInterface[]>([]);
+  const [friends, setFriends] = useState<boolean>(false);
 
   //Atualização em tempo-real
   const [eachUserDoc] = useDocumentData(
@@ -51,6 +53,7 @@ function Profile() {
     uid: string;
     friends: userInterface[];
     requests: userInterface[];
+    sentReq: string[];
     chats: { users: string[]; messages: chatInterface[]; id: number }[];
   }
 
@@ -95,15 +98,28 @@ function Profile() {
 
   const addFriend = async (index: number) => {
     const friendId = searchRes[index].uid;
+    const myDoc = doc(db, "eachUser", `${auth.currentUser?.uid}`);
+    const myDocSnap: DocumentData = await getDoc(myDoc);
+    const myDocData = myDocSnap.data();
     const friendDoc = doc(db, "eachUser", `${friendId}`);
+    const docSnap: DocumentData = await getDoc(friendDoc);
+    const docData: eachUserInt = docSnap.data();
 
-    await updateDoc(friendDoc, {
-      requests: arrayUnion({
-        name: auth.currentUser?.displayName,
-        uid: auth.currentUser?.uid,
-        avatar: auth.currentUser?.photoURL,
-      }),
-    });
+    if (
+      docData.requests.map((item) => item.name == auth.currentUser?.displayName)
+        .length == 0
+    ) {
+      await updateDoc(friendDoc, {
+        requests: arrayUnion({
+          name: auth.currentUser?.displayName,
+          uid: auth.currentUser?.uid,
+          avatar: auth.currentUser?.photoURL,
+        }),
+      });
+      await updateDoc(myDoc, {
+        sentReq: arrayUnion(searchRes[index].name),
+      });
+    } else return;
   };
 
   const acceptFriend = async (index: number) => {
@@ -118,6 +134,7 @@ function Profile() {
     );
     const id: number = Date.now();
     await updateDoc(docRef, {
+      requests: filteredReq,
       friends: arrayUnion({
         name: friend?.name,
         uid: friend?.uid,
@@ -131,6 +148,7 @@ function Profile() {
     });
 
     await updateDoc(friendDoc, {
+      sentReq: arrayRemove(auth.currentUser?.displayName),
       friends: arrayUnion({
         name: auth.currentUser?.displayName,
         uid: auth.currentUser?.uid,
@@ -141,10 +159,6 @@ function Profile() {
         messages: [],
         id,
       }),
-    });
-
-    await updateDoc(docRef, {
-      requests: filteredReq,
     });
   };
 
@@ -228,7 +242,11 @@ function Profile() {
               <li>
                 <img src={item.avatar} alt="Avatar"></img>
                 {item.name}
-                <button onClick={() => addFriend(index)}>Adicionar</button>
+                {eachUser?.sentReq.includes(item.name) ? (
+                  <h2>Solicitação enviada</h2>
+                ) : (
+                  <button onClick={() => addFriend(index)}>Adicionar</button>
+                )}
               </li>
             ))}
         </ul>
@@ -259,17 +277,9 @@ function Profile() {
                   <Link to="/chat" onClick={() => startChat(index)}>
                     Conversar
                   </Link>
-                  {/*  <button onClick={() => startChat(index)}>Conversar</button> */}
                   <button onClick={() => removeFriend(index)}>Remover</button>
                 </li>
               </ul>
-              {/*   <input
-                type="text"
-                placeholder="Digite sua mensagem"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-              ></input>
-              <button onClick={() => sendMsg(index)}>Enviar</button> */}
             </>
           ))}
       </div>
