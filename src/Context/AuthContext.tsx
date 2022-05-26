@@ -26,8 +26,8 @@ interface eachUserInt {
   uid: string;
   friends: userInterface[];
   requests: userInterface[];
-  sentReq: string[];
-  chats: { users: string[]; messages: chatInterface[]; id: number }[];
+  sentReq: userInterface[];
+  chats: { users: userInterface[]; messages: chatInterface[]; id: number }[];
 }
 
 type Props = {
@@ -41,8 +41,8 @@ type AppContextType = {
   setUsers: (newState: usersList[]) => void;
   eachUser: eachUserInt | null;
   setEachUser: (newState: eachUserInt) => void;
-  partner: string | undefined;
-  setPartner: (newState: string) => void;
+  partner: userInterface | null;
+  setPartner: (newState: userInterface) => void;
 };
 
 const InitialValue = {
@@ -52,7 +52,7 @@ const InitialValue = {
   setUsers: () => {},
   eachUser: null,
   setEachUser: () => {},
-  partner: undefined,
+  partner: null,
   setPartner: () => {},
 };
 
@@ -62,7 +62,7 @@ export const AppContextProvider = ({ children }: Props) => {
   const [isAuth, setIsAuth] = useLocalStorage("isAuth", InitialValue.isAuth);
   const [users, setUsers] = useState<usersList[]>([]);
   const [eachUser, setEachUser] = useState<eachUserInt | null>(null);
-  const [partner, setPartner] = useState<string | undefined>(undefined);
+  const [partner, setPartner] = useState<userInterface | null>(null);
   return (
     <AppContext.Provider
       value={{

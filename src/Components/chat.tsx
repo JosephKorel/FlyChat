@@ -21,11 +21,14 @@ function ChatPage() {
   const { eachUser, setEachUser, partner } = useContext(AppContext);
   const [message, setMessage] = useState<string>("");
   const [chat, setChat] = useState<
-    { users: string[]; messages: chatInterface[]; id: number }[] | undefined
+    | { users: userInterface[]; messages: chatInterface[]; id: number }[]
+    | undefined
   >(undefined);
 
-  const currentChat = eachUser?.chats.filter((item) =>
-    item.users.includes(partner!)
+  const currentChat:
+    | { users: userInterface[]; messages: chatInterface[]; id: number }[]
+    | undefined = eachUser?.chats.filter((item) =>
+    item.users.filter((obj) => obj.uid == partner?.uid)
   );
 
   const retrieveDoc = async () => {
@@ -57,7 +60,7 @@ function ChatPage() {
     const currentUser = auth.currentUser;
     const currentUserDoc = doc(db, "eachUser", `${auth.currentUser?.uid}`);
     const friendIndex = eachUser?.friends.findIndex(
-      (item) => item.name == partner
+      (item) => item.name == partner?.name
     );
     const friend: userInterface | undefined = eachUser?.friends[friendIndex!];
     const friendDoc = doc(db, "eachUser", `${friend?.uid}`);
@@ -65,13 +68,13 @@ function ChatPage() {
     const chatDoc: DocumentData = await getDoc(currentUserDoc);
     const chatData:
       | {
-          users: string[];
+          users: userInterface[];
           messages: chatInterface[];
           id: number;
         }[]
       | undefined = chatDoc.data().chats;
     const refIndex = chatData?.findIndex((item) =>
-      item.users.includes(partner!)
+      item.users.filter((obj: userInterface) => obj.uid == partner?.uid)
     );
 
     const newChat = eachUser?.chats.slice();
@@ -96,13 +99,21 @@ function ChatPage() {
   return (
     <div>
       <div>
-        <h1>Conversando com {partner}</h1>
+        <h1>Conversando com {partner?.name}</h1>
         {currentChat && (
           <ul>
             {currentChat.map((item) =>
               item.messages.map((msg) => (
                 <>
                   <li>
+                    <img
+                      src={
+                        msg.sender == eachUser?.name
+                          ? eachUser.avatar
+                          : partner?.avatar
+                      }
+                      alt="usuário"
+                    ></img>
                     <strong>{msg.sender}:</strong>
                     {msg.content} at:{msg.time}
                   </li>
