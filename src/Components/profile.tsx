@@ -35,6 +35,7 @@ function Profile() {
   interface chatInterface {
     sender: string;
     avatar: string;
+    senderuid: string;
     content: string;
     time: string;
   }
@@ -261,9 +262,14 @@ function Profile() {
         id: number;
       }[] = myDocResults?.chats;
 
-      //Altera o nome em cada chat
+      //Altera o nome em cada chat do próprio usuário
       myChats.forEach((item) => {
         item.users[0].name = username;
+        item.messages.forEach((msg) => {
+          if (msg.senderuid == auth.currentUser?.uid) {
+            msg.sender = username;
+          }
+        });
       });
 
       //Altera o nome no perfil
@@ -299,6 +305,7 @@ function Profile() {
         (item) => item.uid !== auth.currentUser?.uid
       );
 
+      //Alterar nos amigos de cada usuário
       filteredUserList.forEach(async (item) => {
         const docRef = doc(db, "eachUser", `${item.uid}`);
         item.friends.forEach((friend) => {
@@ -307,6 +314,24 @@ function Profile() {
           }
         });
         await updateDoc(docRef, { friends: item.friends });
+      });
+
+      //Altera no chat de cada usuário
+      filteredUserList.forEach(async (item) => {
+        const docRef = doc(db, "eachUser", `${item.uid}`);
+        item.chats.forEach((chat) => {
+          chat.users.forEach((user) => {
+            if (user.uid == auth.currentUser?.uid) {
+              user.name = username;
+            }
+          });
+          chat.messages.forEach((msg) => {
+            if (msg.senderuid == auth.currentUser?.uid) {
+              msg.sender = username;
+            }
+          });
+        });
+        await updateDoc(docRef, { chats: item.chats });
       });
     }
   };

@@ -13,6 +13,7 @@ interface userInterface {
 interface chatInterface {
   sender: string;
   avatar: string;
+  senderuid: string;
   content: string;
   time: string;
 }
@@ -20,10 +21,6 @@ interface chatInterface {
 function ChatPage() {
   const { eachUser, setEachUser, partner } = useContext(AppContext);
   const [message, setMessage] = useState<string>("");
-  const [chat, setChat] = useState<
-    | { users: userInterface[]; messages: chatInterface[]; id: number }[]
-    | undefined
-  >(undefined);
 
   const currentChat:
     | { users: userInterface[]; messages: chatInterface[]; id: number }[]
@@ -81,6 +78,7 @@ function ChatPage() {
     newChat?.[refIndex!].messages.push({
       sender: currentUser?.displayName!,
       avatar: currentUser?.photoURL!,
+      senderuid: currentUser?.uid!,
       content: message,
       time,
     });

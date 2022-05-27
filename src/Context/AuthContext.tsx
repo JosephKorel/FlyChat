@@ -16,6 +16,7 @@ interface userInterface {
 interface chatInterface {
   sender: string;
   avatar: string;
+  senderuid: string;
   content: string;
   time: string;
 }
