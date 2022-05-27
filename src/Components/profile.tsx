@@ -12,18 +12,19 @@ import {
 } from "firebase/firestore";
 import React, { useState, useEffect, useContext } from "react";
 import { AppContext } from "../Context/AuthContext";
-import { auth, db } from "../firebase-config";
+import { auth, db, storage } from "../firebase-config";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import { Link } from "react-router-dom";
 import { updateProfile } from "firebase/auth";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 function Profile() {
   const { users, setUsers, eachUser, setEachUser, setPartner } =
     useContext(AppContext);
   const [searchFriend, setSearchFriend] = useState<string>("");
   const [searchRes, setSearchRes] = useState<userInterface[]>([]);
-  const [friends, setFriends] = useState<boolean>(false);
   const [username, setUsername] = useState<string>("");
+  const [profileImg, setProfileImg] = useState<any | null>(null);
 
   //Interfaces
   interface userInterface {
@@ -46,7 +47,7 @@ function Profile() {
     uid: string;
     friends: userInterface[];
     requests: userInterface[];
-    sentReq: string[];
+    sentReq: userInterface[];
     chats: { users: userInterface[]; messages: chatInterface[]; id: number }[];
   }
 
@@ -192,13 +193,23 @@ function Profile() {
     const docRef = doc(db, "eachUser", `${auth.currentUser?.uid}`);
     const friend: userInterface | undefined = eachUser?.requests[index];
     const docSnap: DocumentData = await getDoc(docRef);
+    const friendDoc = doc(db, "eachUser", `${friend?.uid}`);
+    const frDocSnap: DocumentData = await getDoc(friendDoc);
     const currentDoc = docSnap.data();
+    const currentFrdDoc: eachUserInt = frDocSnap.data();
     const filteredReq = currentDoc?.requests.filter(
       (item: userInterface) => item.name !== friend?.name
+    );
+    const filteredFrdReq = currentFrdDoc.sentReq.filter(
+      (item) => item.name !== auth.currentUser?.displayName
     );
 
     await updateDoc(docRef, {
       requests: filteredReq,
+    });
+
+    await updateDoc(friendDoc, {
+      sentReq: filteredFrdReq,
     });
   };
 
@@ -305,20 +316,18 @@ function Profile() {
         (item) => item.uid !== auth.currentUser?.uid
       );
 
-      //Alterar nos amigos de cada usuário
+      //Alterar nos campos de cada usuário
       filteredUserList.forEach(async (item) => {
         const docRef = doc(db, "eachUser", `${item.uid}`);
+
+        //Alterar nos amigos de cada usuário
         item.friends.forEach((friend) => {
           if (friend.uid == auth.currentUser?.uid) {
             friend.name = username;
           }
         });
-        await updateDoc(docRef, { friends: item.friends });
-      });
 
-      //Altera no chat de cada usuário
-      filteredUserList.forEach(async (item) => {
-        const docRef = doc(db, "eachUser", `${item.uid}`);
+        //Altera no chat de cada usuário
         item.chats.forEach((chat) => {
           chat.users.forEach((user) => {
             if (user.uid == auth.currentUser?.uid) {
@@ -331,28 +340,118 @@ function Profile() {
             }
           });
         });
-        await updateDoc(docRef, { chats: item.chats });
+
+        //Altera no campo requests
+        item.requests.forEach((req) => {
+          if (req.uid == auth.currentUser?.uid) {
+            req.name = username;
+          }
+        });
+
+        //Altera no campo sentReq
+        item.sentReq.forEach((sentreq) => {
+          if (sentreq.uid == auth.currentUser?.uid) {
+            sentreq.name = username;
+          }
+        });
+
+        await updateDoc(docRef, {
+          friends: item.friends,
+          requests: item.requests,
+          sentReq: item.sentReq,
+          chats: item.chats,
+        });
       });
+    }
+  };
+
+  const changeProfileImg = async () => {
+    if (auth.currentUser) {
+      const storageRef = ref(storage, `profileImg/${auth.currentUser.uid}`);
+      const myDocRef = doc(db, "eachUser", `${auth.currentUser.uid}`);
+      const allUsersDoc = doc(db, "allUsers", "list");
+      const docData = await getDoc(allUsersDoc);
+      const docResult: DocumentData | undefined = docData.data();
+      const usersList: userInterface[] = docResult?.users;
+      const myDocData = await getDoc(myDocRef);
+      const myDocResults: DocumentData | undefined = myDocData.data();
+      const myChats: {
+        users: userInterface[];
+        messages: chatInterface[];
+        id: number;
+      }[] = myDocResults?.chats;
+
+      let eachUserList: eachUserInt[] = [];
+
+      const colQuery = query(collection(db, "eachUser"));
+      const queryData = await getDocs(colQuery);
+      queryData.forEach((doc: DocumentData) => eachUserList.push(doc.data()));
+      //eachUser de todos os outros usuários
+      const filteredUserList = eachUserList.filter(
+        (item) => item.uid !== auth.currentUser?.uid
+      );
+
+      if (profileImg == null) return;
+
+      //Upload de imagem
+      uploadBytes(storageRef, profileImg).then((res) => console.log("success"));
+
+      //Pegar o URL da imagem
+      getDownloadURL(ref(storage, `profileImg/${auth.currentUser.uid}`)).then(
+        async (url) => {
+          //Atualizar em allUsers
+          usersList.forEach((item) => {
+            if (item.uid == auth.currentUser?.uid) {
+              item.avatar = url;
+            }
+          });
+          await updateDoc(allUsersDoc, { users: usersList });
+
+          //Atualiza o perfil do usuário
+          await updateProfile(auth.currentUser!, { photoURL: url });
+
+          //Atualiza em eachUser
+          myChats.forEach((item) =>
+            item.users.forEach((user) => {
+              if (user.uid == auth.currentUser?.uid) {
+                user.avatar = url;
+              }
+            })
+          );
+          await updateDoc(myDocRef, { avatar: url, chats: myChats });
+
+          //Atualiza em eachUser dos outros usuários
+        }
+      );
     }
   };
 
   return (
     <div>
       <div>
-        <img src={auth.currentUser?.photoURL || ""} alt="User Avatar"></img>
+        <img src={eachUser?.avatar || ""} alt="User Avatar"></img>
         <h1>{auth.currentUser?.displayName}</h1>
       </div>
       <div>
         <input
           type="text"
+          placeholder="Username"
           onChange={(e) => setUsername(e.target.value)}
           value={username}
         ></input>
         <button onClick={changeUsername}>Alterar</button>
+        <br></br>
+        <input
+          type="file"
+          onChange={(e) => setProfileImg(e.target.files?.[0])}
+          value={username}
+        ></input>
+        <button onClick={changeProfileImg}>Alterar</button>
       </div>
       <div>Adicionar amigos:</div>
       <input
         type="text"
+        placeholder="Procurar amigo"
         value={searchFriend}
         onChange={(e) => setSearchFriend(e.target.value)}
       ></input>
