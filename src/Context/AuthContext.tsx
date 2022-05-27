@@ -21,7 +21,7 @@ interface chatInterface {
   time: string;
 }
 
-interface eachUserInt {
+export interface eachUserInt {
   avatar: string;
   name: string;
   uid: string;
@@ -42,8 +42,8 @@ type AppContextType = {
   setUsers: (newState: usersList[]) => void;
   eachUser: eachUserInt | null;
   setEachUser: (newState: eachUserInt) => void;
-  partner: userInterface | null;
-  setPartner: (newState: userInterface) => void;
+  partner: string | null;
+  setPartner: (newState: string) => void;
 };
 
 const InitialValue = {
@@ -63,7 +63,7 @@ export const AppContextProvider = ({ children }: Props) => {
   const [isAuth, setIsAuth] = useLocalStorage("isAuth", InitialValue.isAuth);
   const [users, setUsers] = useState<usersList[]>([]);
   const [eachUser, setEachUser] = useState<eachUserInt | null>(null);
-  const [partner, setPartner] = useState<userInterface | null>(null);
+  const [partner, setPartner] = useState<string | null>(null);
   return (
     <AppContext.Provider
       value={{

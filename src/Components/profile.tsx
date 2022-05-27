@@ -256,7 +256,7 @@ function Profile() {
   const startChat = async (index: number) => {
     const friend: userInterface | undefined = eachUser?.friends[index];
 
-    setPartner(friend!);
+    setPartner(friend?.uid!);
   };
 
   const changeUsername = async () => {
@@ -421,6 +421,37 @@ function Profile() {
           await updateDoc(myDocRef, { avatar: url, chats: myChats });
 
           //Atualiza em eachUser dos outros usuários
+          filteredUserList.forEach(async (item) => {
+            const otherUsersDoc = doc(db, "eachUser", `${item.uid}`);
+            item.friends.forEach((friend) => {
+              if (friend.uid == auth.currentUser?.uid) {
+                friend.avatar = url;
+              }
+            });
+            item.chats.forEach((chat) => {
+              chat.users.forEach((user) => {
+                if (user.uid == auth.currentUser?.uid) {
+                  user.avatar = url;
+                }
+              });
+              item.requests.forEach((req) => {
+                if (req.uid == auth.currentUser?.uid) {
+                  req.avatar = url;
+                }
+              });
+            });
+            item.sentReq.forEach((sentreq) => {
+              if (sentreq.uid == auth.currentUser?.uid) {
+                sentreq.avatar = url;
+              }
+            });
+            await updateDoc(otherUsersDoc, {
+              friends: item.friends,
+              chats: item.chats,
+              requests: item.requests,
+              sentReq: item.sentReq,
+            });
+          });
         }
       );
     }
@@ -444,7 +475,6 @@ function Profile() {
         <input
           type="file"
           onChange={(e) => setProfileImg(e.target.files?.[0])}
-          value={username}
         ></input>
         <button onClick={changeProfileImg}>Alterar</button>
       </div>

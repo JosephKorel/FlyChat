@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { AppContext } from "../Context/AuthContext";
+import { AppContext, eachUserInt } from "../Context/AuthContext";
 import { doc, DocumentData, getDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../firebase-config";
 import { useDocumentData } from "react-firebase-hooks/firestore";
@@ -21,11 +21,12 @@ interface chatInterface {
 function ChatPage() {
   const { eachUser, setEachUser, partner } = useContext(AppContext);
   const [message, setMessage] = useState<string>("");
+  const [currFriend, setCurrFriend] = useState<userInterface | null>(null);
 
   const currentChat:
     | { users: userInterface[]; messages: chatInterface[]; id: number }[]
     | undefined = eachUser?.chats.filter((item) =>
-    item.users.filter((obj) => obj.uid == partner?.uid)
+    item.users.filter((obj) => obj.uid == currFriend?.uid)
   );
 
   const retrieveDoc = async () => {
@@ -34,9 +35,24 @@ function ChatPage() {
     setEachUser(data.data());
   };
 
+  const getPartner = async () => {
+    const partnerDoc = doc(db, "eachUser", `${partner}`);
+    const getPtrDoc: DocumentData = await getDoc(partnerDoc);
+    const docData: eachUserInt = getPtrDoc.data();
+    setCurrFriend({
+      name: docData.name,
+      avatar: docData.avatar,
+      uid: docData.uid,
+    });
+  };
+
   useEffect(() => {
     retrieveDoc();
   }, []);
+
+  useEffect(() => {
+    getPartner();
+  }, [partner]);
 
   //Atualização em tempo-real
   const [eachUserDoc] = useDocumentData(
@@ -51,13 +67,14 @@ function ChatPage() {
 
   useEffect(() => {
     docUpdate();
+    getPartner();
   }, [eachUserDoc]);
 
   const sendMsg = async () => {
     const currentUser = auth.currentUser;
     const currentUserDoc = doc(db, "eachUser", `${auth.currentUser?.uid}`);
     const friendIndex = eachUser?.friends.findIndex(
-      (item) => item.name == partner?.name
+      (item) => item.name == currFriend?.name
     );
     const friend: userInterface | undefined = eachUser?.friends[friendIndex!];
     const friendDoc = doc(db, "eachUser", `${friend?.uid}`);
@@ -71,7 +88,7 @@ function ChatPage() {
         }[]
       | undefined = chatDoc.data().chats;
     const refIndex = chatData?.findIndex((item) =>
-      item.users.filter((obj: userInterface) => obj.uid == partner?.uid)
+      item.users.filter((obj: userInterface) => obj.uid == currFriend?.uid)
     );
 
     const newChat = eachUser?.chats.slice();
@@ -97,7 +114,7 @@ function ChatPage() {
   return (
     <div>
       <div>
-        <h1>Conversando com {partner?.name}</h1>
+        <h1>Conversando com {currFriend?.name}</h1>
         {currentChat && (
           <ul>
             {currentChat.map((item) =>
@@ -108,7 +125,7 @@ function ChatPage() {
                       src={
                         msg.sender == eachUser?.name
                           ? eachUser.avatar
-                          : partner?.avatar
+                          : currFriend?.avatar
                       }
                       alt="usuário"
                     ></img>
