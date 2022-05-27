@@ -1,5 +1,4 @@
 import {
-  arrayRemove,
   arrayUnion,
   collection,
   doc,
@@ -7,11 +6,15 @@ import {
   getDoc,
   getDocs,
   query,
-  QuerySnapshot,
   updateDoc,
 } from "firebase/firestore";
 import React, { useState, useEffect, useContext } from "react";
-import { AppContext } from "../Context/AuthContext";
+import {
+  AppContext,
+  eachUserInt,
+  userInterface,
+  chatInterface,
+} from "../Context/AuthContext";
 import { auth, db, storage } from "../firebase-config";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import { Link } from "react-router-dom";
@@ -25,31 +28,6 @@ function Profile() {
   const [searchRes, setSearchRes] = useState<userInterface[]>([]);
   const [username, setUsername] = useState<string>("");
   const [profileImg, setProfileImg] = useState<any | null>(null);
-
-  //Interfaces
-  interface userInterface {
-    name: string;
-    avatar: string;
-    uid: string;
-  }
-
-  interface chatInterface {
-    sender: string;
-    avatar: string;
-    senderuid: string;
-    content: string;
-    time: string;
-  }
-
-  interface eachUserInt {
-    avatar: string;
-    name: string;
-    uid: string;
-    friends: userInterface[];
-    requests: userInterface[];
-    sentReq: userInterface[];
-    chats: { users: userInterface[]; messages: chatInterface[]; id: number }[];
-  }
 
   //Atualização em tempo-real
   const [eachUserDoc] = useDocumentData(
@@ -533,6 +511,11 @@ function Profile() {
               </ul>
             </>
           ))}
+      </div>
+      <div>
+        <button>
+          <Link to="/new-group">Novo grupo</Link>
+        </button>
       </div>
     </div>
   );

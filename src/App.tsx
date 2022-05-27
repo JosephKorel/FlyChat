@@ -4,13 +4,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./Components/Navbar";
 import Profile from "./Components/profile";
 import ChatPage from "./Components/chat";
+import NewGroup from "./Components/new-group";
 function App() {
-  interface chatInterface {
-    sender: string;
-    avatar: string;
-    content: string;
-    time: string;
-  }
   return (
     <AppContextProvider>
       <Router>
@@ -19,6 +14,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/chat" element={<ChatPage />} />
+          <Route path="/new-group" element={<NewGroup />} />
         </Routes>
       </Router>
     </AppContextProvider>

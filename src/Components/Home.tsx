@@ -1,13 +1,5 @@
 import { signInWithPopup, signOut } from "firebase/auth";
-import {
-  addDoc,
-  collection,
-  doc,
-  DocumentData,
-  getDoc,
-  setDoc,
-} from "firebase/firestore";
-import { userInfo } from "os";
+import { doc, DocumentData, getDoc, setDoc } from "firebase/firestore";
 import React, { FC, useContext, useEffect } from "react";
 import { AppContext } from "../Context/AuthContext";
 import { auth, provider, db } from "../firebase-config";
@@ -35,6 +27,7 @@ const Home: FC = () => {
       requests: [],
       sentReq: [],
       chats: [],
+      groupChat: [],
     });
   };
 

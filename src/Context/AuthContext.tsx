@@ -1,19 +1,19 @@
 import { createContext, ReactNode, useState } from "react";
 import useLocalStorage from "../local-storage";
 
-interface usersList {
+export interface usersList {
   name: string;
   avatar: string;
   uid: string;
 }
 
-interface userInterface {
+export interface userInterface {
   name: string;
   avatar: string;
   uid: string;
 }
 
-interface chatInterface {
+export interface chatInterface {
   sender: string;
   avatar: string;
   senderuid: string;
