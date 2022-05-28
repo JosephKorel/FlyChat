@@ -81,7 +81,8 @@ function ChatPage() {
     const getFrdDoc: DocumentData = await getDoc(friendDoc);
     const frdDocData: eachUserInt = getFrdDoc.data();
     const friendChats: eachChat[] = frdDocData.chats;
-    const time = new Date().getHours() + ":" + new Date().getMinutes();
+    const minutes = String(new Date().getMinutes()).padStart(2, "0");
+    const time = new Date().getHours() + ":" + minutes;
 
     if (message == "") return;
 

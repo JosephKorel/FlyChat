@@ -2,13 +2,19 @@ import { doc, DocumentData, getDoc, updateDoc } from "firebase/firestore";
 import moment from "moment";
 import React, { useContext, useState, useEffect, FormEvent } from "react";
 import { useDocumentData } from "react-firebase-hooks/firestore";
-import { AppContext, eachUserInt, groupChatInt } from "../Context/AuthContext";
+import {
+  AppContext,
+  eachUserInt,
+  groupChatInt,
+  userInterface,
+} from "../Context/AuthContext";
 import { auth, db } from "../firebase-config";
 
 function GroupChat() {
   const { eachUser, groupId, setEachUser } = useContext(AppContext);
   const [currChat, setCurrChat] = useState<groupChatInt | null>(null);
   const [message, setMessage] = useState<string>("");
+  const [avatar, setAvatar] = useState<{ [key: string]: string }[]>([]);
 
   const [eachUserDoc] = useDocumentData(
     doc(db, "eachUser", `${auth.currentUser?.uid}`)
@@ -25,10 +31,14 @@ function GroupChat() {
     setCurrChat(chat?.[0]);
   };
 
-  const getCurrChat = async () => {
-    const chat = eachUser?.groupChat.filter((item) => item.id == groupId);
+  const getCurrChat = () => {
+    const chat: groupChatInt[] | undefined = eachUser?.groupChat.filter(
+      (item) => item.id == groupId
+    );
     setCurrChat(chat?.[0]!);
   };
+
+  console.log(avatar);
 
   useEffect(() => {
     retrieveDoc();
@@ -40,7 +50,8 @@ function GroupChat() {
   }, []);
 
   const sendMsg = async () => {
-    const time = new Date().getHours() + ":" + new Date().getMinutes();
+    const minutes = String(new Date().getMinutes()).padStart(2, "0");
+    const time = new Date().getHours() + ":" + minutes;
 
     if (message == "") return;
 
@@ -86,8 +97,9 @@ function GroupChat() {
                 {currChat.messages.map((msg) => (
                   <ul>
                     <li>
+                      <img></img>
                       <strong>{msg.sender}:</strong>
-                      {msg.content}
+                      {msg.content} at:{msg.time}
                     </li>
                   </ul>
                 ))}
@@ -98,6 +110,7 @@ function GroupChat() {
             <input
               type="text"
               placeholder="Digite sua mensagem"
+              value={message}
               onChange={(e) => setMessage(e.target.value)}
             ></input>
             <button onClick={sendMsg}>Enviar</button>

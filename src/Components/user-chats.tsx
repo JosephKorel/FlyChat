@@ -31,7 +31,7 @@ function UserChats() {
   }, []);
 
   const groupTalk = (index: number) => {
-    setGroupId(chatList[index].groupId);
+    setGroupId(chatList[index].id);
   };
 
   const startChat = (index: number) => {

@@ -39,7 +39,7 @@ export interface groupChatInt {
   }[];
   background: string;
   groupIcon: string;
-  id: number;
+  id: string;
   at: string;
 }
 
@@ -63,7 +63,7 @@ export interface eachUserInt {
     messages: chatInterface[];
     background: string;
     groupIcon: string;
-    id: number;
+    id: string;
     at: string;
   }[];
 }
@@ -81,8 +81,8 @@ type AppContextType = {
   setEachUser: (newState: eachUserInt) => void;
   partner: string | null;
   setPartner: (newState: string) => void;
-  groupId: number | null;
-  setGroupId: (newState: number) => void;
+  groupId: string | null;
+  setGroupId: (newState: string) => void;
 };
 
 const InitialValue = {
@@ -105,7 +105,7 @@ export const AppContextProvider = ({ children }: Props) => {
   const [users, setUsers] = useState<usersList[]>([]);
   const [eachUser, setEachUser] = useState<eachUserInt | null>(null);
   const [partner, setPartner] = useState<string | null>(null);
-  const [groupId, setGroupId] = useState<number | null>(null);
+  const [groupId, setGroupId] = useState<string | null>(null);
   return (
     <AppContext.Provider
       value={{

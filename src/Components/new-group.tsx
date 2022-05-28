@@ -66,7 +66,7 @@ function NewGroup() {
             messages: [],
             background: "/a.png",
             groupIcon: url,
-            id,
+            id: uniqueId,
             at: moment().format(),
           }),
         });
