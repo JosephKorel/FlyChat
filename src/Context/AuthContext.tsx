@@ -21,6 +21,21 @@ export interface chatInterface {
   time: string;
 }
 
+export interface groupChatInt {
+  users: userInterface[];
+  title: string;
+  messages: {
+    sender: string;
+    senderuid: string;
+    content: string;
+    time: string;
+  }[];
+  background: string;
+  groupIcon: string;
+  id: number;
+  at: string;
+}
+
 export interface eachUserInt {
   avatar: string;
   name: string;
@@ -28,7 +43,21 @@ export interface eachUserInt {
   friends: userInterface[];
   requests: userInterface[];
   sentReq: userInterface[];
-  chats: { users: userInterface[]; messages: chatInterface[]; id: number }[];
+  chats: {
+    users: userInterface[];
+    messages: chatInterface[];
+    background: string;
+    id: number;
+  }[];
+  groupChat: {
+    users: userInterface[];
+    title: string;
+    messages: chatInterface[];
+    background: string;
+    groupIcon: string;
+    id: number;
+    at: string;
+  }[];
 }
 
 type Props = {
@@ -44,6 +73,8 @@ type AppContextType = {
   setEachUser: (newState: eachUserInt) => void;
   partner: string | null;
   setPartner: (newState: string) => void;
+  groupId: number | null;
+  setGroupId: (newState: number) => void;
 };
 
 const InitialValue = {
@@ -55,6 +86,8 @@ const InitialValue = {
   setEachUser: () => {},
   partner: null,
   setPartner: () => {},
+  groupId: null,
+  setGroupId: () => {},
 };
 
 export const AppContext = createContext<AppContextType>(InitialValue);
@@ -64,6 +97,7 @@ export const AppContextProvider = ({ children }: Props) => {
   const [users, setUsers] = useState<usersList[]>([]);
   const [eachUser, setEachUser] = useState<eachUserInt | null>(null);
   const [partner, setPartner] = useState<string | null>(null);
+  const [groupId, setGroupId] = useState<number | null>(null);
   return (
     <AppContext.Provider
       value={{
@@ -75,6 +109,8 @@ export const AppContextProvider = ({ children }: Props) => {
         setEachUser,
         partner,
         setPartner,
+        groupId,
+        setGroupId,
       }}
     >
       {children}

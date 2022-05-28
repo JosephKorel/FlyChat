@@ -5,6 +5,7 @@ import Navbar from "./Components/Navbar";
 import Profile from "./Components/profile";
 import ChatPage from "./Components/chat";
 import NewGroup from "./Components/new-group";
+import GroupChat from "./Components/group-chat";
 function App() {
   return (
     <AppContextProvider>
@@ -15,6 +16,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/new-group" element={<NewGroup />} />
+          <Route path="/group-chat" element={<GroupChat />} />
         </Routes>
       </Router>
     </AppContextProvider>

@@ -6,6 +6,7 @@ import {
   getDoc,
   getDocs,
   query,
+  serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
 import React, { useState, useEffect, useContext } from "react";
@@ -20,9 +21,10 @@ import { useDocumentData } from "react-firebase-hooks/firestore";
 import { Link } from "react-router-dom";
 import { updateProfile } from "firebase/auth";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import moment from "moment";
 
 function Profile() {
-  const { users, setUsers, eachUser, setEachUser, setPartner } =
+  const { users, setUsers, eachUser, setEachUser, setPartner, setGroupId } =
     useContext(AppContext);
   const [searchFriend, setSearchFriend] = useState<string>("");
   const [searchRes, setSearchRes] = useState<userInterface[]>([]);
@@ -141,7 +143,9 @@ function Profile() {
           { name: friend?.name, avatar: friend?.avatar, uid: friend?.uid },
         ],
         messages: [],
+        background: "/b.png",
         id,
+        at: moment().format(),
       }),
     });
 
@@ -162,7 +166,9 @@ function Profile() {
           },
         ],
         messages: [],
+        background: "/b.png",
         id,
+        at: moment().format(),
       }),
     });
   };
@@ -435,6 +441,10 @@ function Profile() {
     }
   };
 
+  const startGroupChat = (index: number) => {
+    setGroupId(eachUser?.groupChat[index].id!);
+  };
+
   return (
     <div>
       <div>
@@ -511,6 +521,24 @@ function Profile() {
               </ul>
             </>
           ))}
+      </div>
+      <div>
+        {eachUser?.groupChat.length !== 0 && (
+          <>
+            <h1>Grupos:</h1>
+            {eachUser?.groupChat.map((item, index) => (
+              <ul>
+                <li>
+                  <img src={item.groupIcon}></img>
+                  {item.title}
+                  <Link to="/group-chat" onClick={() => startGroupChat(index)}>
+                    Conversar
+                  </Link>
+                </li>
+              </ul>
+            ))}
+          </>
+        )}
       </div>
       <div>
         <button>
