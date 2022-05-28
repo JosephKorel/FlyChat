@@ -18,9 +18,14 @@ function GroupChat() {
     const userDoc = doc(db, "eachUser", `${auth.currentUser?.uid}`);
     const data: DocumentData = await getDoc(userDoc);
     setEachUser(data.data());
+
+    const chat = data
+      .data()
+      .groupChat.filter((item: groupChatInt) => item.id == groupId);
+    setCurrChat(chat?.[0]);
   };
 
-  const getCurrChat = () => {
+  const getCurrChat = async () => {
     const chat = eachUser?.groupChat.filter((item) => item.id == groupId);
     setCurrChat(chat?.[0]!);
   };
@@ -28,6 +33,8 @@ function GroupChat() {
   useEffect(() => {
     retrieveDoc();
     getCurrChat();
+
+    console.log(currChat);
   }, [eachUserDoc]);
 
   useEffect(() => {
@@ -58,6 +65,8 @@ function GroupChat() {
       });
       await updateDoc(docRef, { groupChat: chats });
     });
+
+    setMessage("");
   };
 
   return (
