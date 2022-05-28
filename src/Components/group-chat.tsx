@@ -33,8 +33,6 @@ function GroupChat() {
   useEffect(() => {
     retrieveDoc();
     getCurrChat();
-
-    console.log(currChat);
   }, [eachUserDoc]);
 
   useEffect(() => {

@@ -504,7 +504,7 @@ function Profile() {
             ))}
         </ul>
       </div>
-      <div>
+      {/*  <div>
         <h2>Amigos</h2>
         {eachUser?.friends &&
           eachUser.friends.map((item, index) => (
@@ -521,7 +521,7 @@ function Profile() {
               </ul>
             </>
           ))}
-      </div>
+      </div> */}
       <div>
         {eachUser?.groupChat.length !== 0 && (
           <>
