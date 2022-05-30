@@ -1,23 +1,34 @@
-import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-import { doc, DocumentData, getDoc, setDoc } from "firebase/firestore";
+import {
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  updateProfile,
+} from "firebase/auth";
+import {
+  doc,
+  DocumentData,
+  getDoc,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router";
-import { AppContext } from "../Context/AuthContext";
-import { auth, db, provider } from "../firebase-config";
+import { AppContext, userInterface } from "../Context/AuthContext";
+import { auth, db, provider, storage } from "../firebase-config";
 
 function CreateAccount() {
   const { setEachUser, setIsAuth } = useContext(AppContext);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [pswError, setPswError] = useState<boolean>(false);
+  const [isReg, setIsReg] = useState<boolean>(false);
+  const [avatar, setAvatar] = useState<any>(null);
+  const [name, setName] = useState<string>("");
   const input = document.getElementById("psw") as HTMLInputElement;
   let navigate = useNavigate();
+  let defaultAvatar = "./default_avatar.png";
 
-  const createUser = async (
-    name: string | undefined | null,
-    userId: string | undefined,
-    photo: string | undefined | null
-  ) => {
+  const createUser = async (name: string, userId: string, photo: string) => {
     const docRef = doc(db, "eachUser", `${userId}`);
     const docSnap = await getDoc(docRef);
 
@@ -36,11 +47,7 @@ function CreateAccount() {
     });
   };
 
-  const submitUser = async (
-    name: string | undefined | null,
-    userId: string | undefined,
-    photo: string | undefined | null
-  ) => {
+  const submitUser = async (name: string, userId: string, photo: string) => {
     const snapshot: DocumentData = await getDoc(doc(db, "allUsers", "list"));
     const currentUsers: { name: string; uid: string; photo: string }[] =
       snapshot.data().users;
@@ -64,36 +71,112 @@ function CreateAccount() {
 
     createUserWithEmailAndPassword(auth, email, password)
       .then((res) => {
-        createUser(res.user.displayName, res.user.uid, res.user.photoURL);
-        submitUser(res.user.displayName, res.user.uid, res.user.photoURL);
+        createUser(res.user.displayName!, res.user.uid, res.user.photoURL!);
+        submitUser(res.user.displayName!, res.user.uid, res.user.photoURL!);
+        setIsAuth(true);
+        setIsReg(true);
       })
       .catch((error) => console.log(error));
   };
 
+  const setProfile = async () => {
+    if (name && avatar) {
+      const storageRef = ref(storage, `profileImg/${auth.currentUser?.uid}`);
+      const docRef = doc(db, "eachUser", `${auth.currentUser?.uid}`);
+      const allUsersDoc = doc(db, "allUsers", "list");
+      const docData = await getDoc(allUsersDoc);
+      const docResult: DocumentData | undefined = docData.data();
+      const usersList: userInterface[] = docResult?.users;
+
+      if (avatar == defaultAvatar) {
+        usersList.forEach((user) => {
+          if (user.uid == auth.currentUser?.uid) {
+            user.name = name;
+            user.avatar = avatar;
+          }
+        });
+
+        await updateProfile(auth.currentUser!, {
+          displayName: name,
+          photoURL: avatar,
+        });
+
+        await updateDoc(allUsersDoc, { users: usersList });
+
+        await updateDoc(docRef, { name, avatar });
+      } else {
+        uploadBytes(storageRef, avatar).then(() => console.log("success"));
+
+        getDownloadURL(
+          ref(storage, `profileImg/${auth.currentUser?.uid}`)
+        ).then(async (url) => {
+          usersList.forEach((user) => {
+            if (user.uid == auth.currentUser?.uid) {
+              user.name = name;
+              user.avatar = url;
+            }
+          });
+
+          await updateProfile(auth.currentUser!, {
+            displayName: name,
+            photoURL: url,
+          });
+
+          await updateDoc(docRef, { name, avatar: url });
+        });
+      }
+
+      navigate("/profile");
+    }
+  };
+
   return (
     <div>
-      <input
-        type="text"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      ></input>
-      <input type="password" placeholder="Senha" id="psw"></input>
-      <input
-        type="password"
-        placeholder="Senha"
-        value={password}
-        onChange={(e) => {
-          setPassword(e.target.value);
-          setPswError(false);
-        }}
-      ></input>
-      {pswError && <p>As senhas precisam ser iguais</p>}
-      <button onClick={createAccount}>Criar conta</button>
-      <br></br>
-      <button onClick={() => navigate("/phone-account")}>
-        Criar conta com número de celular
-      </button>
+      {isReg ? (
+        <div>
+          <label>Nome de usuário</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          ></input>
+          <label>Foto de usuário</label>
+          <input
+            type="file"
+            onChange={(e) => setAvatar(e.target.files?.[0])}
+          ></input>
+          <button onClick={() => setAvatar(defaultAvatar)}>
+            Usar foto automática
+          </button>
+          <button onClick={setProfile}>Continuar</button>
+        </div>
+      ) : (
+        <div>
+          {" "}
+          <input
+            type="text"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          ></input>
+          <input type="password" placeholder="Senha" id="psw"></input>
+          <input
+            type="password"
+            placeholder="Senha"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setPswError(false);
+            }}
+          ></input>
+          {pswError && <p>As senhas precisam ser iguais</p>}
+          <button onClick={createAccount}>Criar conta</button>
+          <br></br>
+          <button onClick={() => navigate("/phone-account")}>
+            Criar conta com número de celular
+          </button>
+        </div>
+      )}
     </div>
   );
 }
