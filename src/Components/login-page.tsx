@@ -1,4 +1,8 @@
-import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+} from "firebase/auth";
 import { doc, DocumentData, getDoc, setDoc } from "firebase/firestore";
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router";
@@ -63,6 +67,14 @@ function Login() {
       .catch((error) => console.log(error));
   };
 
+  const signIn = () => {
+    signInWithEmailAndPassword(auth, email, password)
+      .then(() => {
+        setIsAuth(true);
+      })
+      .catch((error) => console.log(error));
+  };
+
   const googleSignIn = () => {
     signInWithPopup(auth, provider).then((res) => {
       createUser(res.user.displayName, res.user.uid, res.user.photoURL);
@@ -86,6 +98,7 @@ function Login() {
           setPassword(e.target.value);
         }}
       ></input>
+      <button onClick={signIn}>Entrar com o Google</button>
       <button onClick={googleSignIn}>Entrar com o Google</button>
       <button>Entrar com número de celular</button>
       <br></br>

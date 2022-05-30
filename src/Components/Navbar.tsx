@@ -1,14 +1,21 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import { auth } from "../firebase-config";
+
+import { AppContext } from "../Context/AuthContext";
 
 function Navbar() {
+  const { isAuth } = useContext(AppContext);
   return (
     <div>
       <Link to="/">Home</Link>
-      <Link to="/profile">Profile</Link>
-      <Link to="/login">Entrar</Link>
-      <Link to="/user-chats">Conversas</Link>
+      {isAuth ? (
+        <>
+          <Link to="/profile">Profile</Link>
+          <Link to="/user-chats">Conversas</Link>
+        </>
+      ) : (
+        <Link to="/login">Entrar</Link>
+      )}
     </div>
   );
 }

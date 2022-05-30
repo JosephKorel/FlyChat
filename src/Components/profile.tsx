@@ -499,7 +499,7 @@ function Profile() {
     <div>
       <div>
         <img src={eachUser?.avatar || ""} alt="User Avatar"></img>
-        <h1>{auth.currentUser?.displayName}</h1>
+        <h1>{eachUser?.name}</h1>
       </div>
       <div>
         <input

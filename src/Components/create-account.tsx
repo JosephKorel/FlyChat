@@ -71,17 +71,16 @@ function CreateAccount() {
 
     createUserWithEmailAndPassword(auth, email, password)
       .then((res) => {
-        createUser(res.user.displayName!, res.user.uid, res.user.photoURL!);
-        submitUser(res.user.displayName!, res.user.uid, res.user.photoURL!);
-        setIsAuth(true);
+        createUser("", res.user.uid, "");
+        submitUser("", res.user.uid, "");
         setIsReg(true);
+        setIsAuth(true);
       })
       .catch((error) => console.log(error));
   };
 
   const setProfile = async () => {
     if (name && avatar) {
-      const storageRef = ref(storage, `profileImg/${auth.currentUser?.uid}`);
       const docRef = doc(db, "eachUser", `${auth.currentUser?.uid}`);
       const allUsersDoc = doc(db, "allUsers", "list");
       const docData = await getDoc(allUsersDoc);
@@ -104,26 +103,32 @@ function CreateAccount() {
         await updateDoc(allUsersDoc, { users: usersList });
 
         await updateDoc(docRef, { name, avatar });
+
+        setIsAuth(true);
       } else {
-        uploadBytes(storageRef, avatar).then(() => console.log("success"));
+        const storageRef = ref(storage, `profileImg/${auth.currentUser?.uid}`);
+        await uploadBytes(storageRef, avatar).then(() =>
+          console.log("success")
+        );
 
-        getDownloadURL(
-          ref(storage, `profileImg/${auth.currentUser?.uid}`)
-        ).then(async (url) => {
-          usersList.forEach((user) => {
-            if (user.uid == auth.currentUser?.uid) {
-              user.name = name;
-              user.avatar = url;
-            }
-          });
+        getDownloadURL(ref(storage, `profileImg/${auth.currentUser?.uid}`))
+          .then(async (url) => {
+            usersList.forEach((user) => {
+              if (user.uid == auth.currentUser?.uid) {
+                user.name = name;
+                user.avatar = url;
+              }
+            });
 
-          await updateProfile(auth.currentUser!, {
-            displayName: name,
-            photoURL: url,
-          });
+            await updateProfile(auth.currentUser!, {
+              displayName: name,
+              photoURL: url,
+            });
 
-          await updateDoc(docRef, { name, avatar: url });
-        });
+            await updateDoc(docRef, { name, avatar: url });
+          })
+          .catch((error) => console.log(error));
+        setIsAuth(true);
       }
 
       navigate("/profile");
