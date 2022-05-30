@@ -14,7 +14,6 @@ function GroupChat() {
   const { eachUser, groupId, setEachUser } = useContext(AppContext);
   const [currChat, setCurrChat] = useState<groupChatInt | null>(null);
   const [message, setMessage] = useState<string>("");
-  const [avatar, setAvatar] = useState<{ [key: string]: string }[]>([]);
 
   const [eachUserDoc] = useDocumentData(
     doc(db, "eachUser", `${auth.currentUser?.uid}`)
@@ -37,8 +36,6 @@ function GroupChat() {
     );
     setCurrChat(chat?.[0]!);
   };
-
-  console.log(avatar);
 
   useEffect(() => {
     retrieveDoc();
@@ -84,10 +81,18 @@ function GroupChat() {
         <>
           <div>
             <img src={currChat.groupIcon} alt="ícone"></img>
+            <button>Alterar ícone</button>
             <h1>{currChat.title}</h1>
             <h2>Usuários:</h2>
             {currChat.users.map((item) => (
-              <h3>{item.name}</h3>
+              <>
+                <ul>
+                  <li>
+                    <img src={item.avatar} alt="avatar"></img>
+                    {item.name}
+                  </li>
+                </ul>
+              </>
             ))}
           </div>
           <div>

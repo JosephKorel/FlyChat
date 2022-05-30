@@ -15,6 +15,8 @@ import {
   eachUserInt,
   userInterface,
   chatInterface,
+  eachChat,
+  groupChatInt,
 } from "../Context/AuthContext";
 import { auth, db, storage } from "../firebase-config";
 import { useDocumentData } from "react-firebase-hooks/firestore";
@@ -251,11 +253,8 @@ function Profile() {
       const docRef = doc(db, "eachUser", `${auth.currentUser.uid}`);
       const myDocData = await getDoc(docRef);
       const myDocResults: DocumentData | undefined = myDocData.data();
-      const myChats: {
-        users: userInterface[];
-        messages: chatInterface[];
-        id: number;
-      }[] = myDocResults?.chats;
+      const myChats: eachChat[] = myDocResults?.chats;
+      const myGroupChat: groupChatInt[] = myDocResults?.groupChat;
 
       //Altera o nome em cada chat do próprio usuário
       myChats.forEach((item) => {
@@ -267,11 +266,28 @@ function Profile() {
         });
       });
 
+      myGroupChat.forEach((item) => {
+        item.users.forEach((user) => {
+          if (user.uid == auth.currentUser?.uid) {
+            user.name = username;
+          }
+        });
+        item.messages.forEach((msg) => {
+          if (msg.senderuid == auth.currentUser?.uid) {
+            msg.sender = username;
+          }
+        });
+      });
+
       //Altera o nome no perfil
       await updateProfile(auth.currentUser, { displayName: username });
 
       //Altera em eachUser
-      await updateDoc(docRef, { name: username, chats: myChats });
+      await updateDoc(docRef, {
+        name: username,
+        chats: myChats,
+        groupChat: myGroupChat,
+      });
       setUsername("");
 
       //Alterar no documento allUsers
@@ -325,6 +341,19 @@ function Profile() {
           });
         });
 
+        item.groupChat.forEach((chat) => {
+          chat.users.forEach((user) => {
+            if (user.uid == auth.currentUser?.uid) {
+              user.name = username;
+            }
+          });
+          chat.messages.forEach((item) => {
+            if (item.senderuid == auth.currentUser?.uid) {
+              item.senderuid = username;
+            }
+          });
+        });
+
         //Altera no campo requests
         item.requests.forEach((req) => {
           if (req.uid == auth.currentUser?.uid) {
@@ -344,6 +373,7 @@ function Profile() {
           requests: item.requests,
           sentReq: item.sentReq,
           chats: item.chats,
+          groupChat: item.groupChat,
         });
       });
     }
@@ -359,11 +389,8 @@ function Profile() {
       const usersList: userInterface[] = docResult?.users;
       const myDocData = await getDoc(myDocRef);
       const myDocResults: DocumentData | undefined = myDocData.data();
-      const myChats: {
-        users: userInterface[];
-        messages: chatInterface[];
-        id: number;
-      }[] = myDocResults?.chats;
+      const myChats: eachChat[] = myDocResults?.chats;
+      const myGroupChat: groupChatInt[] = myDocResults?.groupChat;
 
       let eachUserList: eachUserInt[] = [];
 
@@ -402,7 +429,20 @@ function Profile() {
               }
             })
           );
-          await updateDoc(myDocRef, { avatar: url, chats: myChats });
+
+          myGroupChat.forEach((item) => {
+            item.users.forEach((user) => {
+              if (user.uid == auth.currentUser?.uid) {
+                user.avatar = url;
+              }
+            });
+          });
+
+          await updateDoc(myDocRef, {
+            avatar: url,
+            chats: myChats,
+            groupChat: myGroupChat,
+          });
 
           //Atualiza em eachUser dos outros usuários
           filteredUserList.forEach(async (item) => {
@@ -424,6 +464,15 @@ function Profile() {
                 }
               });
             });
+
+            item.groupChat.forEach((chat) =>
+              chat.users.forEach((user) => {
+                if (user.uid == auth.currentUser?.uid) {
+                  user.avatar = url;
+                }
+              })
+            );
+
             item.sentReq.forEach((sentreq) => {
               if (sentreq.uid == auth.currentUser?.uid) {
                 sentreq.avatar = url;
@@ -432,6 +481,7 @@ function Profile() {
             await updateDoc(otherUsersDoc, {
               friends: item.friends,
               chats: item.chats,
+              groupChat: item.groupChat,
               requests: item.requests,
               sentReq: item.sentReq,
             });
