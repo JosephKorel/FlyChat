@@ -1,19 +1,24 @@
 import { doc, DocumentData, getDoc, updateDoc } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import moment from "moment";
 import React, { useContext, useState, useEffect, FormEvent } from "react";
 import { useDocumentData } from "react-firebase-hooks/firestore";
+import { useNavigate } from "react-router";
 import {
   AppContext,
   eachUserInt,
   groupChatInt,
   userInterface,
 } from "../Context/AuthContext";
-import { auth, db } from "../firebase-config";
+import { auth, db, storage } from "../firebase-config";
 
 function GroupChat() {
   const { eachUser, groupId, setEachUser } = useContext(AppContext);
   const [currChat, setCurrChat] = useState<groupChatInt | null>(null);
   const [message, setMessage] = useState<string>("");
+  const [icon, setIcon] = useState<any>(null);
+
+  let navigate = useNavigate();
 
   const [eachUserDoc] = useDocumentData(
     doc(db, "eachUser", `${auth.currentUser?.uid}`)
@@ -75,13 +80,60 @@ function GroupChat() {
     setMessage("");
   };
 
+  const changeIcon = () => {
+    let uniqueId = "";
+    const storageRef = ref(storage, `groupIcon/${uniqueId}`);
+
+    uploadBytes(storageRef, icon).then((res) => console.log("success"));
+
+    getDownloadURL(ref(storage, `groupIcon/${uniqueId}`)).then((url) => {
+      currChat?.users.forEach(async (user) => {
+        const docRef = doc(db, "eachUser", `${user.uid}`);
+        const docSnap = await getDoc(docRef);
+        const docData = docSnap.data();
+        const chats: groupChatInt[] = docData?.groupChat;
+
+        chats.forEach((item) => {
+          if (item.id == groupId) {
+            item.groupIcon = url;
+          }
+        });
+
+        await updateDoc(docRef, { groupChat: chats });
+      });
+    });
+  };
+
+  const deleteGroup = () => {
+    currChat?.users.forEach(async (user) => {
+      const docRef = doc(db, "eachUser", `${user.uid}`);
+      const docSnap = await getDoc(docRef);
+      const docData = docSnap.data();
+      const chats: groupChatInt[] = docData?.groupChat;
+
+      const filteredChat = chats.filter((item) => item.id !== groupId);
+
+      await updateDoc(docRef, { groupChat: filteredChat });
+    });
+
+    navigate("/user-chats");
+  };
+
   return (
     <div>
       {currChat && (
         <>
           <div>
             <img src={currChat.groupIcon} alt="ícone"></img>
-            <button>Alterar ícone</button>
+            <input
+              type="file"
+              onChange={(e) => setIcon(e.target.files?.[0])}
+            ></input>
+            <button onClick={changeIcon}>Alterar ícone</button>
+            {currChat?.users[0].uid == auth.currentUser?.uid && (
+              <button onClick={deleteGroup}>Excluir grupo</button>
+            )}
+            <button onClick={deleteGroup}>Excluir grupo</button>
             <h1>{currChat.title}</h1>
             <h2>Usuários:</h2>
             {currChat.users.map((item) => (

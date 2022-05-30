@@ -46,7 +46,6 @@ function NewGroup() {
   };
 
   const createGroup = async () => {
-    const id = Date.now();
     let uniqueId = "";
     groupUsers.forEach((item) => (uniqueId += item.uid.slice(0, 3)));
     const storageRef = ref(storage, `groupIcon/${uniqueId}`);

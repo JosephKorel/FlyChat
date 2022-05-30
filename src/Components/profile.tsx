@@ -554,24 +554,6 @@ function Profile() {
             ))}
         </ul>
       </div>
-      {/*  <div>
-        <h2>Amigos</h2>
-        {eachUser?.friends &&
-          eachUser.friends.map((item, index) => (
-            <>
-              <ul>
-                <li>
-                  <img src={item.avatar} alt="Avatar"></img>
-                  <h1> {item.name}</h1>
-                  <Link to="/chat" onClick={() => startChat(index)}>
-                    Conversar
-                  </Link>
-                  <button onClick={() => removeFriend(index)}>Remover</button>
-                </li>
-              </ul>
-            </>
-          ))}
-      </div> */}
       <div>
         {eachUser?.groupChat.length !== 0 && (
           <>
