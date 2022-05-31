@@ -17,7 +17,7 @@ import { AppContext, userInterface } from "../Context/AuthContext";
 import { auth, db, provider, storage } from "../firebase-config";
 
 function CreateAccount() {
-  const { setEachUser, setIsAuth } = useContext(AppContext);
+  const { setIsAuth } = useContext(AppContext);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [pswError, setPswError] = useState<boolean>(false);
@@ -74,7 +74,6 @@ function CreateAccount() {
         createUser("", res.user.uid, "");
         submitUser("", res.user.uid, "");
         setIsReg(true);
-        setIsAuth(true);
       })
       .catch((error) => console.log(error));
   };
@@ -157,7 +156,6 @@ function CreateAccount() {
         </div>
       ) : (
         <div>
-          {" "}
           <input
             type="text"
             placeholder="Email"
