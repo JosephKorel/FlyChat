@@ -63,7 +63,7 @@ function NewGroup() {
             users: groupUsers,
             title: title,
             messages: [],
-            background: "/a.png",
+            background: "./default_svg.png",
             groupIcon: url,
             id: uniqueId,
             at: moment().format(),

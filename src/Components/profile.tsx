@@ -510,7 +510,11 @@ function Profile() {
           eachUser?.chats.forEach((chat) => {
             chat.background = url;
           });
-          await updateDoc(myDocRef, { chats: eachUser?.chats });
+          eachUser?.groupChat.forEach((chat) => (chat.background = url));
+          await updateDoc(myDocRef, {
+            chats: eachUser?.chats,
+            groupChat: eachUser?.groupChat,
+          });
         }
       );
     }
