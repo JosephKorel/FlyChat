@@ -96,26 +96,28 @@ function Login() {
           </form>
         </div>
       ) : (
-        <div>
-          <input
-            type="text"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          ></input>
-          <input
-            type="password"
-            placeholder="Senha"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-            }}
-          ></input>
-          <button onClick={signIn}>Entrar</button>
-          <button onClick={googleSignIn}>Entrar com o Google</button>
-          <button onClick={(e) => setPhoneLogin(true)}>
-            Entrar com celular
-          </button>
+        <div className="bg-water-300">
+          <div className="flex flex-col align-end">
+            <input
+              type="text"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            ></input>
+            <input
+              type="password"
+              placeholder="Senha"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+              }}
+            ></input>
+            <button onClick={signIn}>Entrar</button>
+            <button onClick={googleSignIn}>Entrar com o Google</button>
+            <button onClick={(e) => setPhoneLogin(true)}>
+              Entrar com celular
+            </button>
+          </div>
           <br></br>
           <h1>Ainda não tem uma conta?</h1>
           <button onClick={() => navigate("/create-account")}>
