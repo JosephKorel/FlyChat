@@ -6,9 +6,9 @@ import { AppContext } from "../Context/AuthContext";
 function Navbar() {
   const { isAuth } = useContext(AppContext);
   return (
-    <div className="bg-paleyellow">
-      <h1 className="p-2 text-4xl font-extrabold text-skyblue font-dancing">
-        <span className="text-2xl italic text-stone-800 font-sans font-light">
+    <div className="bg-skyblue">
+      <h1 className="p-2 text-4xl font-extrabold text-stone-100 font-dancing">
+        <span className="text-2xl italic text-paleyellow-800 font-sans font-normal">
           Fly
         </span>
         Chat

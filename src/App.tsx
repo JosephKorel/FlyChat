@@ -10,23 +10,26 @@ import UserChats from "./Components/user-chats";
 import Login from "./Components/login-page";
 import PhoneAccount from "./Components/phone-account";
 import CreateAccount from "./Components/create-account";
+import { ChakraProvider } from "@chakra-ui/react";
 function App() {
   return (
     <AppContextProvider>
-      <Router>
-        <Navbar />
-        <Routes>
-          <Route path="/home" element={<Home />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/" element={<Login />} />
-          <Route path="/create-account" element={<CreateAccount />} />
-          <Route path="/phone-account" element={<PhoneAccount />} />
-          <Route path="/user-chats" element={<UserChats />} />
-          <Route path="/chat" element={<ChatPage />} />
-          <Route path="/new-group" element={<NewGroup />} />
-          <Route path="/group-chat" element={<GroupChat />} />
-        </Routes>
-      </Router>
+      <ChakraProvider>
+        <Router>
+          <Navbar />
+          <Routes>
+            <Route path="/home" element={<Home />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/" element={<Login />} />
+            <Route path="/create-account" element={<CreateAccount />} />
+            <Route path="/phone-account" element={<PhoneAccount />} />
+            <Route path="/user-chats" element={<UserChats />} />
+            <Route path="/chat" element={<ChatPage />} />
+            <Route path="/new-group" element={<NewGroup />} />
+            <Route path="/group-chat" element={<GroupChat />} />
+          </Routes>
+        </Router>
+      </ChakraProvider>
     </AppContextProvider>
   );
 }

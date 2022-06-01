@@ -1,10 +1,13 @@
+import { Button, Input, InputGroup, InputLeftAddon } from "@chakra-ui/react";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { doc, DocumentData, getDoc, setDoc } from "firebase/firestore";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { AppContext } from "../Context/AuthContext";
 import { auth, db, provider } from "../firebase-config";
 import { requestOTP, verifyOTP } from "../Login-functions/phone-auth";
+import { FcGoogle, FcPhoneAndroid } from "react-icons/fc";
+import { RiLoginBoxLine } from "react-icons/ri";
 
 function Login() {
   const { setIsAuth } = useContext(AppContext);
@@ -13,8 +16,12 @@ function Login() {
   const [phoneLogin, setPhoneLogin] = useState(false);
   const [number, setNumber] = useState<string>("");
   const [disable, setDisable] = useState<boolean>(true);
-  const [isVer, setIsVer] = useState<boolean>(false);
+  const [success, setSuccess] = useState<boolean>(false);
   let navigate = useNavigate();
+
+  useEffect(() => {
+    document.body.style.backgroundColor = "#A4EFED";
+  }, []);
 
   const createUser = async (
     name: string | undefined | null,
@@ -77,52 +84,122 @@ function Login() {
   return (
     <div>
       {phoneLogin ? (
-        <div>
-          <form onSubmit={(e) => requestOTP(e, number, setDisable)}>
-            <input
+        <div className="flex flex-col align-center">
+          <form
+            onSubmit={(e) => {
+              requestOTP(e, number, setDisable);
+              setSuccess(true);
+            }}
+            className="w-5/6 m-auto mt-4"
+            id="phone-form"
+          >
+            <InputGroup className="mt-4">
+              <InputLeftAddon children="+55" />
+              <Input
+                placeholder="Número de telefone"
+                type="text"
+                value={number}
+                background="white"
+                _focus={{ bg: "white" }}
+                onChange={(e: React.FormEvent<HTMLInputElement>) =>
+                  setNumber(e.currentTarget.value)
+                }
+              ></Input>
+            </InputGroup>
+            <p className={success ? "py-2 text-sm text-stone-900" : "hidden"}>
+              Você receberá um SMS com um código de verificação.
+            </p>
+            <Input
               type="text"
-              value={number}
-              onChange={(e) => setNumber(e.target.value)}
-            ></input>
-            <input
-              type="text"
+              className="mt-4"
               id="code"
-              onChange={() => verifyOTP("code", null, null, setIsAuth)}
-              placeholder="Código"
+              onChange={() => {
+                verifyOTP("code", null, null, setIsAuth);
+                navigate("/profile");
+              }}
+              background="white"
+              _focus={{ bg: "white" }}
+              placeholder="Código de segurança"
               disabled={disable}
-            ></input>
-            <input type="submit" placeholder="Continuar"></input>
+            ></Input>
+            <Button
+              className="m-auto mt-4 w-full"
+              colorScheme="messenger"
+              type="submit"
+            >
+              Enviar código de segurança
+            </Button>
             <div id="recaptcha-container"></div>
           </form>
         </div>
       ) : (
-        <div className="bg-water-300">
+        <div className="flex flex-col">
           <div className="flex flex-col align-end">
-            <input
-              type="text"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            ></input>
-            <input
-              type="password"
-              placeholder="Senha"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-              }}
-            ></input>
-            <button onClick={signIn}>Entrar</button>
-            <button onClick={googleSignIn}>Entrar com o Google</button>
-            <button onClick={(e) => setPhoneLogin(true)}>
+            <div className="w-5/6 m-auto mt-4">
+              <Input
+                className="mt-4"
+                type="text"
+                placeholder="Email"
+                background="white"
+                _focus={{ bg: "white" }}
+                value={email}
+                onChange={(e: React.FormEvent<HTMLInputElement>) =>
+                  setEmail(e.currentTarget.value)
+                }
+              ></Input>
+              <Input
+                className=" mt-4"
+                type="password"
+                placeholder="Senha"
+                background="white"
+                _focus={{ bg: "white" }}
+                value={password}
+                onChange={(e: React.FormEvent<HTMLInputElement>) => {
+                  setPassword(e.currentTarget.value);
+                }}
+              ></Input>
+            </div>
+            <Button
+              className="m-auto mt-4 w-5/6"
+              leftIcon={<RiLoginBoxLine />}
+              onClick={signIn}
+              colorScheme="messenger"
+            >
+              Entrar
+            </Button>
+            <Button
+              className="m-auto mt-4 w-5/6"
+              leftIcon={<FcGoogle />}
+              onClick={googleSignIn}
+              colorScheme="gray"
+            >
+              Continuar com o Google
+            </Button>
+            <Button
+              className="m-auto mt-4 w-5/6"
+              leftIcon={<FcPhoneAndroid />}
+              onClick={(e: EventInit) => setPhoneLogin(true)}
+              colorScheme="gray"
+            >
               Entrar com celular
-            </button>
+            </Button>
           </div>
-          <br></br>
-          <h1>Ainda não tem uma conta?</h1>
-          <button onClick={() => navigate("/create-account")}>
+          <div className="flex align-center justify-center mt-4 w-5/6 m-auto">
+            <div className="flex-grow flex flex-col align-center justify-center">
+              <div className="border border-stone-800  h-0"></div>
+            </div>
+            <p className="px-4">OU</p>
+            <div className="flex-grow flex flex-col align-center justify-center">
+              <div className="border border-stone-800  h-0"></div>
+            </div>
+          </div>
+          <Button
+            className="m-auto mt-4 w-5/6"
+            onClick={() => navigate("/create-account")}
+            colorScheme="messenger"
+          >
             Criar conta
-          </button>
+          </Button>
         </div>
       )}
     </div>

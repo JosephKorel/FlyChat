@@ -28,7 +28,7 @@ export const requestOTP = (
   if (number.length > 8) {
     generateRecaptcha();
     let appVerifier = window.recaptchaVerifier;
-    signInWithPhoneNumber(auth, number, appVerifier)
+    signInWithPhoneNumber(auth, "+55" + number, appVerifier)
       .then((confirmationRes) => {
         setDisable(false);
         window.confirmationRes = confirmationRes;
