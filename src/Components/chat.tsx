@@ -122,24 +122,29 @@ function ChatPage() {
       <div>
         <h1>Conversando com {currFriend?.name}</h1>
         {currChat !== null && (
-          <ul>
-            {currChat?.messages.map((msg) => (
-              <>
-                <li>
-                  <img
-                    src={
-                      msg.sender == eachUser?.name
-                        ? eachUser.avatar
-                        : currFriend?.avatar
-                    }
-                    alt="usuário"
-                  ></img>
-                  <strong>{msg.sender}:</strong>
-                  {msg.content} at:{msg.time}
-                </li>
-              </>
-            ))}
-          </ul>
+          <div
+            style={{ backgroundImage: `url(${currChat.background})` }}
+            className="chat-container"
+          >
+            <ul>
+              {currChat?.messages.map((msg) => (
+                <>
+                  <li>
+                    <img
+                      src={
+                        msg.sender == eachUser?.name
+                          ? eachUser.avatar
+                          : currFriend?.avatar
+                      }
+                      alt="usuário"
+                    ></img>
+                    <strong>{msg.sender}:</strong>
+                    {msg.content} at:{msg.time}
+                  </li>
+                </>
+              ))}
+            </ul>
+          </div>
         )}
         <input
           type="text"

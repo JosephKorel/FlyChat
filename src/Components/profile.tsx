@@ -32,6 +32,7 @@ function Profile() {
   const [searchRes, setSearchRes] = useState<userInterface[]>([]);
   const [username, setUsername] = useState<string>("");
   const [profileImg, setProfileImg] = useState<any | null>(null);
+  const [bgImg, setBgImg] = useState<any | null>(null);
 
   //Atualização em tempo-real
   const [eachUserDoc] = useDocumentData(
@@ -145,7 +146,7 @@ function Profile() {
           { name: friend?.name, avatar: friend?.avatar, uid: friend?.uid },
         ],
         messages: [],
-        background: "/b.png",
+        background: "./default_svg.png",
         id,
         at: moment().format(),
       }),
@@ -168,7 +169,7 @@ function Profile() {
           },
         ],
         messages: [],
-        background: "/b.png",
+        background: "./default_svg.png",
         id,
         at: moment().format(),
       }),
@@ -495,6 +496,26 @@ function Profile() {
     setGroupId(eachUser?.groupChat[index].id!);
   };
 
+  const changeBg = async () => {
+    if (auth.currentUser) {
+      const storageRef = ref(storage, `chatBg/${auth.currentUser.uid}`);
+      const myDocRef = doc(db, "eachUser", `${auth.currentUser.uid}`);
+
+      await uploadBytes(storageRef, bgImg).then((res) =>
+        console.log("success")
+      );
+
+      getDownloadURL(ref(storage, `chatBg/${auth.currentUser.uid}`)).then(
+        async (url) => {
+          eachUser?.chats.forEach((chat) => {
+            chat.background = url;
+          });
+          await updateDoc(myDocRef, { chats: eachUser?.chats });
+        }
+      );
+    }
+  };
+
   return (
     <div>
       <div>
@@ -502,6 +523,7 @@ function Profile() {
         <h1>{eachUser?.name}</h1>
       </div>
       <div>
+        <h2>Configurações</h2>
         <input
           type="text"
           placeholder="Username"
@@ -515,6 +537,14 @@ function Profile() {
           onChange={(e) => setProfileImg(e.target.files?.[0])}
         ></input>
         <button onClick={changeProfileImg}>Alterar</button>
+        <h3>Alterar plano de fundo</h3>
+        <h4>Plano de fundo atual:</h4>
+        <img src={eachUser?.chats[0].background} alt="background"></img>
+        <input
+          type="file"
+          onChange={(e) => setBgImg(e.target.files?.[0])}
+        ></input>
+        <button onClick={changeBg}>Alterar plano de fundo</button>
       </div>
       <div>Adicionar amigos:</div>
       <input
