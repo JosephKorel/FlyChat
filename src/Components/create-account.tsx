@@ -1,3 +1,4 @@
+import { Button, IconButton, Input } from "@chakra-ui/react";
 import {
   createUserWithEmailAndPassword,
   signInWithPopup,
@@ -12,9 +13,11 @@ import {
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useContext, useState } from "react";
+import { FcPhoneAndroid } from "react-icons/fc";
+import { AiOutlineUpload } from "react-icons/ai";
 import { useNavigate } from "react-router";
 import { AppContext, userInterface } from "../Context/AuthContext";
-import { auth, db, provider, storage } from "../firebase-config";
+import { auth, db, storage } from "../firebase-config";
 
 function CreateAccount() {
   const { setIsAuth } = useContext(AppContext);
@@ -44,6 +47,7 @@ function CreateAccount() {
       sentReq: [],
       chats: [],
       groupChat: [],
+      chatBg: "./default_svg.png",
     });
   };
 
@@ -71,8 +75,6 @@ function CreateAccount() {
 
     createUserWithEmailAndPassword(auth, email, password)
       .then((res) => {
-        createUser("", res.user.uid, "");
-        submitUser("", res.user.uid, "");
         setIsReg(true);
       })
       .catch((error) => console.log(error));
@@ -87,21 +89,13 @@ function CreateAccount() {
       const usersList: userInterface[] = docResult?.users;
 
       if (avatar == defaultAvatar) {
-        usersList.forEach((user) => {
-          if (user.uid == auth.currentUser?.uid) {
-            user.name = name;
-            user.avatar = avatar;
-          }
-        });
-
         await updateProfile(auth.currentUser!, {
           displayName: name,
           photoURL: avatar,
         });
 
-        await updateDoc(allUsersDoc, { users: usersList });
-
-        await updateDoc(docRef, { name, avatar });
+        createUser(name, auth.currentUser?.uid!, avatar);
+        submitUser(name, auth.currentUser?.uid!, avatar);
 
         setIsAuth(true);
       } else {
@@ -112,19 +106,12 @@ function CreateAccount() {
 
         getDownloadURL(ref(storage, `profileImg/${auth.currentUser?.uid}`))
           .then(async (url) => {
-            usersList.forEach((user) => {
-              if (user.uid == auth.currentUser?.uid) {
-                user.name = name;
-                user.avatar = url;
-              }
-            });
-
             await updateProfile(auth.currentUser!, {
               displayName: name,
               photoURL: url,
             });
-
-            await updateDoc(docRef, { name, avatar: url });
+            createUser(name, auth.currentUser?.uid!, url);
+            submitUser(name, auth.currentUser?.uid!, url);
           })
           .catch((error) => console.log(error));
         setIsAuth(true);
@@ -134,50 +121,137 @@ function CreateAccount() {
     }
   };
 
+  console.log(avatar.name);
+
   return (
     <div>
       {isReg ? (
-        <div>
-          <label>Nome de usuário</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          ></input>
-          <label>Foto de usuário</label>
-          <input
-            type="file"
-            onChange={(e) => setAvatar(e.target.files?.[0])}
-          ></input>
+        <div className="flex flex-col">
+          <div className="w-5/6 m-auto mt-4">
+            <label className="font-sans text-lg font-medium">Nome</label>
+            <Input
+              className="mt-1"
+              type="text"
+              background="white"
+              _focus={{ bg: "white" }}
+              value={name}
+              onChange={(e: React.FormEvent<HTMLInputElement>) =>
+                setName(e.currentTarget.value)
+              }
+            ></Input>
+            <div className="flex justify-around mt-4">
+              <p className="font-sans text-lg font-medium leading-[45px]">
+                Selecione uma foto de perfil
+              </p>
+              <IconButton
+                icon={<AiOutlineUpload />}
+                aria-label="Search database"
+                rounded="50%"
+                size="lg"
+                colorScheme="messenger"
+                onClick={() => {
+                  document.getElementById("avatar-input")?.click();
+                }}
+              />
+            </div>
+            <input
+              className="hidden"
+              type="file"
+              id="avatar-input"
+              onChange={(e) => setAvatar(e.target.files?.[0])}
+            ></input>
+          </div>
+          {avatar != null ? (
+            <>
+              <p className="w-5/6 m-auto">{avatar?.name}</p>
+              <Button
+                className="m-auto mt-8 w-5/6"
+                onClick={setProfile}
+                colorScheme="messenger"
+              >
+                Continuar
+              </Button>
+            </>
+          ) : (
+            <Button
+              className="m-auto mt-4 w-5/6"
+              colorScheme="messenger"
+              onClick={() => {
+                setAvatar(defaultAvatar);
+                setProfile();
+              }}
+            >
+              Talvez mais tarde
+            </Button>
+          )}
           <button onClick={() => setAvatar(defaultAvatar)}>
             Usar foto automática
           </button>
           <button onClick={setProfile}>Continuar</button>
         </div>
       ) : (
-        <div>
-          <input
-            type="text"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          ></input>
-          <input type="password" placeholder="Senha" id="psw"></input>
-          <input
-            type="password"
-            placeholder="Senha"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              setPswError(false);
-            }}
-          ></input>
-          {pswError && <p>As senhas precisam ser iguais</p>}
-          <button onClick={createAccount}>Criar conta</button>
-          <br></br>
-          <button onClick={() => navigate("/phone-account")}>
+        <div className="flex flex-col">
+          <div className="text-center w-5/6 m-auto">
+            <Input
+              className="mt-4"
+              type="text"
+              placeholder="Email"
+              background="white"
+              _focus={{ bg: "white" }}
+              value={email}
+              onChange={(e: React.FormEvent<HTMLInputElement>) =>
+                setEmail(e.currentTarget.value)
+              }
+            ></Input>
+            <Input
+              type="password"
+              placeholder="Senha"
+              id="psw"
+              className="mt-4"
+              background="white"
+              _focus={{ bg: "white" }}
+            ></Input>
+            <Input
+              className="mt-4"
+              type="password"
+              placeholder="Digite a senha novamente"
+              value={password}
+              isInvalid={pswError}
+              background="white"
+              _focus={{ bg: "white" }}
+              onChange={(e: React.FormEvent<HTMLInputElement>) => {
+                setPassword(e.currentTarget.value);
+                setPswError(false);
+              }}
+            ></Input>
+          </div>
+          {pswError && (
+            <p className="text-center pt-1">As senhas precisam ser iguais</p>
+          )}
+          <Button
+            className="m-auto mt-4 w-5/6"
+            onClick={createAccount}
+            colorScheme="messenger"
+          >
+            Criar conta
+          </Button>
+          <div className="flex align-center justify-center mt-4 w-5/6 m-auto">
+            <div className="flex-grow flex flex-col align-center justify-center">
+              <div className="border border-stone-800  h-0"></div>
+            </div>
+            <p className="px-4">OU</p>
+            <div className="flex-grow flex flex-col align-center justify-center">
+              <div className="border border-stone-800  h-0"></div>
+            </div>
+          </div>
+          <Button
+            className="m-auto mt-4 w-5/6"
+            leftIcon={<FcPhoneAndroid />}
+            onClick={() => navigate("/phone-account")}
+            colorScheme="gray"
+          >
             Criar conta com número de celular
-          </button>
+          </Button>
         </div>
       )}
     </div>
