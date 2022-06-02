@@ -4,13 +4,14 @@ import { AppContext, userInterface } from "../Context/AuthContext";
 import { auth, db } from "../firebase-config";
 import {
   Avatar,
+  Icon,
   IconButton,
   Input,
   InputGroup,
   InputRightElement,
 } from "@chakra-ui/react";
 import { AiOutlineSearch } from "react-icons/ai";
-import { BsPlusLg } from "react-icons/bs";
+import { BsPlusLg, BsCheckSquareFill } from "react-icons/bs";
 
 function AddFriend() {
   const [searchFriend, setSearchFriend] = useState<string>("");
@@ -93,7 +94,7 @@ function AddFriend() {
               </p>
               {eachUser?.sentReq.filter((obj) => obj.uid == item.uid).length ==
               1 ? (
-                <h2 className={`${item.name} as`}>Solicitação enviada</h2>
+                <Icon as={BsCheckSquareFill} w={10} h={10} color="blue.500" />
               ) : (
                 <IconButton
                   aria-label="Adicionar"
@@ -107,6 +108,19 @@ function AddFriend() {
             </div>
           ))}
       </div>
+      {eachUser?.sentReq.length !== 0 && (
+        <div className="mt-10 text-2xl font-semibold font-sans">
+          <h1>Solicitações enviadas</h1>
+          {eachUser?.sentReq.map((user) => (
+            <div className="flex align-center mt-4">
+              <Avatar src={user.avatar} />
+              <p className="text-xl font-sans font-semibold px-10 leading-[45px]">
+                {user.name}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
