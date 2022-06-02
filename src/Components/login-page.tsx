@@ -10,7 +10,7 @@ import { FcGoogle, FcPhoneAndroid } from "react-icons/fc";
 import { RiLoginBoxLine } from "react-icons/ri";
 
 function Login() {
-  const { setIsAuth } = useContext(AppContext);
+  const { setIsAuth, setEachUser } = useContext(AppContext);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [phoneLogin, setPhoneLogin] = useState(false);
@@ -68,16 +68,21 @@ function Login() {
     signInWithEmailAndPassword(auth, email, password)
       .then(() => {
         setIsAuth(true);
-        navigate("/profile");
+        navigate("/user-chats");
       })
       .catch((error) => console.log(error));
   };
 
   const googleSignIn = () => {
-    signInWithPopup(auth, provider).then((res) => {
+    signInWithPopup(auth, provider).then(async (res) => {
       createUser(res.user.displayName, res.user.uid, res.user.photoURL);
       submitUser(res.user.displayName, res.user.uid, res.user.photoURL);
+
+      const docRef = doc(db, "eachUser", res.user.uid);
+      const docSnap: DocumentData = await getDoc(docRef);
+      setEachUser(docSnap.data());
       setIsAuth(true);
+      navigate("/user-chats");
     });
   };
 

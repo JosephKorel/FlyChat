@@ -117,11 +117,9 @@ function CreateAccount() {
         setIsAuth(true);
       }
 
-      navigate("/profile");
+      navigate("/user-chats");
     }
   };
-
-  console.log(avatar.name);
 
   return (
     <div>

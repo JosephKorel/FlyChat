@@ -17,7 +17,6 @@ export interface eachChat {
   users: userInterface[];
   messages: chatInterface[];
   id: number;
-  background: string;
   at: string;
 }
 
@@ -37,7 +36,6 @@ export interface groupChatInt {
     content: string;
     time: string;
   }[];
-  background: string;
   groupIcon: string;
   id: string;
   at: string;
@@ -54,14 +52,13 @@ export interface eachUserInt {
     users: userInterface[];
     messages: chatInterface[];
     id: number;
-    background: string;
     at: string;
   }[];
+  chatBg: string;
   groupChat: {
     users: userInterface[];
     title: string;
     messages: chatInterface[];
-    background: string;
     groupIcon: string;
     id: string;
     at: string;

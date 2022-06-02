@@ -507,13 +507,8 @@ function Profile() {
 
       getDownloadURL(ref(storage, `chatBg/${auth.currentUser.uid}`)).then(
         async (url) => {
-          eachUser?.chats.forEach((chat) => {
-            chat.background = url;
-          });
-          eachUser?.groupChat.forEach((chat) => (chat.background = url));
           await updateDoc(myDocRef, {
-            chats: eachUser?.chats,
-            groupChat: eachUser?.groupChat,
+            chatBg: url,
           });
         }
       );
@@ -543,7 +538,7 @@ function Profile() {
         <button onClick={changeProfileImg}>Alterar</button>
         <h3>Alterar plano de fundo</h3>
         <h4>Plano de fundo atual:</h4>
-        <img src={eachUser?.chats[0].background} alt="background"></img>
+        <img src={eachUser?.chatBg} alt="background"></img>
         <input
           type="file"
           onChange={(e) => setBgImg(e.target.files?.[0])}

@@ -123,7 +123,7 @@ function ChatPage() {
         <h1>Conversando com {currFriend?.name}</h1>
         {currChat !== null && (
           <div
-            style={{ backgroundImage: `url(${currChat.background})` }}
+            style={{ backgroundImage: `url(${eachUser?.chatBg})` }}
             className="chat-container"
           >
             <ul>

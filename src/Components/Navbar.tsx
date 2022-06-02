@@ -13,14 +13,6 @@ function Navbar() {
         </span>
         Chat
       </h1>
-      {isAuth ? (
-        <>
-          <Link to="/profile">Profile</Link>
-          <Link to="/user-chats">Conversas</Link>
-        </>
-      ) : (
-        <></>
-      )}
     </div>
   );
 }

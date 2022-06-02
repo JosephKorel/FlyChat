@@ -102,7 +102,7 @@ function PhoneAccount() {
         setIsAuth(true);
       }
 
-      navigate("/profile");
+      navigate("/user-chats");
     }
   };
 
