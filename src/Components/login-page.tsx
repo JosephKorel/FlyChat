@@ -38,6 +38,7 @@ function Login() {
       name,
       avatar: photo,
       uid: userId,
+      status: "",
       friends: [],
       requests: [],
       sentReq: [],
@@ -89,7 +90,7 @@ function Login() {
   return (
     <div>
       {phoneLogin ? (
-        <div className="flex flex-col align-center">
+        <div className="flex flex-col align-center flex-1">
           <form
             onSubmit={(e) => {
               requestOTP(e, number, setDisable);
@@ -139,7 +140,7 @@ function Login() {
         </div>
       ) : (
         <div className="flex flex-col">
-          <div className="flex flex-col align-end">
+          <div className="flex flex-col">
             <div className="w-5/6 m-auto mt-4">
               <Input
                 className="mt-4"

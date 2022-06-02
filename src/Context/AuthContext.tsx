@@ -45,6 +45,7 @@ export interface eachUserInt {
   avatar: string;
   name: string;
   uid: string;
+  status: string;
   friends: userInterface[];
   requests: userInterface[];
   sentReq: userInterface[];

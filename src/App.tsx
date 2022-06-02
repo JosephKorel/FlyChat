@@ -1,5 +1,5 @@
 import Home from "./Components/Home";
-import { AppContextProvider } from "./Context/AuthContext";
+import { AppContextProvider, AppContext } from "./Context/AuthContext";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./Components/Navbar";
 import Profile from "./Components/profile";
@@ -11,7 +11,12 @@ import Login from "./Components/login-page";
 import PhoneAccount from "./Components/phone-account";
 import CreateAccount from "./Components/create-account";
 import { ChakraProvider } from "@chakra-ui/react";
+import BottomNav from "./Components/bottom-nav";
+import { useContext } from "react";
+import FriendList from "./Components/friends";
+import AddFriend from "./Components/add-friend";
 function App() {
+  const { isAuth } = useContext(AppContext);
   return (
     <AppContextProvider>
       <ChakraProvider>
@@ -27,7 +32,11 @@ function App() {
             <Route path="/chat" element={<ChatPage />} />
             <Route path="/new-group" element={<NewGroup />} />
             <Route path="/group-chat" element={<GroupChat />} />
+            <Route path="/friends" element={<FriendList />} />
+            <Route path="/add-friend" element={<AddFriend />} />
           </Routes>
+          {/* {isAuth && <BottomNav />} */}
+          <BottomNav />
         </Router>
       </ChakraProvider>
     </AppContextProvider>

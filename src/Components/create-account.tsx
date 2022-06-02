@@ -42,6 +42,7 @@ function CreateAccount() {
       name,
       avatar: photo,
       uid: userId,
+      status: "",
       friends: [],
       requests: [],
       sentReq: [],
