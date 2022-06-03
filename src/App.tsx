@@ -1,6 +1,11 @@
 import Home from "./Components/Home";
 import { AppContextProvider, AppContext } from "./Context/AuthContext";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 import Navbar from "./Components/Navbar";
 import Profile from "./Components/profile";
 import ChatPage from "./Components/chat";

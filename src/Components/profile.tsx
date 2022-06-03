@@ -111,95 +111,6 @@ function Profile() {
     });
   };
 
-  const acceptFriend = async (index: number) => {
-    const docRef = doc(db, "eachUser", `${auth.currentUser?.uid}`);
-    const friend: userInterface | undefined = eachUser?.requests[index];
-    const friendDoc = doc(db, "eachUser", `${friend?.uid}`);
-    const docSnap: DocumentData = await getDoc(docRef);
-    const currentDoc = docSnap.data();
-    const friendDocSnap: DocumentData = await getDoc(friendDoc);
-    const frdDocData = friendDocSnap.data();
-    const id: number = Date.now();
-
-    const filteredReq = currentDoc?.requests.filter(
-      (item: userInterface) => item.name !== friend?.name
-    );
-
-    const filteredSentReq = frdDocData.sentReq.filter(
-      (item: userInterface) => item.uid !== auth.currentUser?.uid
-    );
-
-    await updateDoc(docRef, {
-      requests: filteredReq,
-      friends: arrayUnion({
-        name: friend?.name,
-        uid: friend?.uid,
-        avatar: friend?.avatar,
-      }),
-      chats: arrayUnion({
-        users: [
-          {
-            name: eachUser?.name,
-            avatar: eachUser?.avatar,
-            uid: eachUser?.uid,
-          },
-          { name: friend?.name, avatar: friend?.avatar, uid: friend?.uid },
-        ],
-        messages: [],
-        background: "./default_svg.png",
-        id,
-        at: moment().format(),
-      }),
-    });
-
-    await updateDoc(friendDoc, {
-      sentReq: filteredSentReq,
-      friends: arrayUnion({
-        name: auth.currentUser?.displayName,
-        uid: auth.currentUser?.uid,
-        avatar: auth.currentUser?.photoURL,
-      }),
-      chats: arrayUnion({
-        users: [
-          { name: friend?.name, avatar: friend?.avatar, uid: friend?.uid },
-          {
-            name: eachUser?.name,
-            avatar: eachUser?.avatar,
-            uid: eachUser?.uid,
-          },
-        ],
-        messages: [],
-        background: "./default_svg.png",
-        id,
-        at: moment().format(),
-      }),
-    });
-  };
-
-  const refuseRequest = async (index: number) => {
-    const docRef = doc(db, "eachUser", `${auth.currentUser?.uid}`);
-    const friend: userInterface | undefined = eachUser?.requests[index];
-    const docSnap: DocumentData = await getDoc(docRef);
-    const friendDoc = doc(db, "eachUser", `${friend?.uid}`);
-    const frDocSnap: DocumentData = await getDoc(friendDoc);
-    const currentDoc = docSnap.data();
-    const currentFrdDoc: eachUserInt = frDocSnap.data();
-    const filteredReq = currentDoc?.requests.filter(
-      (item: userInterface) => item.name !== friend?.name
-    );
-    const filteredFrdReq = currentFrdDoc.sentReq.filter(
-      (item) => item.name !== auth.currentUser?.displayName
-    );
-
-    await updateDoc(docRef, {
-      requests: filteredReq,
-    });
-
-    await updateDoc(friendDoc, {
-      sentReq: filteredFrdReq,
-    });
-  };
-
   const removeFriend = async (index: number) => {
     const docRef = doc(db, "eachUser", `${auth.currentUser?.uid}`);
     const friend: userInterface | undefined = eachUser?.friends[index];
@@ -517,6 +428,11 @@ function Profile() {
 
   return (
     <div>
+      <div className="inline-block">
+        <h1 className="p-2 px-4 text-md text-stone-100 rounded-br-lg font-sans font-bold bg-skyblue">
+          Perfil
+        </h1>
+      </div>
       <div>
         <img src={eachUser?.avatar || ""} alt="User Avatar"></img>
         <h1>{eachUser?.name}</h1>
@@ -565,20 +481,6 @@ function Profile() {
                 ) : (
                   <button onClick={() => addFriend(index)}>Adicionar</button>
                 )}
-              </li>
-            ))}
-        </ul>
-      </div>
-      <div>
-        <h2>Notificações</h2>
-        <ul>
-          {eachUser?.requests &&
-            eachUser.requests.map((item, index) => (
-              <li>
-                <img src={item.avatar} alt="Avatar"></img>
-                <h1> {item.name}</h1>
-                <button onClick={() => acceptFriend(index)}>Aceitar</button>
-                <button onClick={() => refuseRequest(index)}>Recusar</button>
               </li>
             ))}
         </ul>

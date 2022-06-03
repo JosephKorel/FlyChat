@@ -1,21 +1,28 @@
 import React, { useContext, useState, useEffect } from "react";
-import { AppContext } from "../Context/AuthContext";
-import { doc, DocumentData, getDoc, updateDoc } from "firebase/firestore";
+import { AppContext, userInterface } from "../Context/AuthContext";
+import {
+  arrayUnion,
+  doc,
+  DocumentData,
+  getDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { auth, db } from "../firebase-config";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import moment from "moment";
 import { Link, useNavigate } from "react-router-dom";
-import { Avatar, Button } from "@chakra-ui/react";
+import { Avatar, Button, IconButton } from "@chakra-ui/react";
 import { onAuthStateChanged } from "firebase/auth";
-import { AiOutlineUserAdd } from "react-icons/ai";
+import { AiOutlineSend, AiOutlineUserAdd } from "react-icons/ai";
+import { GrSend } from "react-icons/gr";
+import { FaTelegramPlane } from "react-icons/fa";
 
 function FriendList() {
   let navigate = useNavigate();
-  const { eachUser, setEachUser, isAuth, setPartner, setGroupId } =
-    useContext(AppContext);
+  const { eachUser, setEachUser, isAuth, setPartner } = useContext(AppContext);
 
   useEffect(() => {
-    document.body.style.backgroundColor = "#fffff5";
+    document.body.style.backgroundColor = "#F0EFEB";
   }, []);
 
   useEffect(() => {
@@ -27,24 +34,42 @@ function FriendList() {
       }
     });
   }, [onAuthStateChanged]);
+
+  const startChat = async (index: number) => {
+    const friend: userInterface | undefined = eachUser?.friends[index];
+
+    setPartner(friend?.uid!);
+    navigate("/chat");
+  };
+
   return (
     <div className="h-screen">
       {eachUser ? (
         <>
-          {eachUser?.friends.length == 0 ? (
+          {eachUser?.friends.length > 0 ? (
             <>
               <div className="inline-block">
-                <h1 className="p-2 text-xl text-stone-100 rounded-br-lg font-sans font-bold bg-skyblue">
+                <h1 className="p-2 text-md text-stone-100 rounded-br-lg font-sans font-bold bg-skyblue">
                   Amigos
                 </h1>
               </div>
-              <div className="w-5/6 m-auto mt-4">
-                {eachUser?.sentReq.map((user) => (
-                  <div className="flex align-center mt-4">
-                    <Avatar src={user.avatar} />
-                    <p className="text-xl font-sans font-semibold px-10 leading-[45px]">
+              <div className="w-[95%] m-auto mt-4">
+                {eachUser?.friends.map((user, index) => (
+                  <div className="flex align-center justify-between mt-4 p-1 shadow-lg bg-[#FDFDFC] rounded-full rounded-l-full border-b border-l border-skyblue">
+                    <div className="">
+                      <Avatar src={user.avatar} />
+                    </div>
+                    <p className="text-lg font-sans font-semibold px-10 leading-[45px]">
                       {user.name}
                     </p>
+                    <IconButton
+                      className="mt-1"
+                      aria-label="Enviar mensagem"
+                      icon={<FaTelegramPlane size={32} color="#48D6D2" />}
+                      bg="transparent"
+                      rounded="full"
+                      onClick={() => startChat(index)}
+                    />
                   </div>
                 ))}
               </div>

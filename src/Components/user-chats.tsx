@@ -67,6 +67,11 @@ function UserChats() {
 
   return (
     <div className="h-screen">
+      <div className="inline-block">
+        <h1 className="p-2 text-md text-stone-100 rounded-br-lg font-sans font-bold bg-skyblue">
+          Conversas
+        </h1>
+      </div>
       {eachUser ? (
         <>
           {eachUser?.friends.length > 0 ? (
