@@ -4,17 +4,23 @@ import {
   eachUserInt,
   userInterface,
   eachChat,
+  chatInterface,
 } from "../Context/AuthContext";
 import { doc, DocumentData, getDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../firebase-config";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import moment from "moment";
+import { Avatar, IconButton, Input } from "@chakra-ui/react";
+import { BiArrowBack } from "react-icons/bi";
+import { useNavigate } from "react-router";
+import { RiSendPlane2Fill } from "react-icons/ri";
 
 function ChatPage() {
   const { eachUser, setEachUser, partner } = useContext(AppContext);
   const [message, setMessage] = useState<string>("");
   const [currFriend, setCurrFriend] = useState<userInterface | null>(null);
   const [currChat, setCurrChat] = useState<eachChat | null>(null);
+  let navigate = useNavigate();
 
   const retrieveDoc = async () => {
     const userDoc = doc(db, "eachUser", `${auth.currentUser?.uid}`);
@@ -115,44 +121,77 @@ function ChatPage() {
     setMessage("");
   };
 
-  console.log(currChat);
+  const msgPlace = (msg: chatInterface) => {
+    return msg.senderuid == eachUser?.uid ? "flex-row-reverse" : "";
+  };
 
   return (
-    <div>
+    <div
+      className={`h-screen`}
+      style={{ background: `url(${eachUser?.chatBg})` }}
+    >
+      <div className="py-1 flex align-center bg-skyblue">
+        <div>
+          <IconButton
+            className="mt-1"
+            aria-label="Voltar"
+            icon={<BiArrowBack size={20} color="white" />}
+            bg="none"
+            onClick={() => navigate("/user-chats")}
+          />
+          <Avatar src={currFriend?.avatar} />
+        </div>
+        <p className="text-lg mt-1 font-sans leading-10 pl-6 font-semibold text-stone-100">
+          {currFriend?.name}
+        </p>
+      </div>
       <div>
-        <h1>Conversando com {currFriend?.name}</h1>
         {currChat !== null && (
-          <div
-            style={{ backgroundImage: `url(${eachUser?.chatBg})` }}
-            className="chat-container"
-          >
-            <ul>
-              {currChat?.messages.map((msg) => (
-                <>
-                  <li>
-                    <img
-                      src={
-                        msg.sender == eachUser?.name
-                          ? eachUser.avatar
-                          : currFriend?.avatar
-                      }
-                      alt="usuário"
-                    ></img>
-                    <strong>{msg.sender}:</strong>
-                    {msg.content} at:{msg.time}
-                  </li>
-                </>
-              ))}
-            </ul>
-          </div>
+          <>
+            {currChat?.messages.map((msg) => (
+              <>
+                <div className={`flex ${msgPlace(msg)} mt-2`}>
+                  <div className="flex flex-col max-w-[40%] bg-diamond">
+                    <div className={`flex ${msgPlace(msg)} p-1`}>
+                      <Avatar
+                        size="sm"
+                        src={
+                          msg.sender == eachUser?.name
+                            ? eachUser.avatar
+                            : currFriend?.avatar
+                        }
+                      />
+                      <p>{msg.sender}</p>
+                    </div>
+                    <p className={``}>{msg.content}</p>
+                    <p className={``}>{msg.time}</p>
+                  </div>
+                </div>
+              </>
+            ))}
+          </>
         )}
-        <input
-          type="text"
-          placeholder="Digite sua mensagem"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-        ></input>
-        <button onClick={sendMsg}>Enviar</button>
+        <div className="w-full py-2 m-auto absolute bottom-0 flex align-center justify-around">
+          <Input
+            bg="white"
+            rounded="full"
+            width="80%"
+            type="text"
+            placeholder="Digite sua mensagem"
+            value={message}
+            onChange={(e: React.FormEvent<HTMLInputElement>) =>
+              setMessage(e.currentTarget.value)
+            }
+          ></Input>
+          <IconButton
+            aria-label="Enviar"
+            icon={<RiSendPlane2Fill size={20} color="white" />}
+            bg="blue.500"
+            rounded="full"
+            onClick={sendMsg}
+          />
+          {/*  <button onClick={sendMsg}>Enviar</button> */}
+        </div>
       </div>
     </div>
   );
