@@ -5,9 +5,11 @@ import { auth, db } from "../firebase-config";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import moment from "moment";
 import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@chakra-ui/react";
+import { Avatar, Button, IconButton } from "@chakra-ui/react";
 import { onAuthStateChanged } from "firebase/auth";
 import { AiOutlineUserAdd } from "react-icons/ai";
+import { FaTelegramPlane } from "react-icons/fa";
+import { MdGroupAdd } from "react-icons/md";
 
 function UserChats() {
   const { eachUser, setEachUser, setUsers, setPartner, setGroupId } =
@@ -33,7 +35,7 @@ function UserChats() {
   }, [onAuthStateChanged]);
 
   useEffect(() => {
-    document.body.style.backgroundColor = "#fffff5";
+    document.body.style.backgroundColor = "#F0EFEB";
     getUsers();
   }, []);
 
@@ -63,6 +65,13 @@ function UserChats() {
 
   const startChat = (index: number) => {
     setPartner(chatList[index].users[1].uid);
+    navigate("/chat");
+  };
+
+  const lastMsg = (chat: any) => {
+    return chat.messages.slice(-1)[0].content.length > 40
+      ? chat.messages.slice(-1)[0].content.slice(0, 40) + "..."
+      : chat.messages.slice(-1)[0].content;
   };
 
   return (
@@ -72,31 +81,63 @@ function UserChats() {
           Conversas
         </h1>
       </div>
+
       {eachUser ? (
         <>
           {eachUser?.friends.length > 0 ? (
-            <div>
+            <div className="w-[98%] m-auto">
               {chatList.map((chat, index) => (
                 <div>
-                  <ul>
-                    {chat.users.length > 2 ? (
-                      <li>
+                  {chat.users.length > 2 ? (
+                    <>
+                      <div className="flex align-center justify-between mt-4 p-1 shadow-lg bg-[#FDFDFC] rounded-full rounded-l-full border-b border-l border-skyblue">
+                        <div className="">
+                          <Avatar src={chat.groupIcon} />
+                        </div>
+                        <div>
+                          <p className="text-lg font-sans font-semibold px-10 leading-[45px]">
+                            {chat.title}
+                          </p>{" "}
+                          <p className="text-sm text-stone-400">
+                            {lastMsg(chat)}
+                          </p>
+                        </div>
+                        <IconButton
+                          className="mt-1"
+                          aria-label="Enviar mensagem"
+                          icon={<FaTelegramPlane size={32} color="#48D6D2" />}
+                          bg="transparent"
+                          rounded="full"
+                        />
+                      </div>
+                      {/* <li>
                         <img src={chat.groupIcon}></img>
                         {chat.title}
                         <Link to="/group-chat" onClick={() => groupTalk(index)}>
                           Conversar
                         </Link>
-                      </li>
-                    ) : (
-                      <li>
-                        <img src={chat.users[1].avatar}></img>
-                        {chat.users[1].name}
-                        <Link to="/chat" onClick={() => startChat(index)}>
-                          Conversar
-                        </Link>
-                      </li>
-                    )}
-                  </ul>
+                      </li> */}
+                    </>
+                  ) : (
+                    <>
+                      <div
+                        className=" flex align-center mt-4 p-1 shadow-lg bg-[#FDFDFC] rounded-full border-b border-l border-skyblue"
+                        onClick={() => startChat(index)}
+                      >
+                        <div>
+                          <Avatar src={chat.users[1].avatar} />
+                        </div>
+                        <div className="ml-2">
+                          <p className="text-lg font-sans font-semibold">
+                            {chat.users[1].name}
+                          </p>
+                          <p className="text-sm text-stone-400">
+                            {lastMsg(chat)}
+                          </p>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               ))}
             </div>
@@ -121,18 +162,16 @@ function UserChats() {
       ) : (
         <></>
       )}
+      <IconButton
+        aria-label="Novo grupo"
+        icon={<MdGroupAdd size={25} color="white" />}
+        className="sticky bottom-10"
+        rounded="full"
+        bg="#2ABCB8"
+        onClick={() => navigate("/new-group")}
+      />
     </div>
   );
 }
 
 export default UserChats;
-
-{
-  /*  <div className="flex flex-col w-[100px]">
-        <div className="flex justify-between">
-          <div className="w-10 h-10 bg-sky-400"></div>
-          <div className="w-10 h-10 bg-sky-400"></div>
-        </div>
-        <div className="w-full h-10 bg-sky-400 mt-2"></div>
-      </div> */
-}

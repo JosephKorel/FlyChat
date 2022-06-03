@@ -48,8 +48,6 @@ function ChatPage() {
   useEffect(() => {
     getPartner();
     docUpdate();
-
-    console.log(partner);
   }, [partner]);
 
   //Atualização em tempo-real
@@ -122,7 +120,13 @@ function ChatPage() {
   };
 
   const msgPlace = (msg: chatInterface) => {
-    return msg.senderuid == eachUser?.uid ? "flex-row-reverse" : "";
+    return msg.senderuid == eachUser?.uid ? "flex-row-reverse mr-1" : "";
+  };
+
+  const msgShape = (msg: chatInterface) => {
+    return msg.senderuid == eachUser?.uid
+      ? "rounded-tl-3xl rounded-br-3xl px-3"
+      : "rounded-tr-3xl rounded-bl-3xl px-3";
   };
 
   return (
@@ -130,7 +134,7 @@ function ChatPage() {
       className={`h-screen`}
       style={{ background: `url(${eachUser?.chatBg})` }}
     >
-      <div className="py-1 flex align-center bg-skyblue">
+      <div className="py-1 flex align-center bg-water-700">
         <div>
           <IconButton
             className="mt-1"
@@ -151,20 +155,17 @@ function ChatPage() {
             {currChat?.messages.map((msg) => (
               <>
                 <div className={`flex ${msgPlace(msg)} mt-2`}>
-                  <div className="flex flex-col max-w-[40%] bg-diamond">
-                    <div className={`flex ${msgPlace(msg)} p-1`}>
-                      <Avatar
-                        size="sm"
-                        src={
-                          msg.sender == eachUser?.name
-                            ? eachUser.avatar
-                            : currFriend?.avatar
-                        }
-                      />
-                      <p>{msg.sender}</p>
+                  <div
+                    className={`flex flex-col max-w-[70%] bg-skyblue ${msgShape(
+                      msg
+                    )}`}
+                  >
+                    <div className={``}>
+                      <p className={`text-sm text-stone-100 font-sans pt-1`}>
+                        {msg.content}
+                      </p>
                     </div>
-                    <p className={``}>{msg.content}</p>
-                    <p className={``}>{msg.time}</p>
+                    <p className={`text-xs text-stone-300`}>{msg.time}</p>
                   </div>
                 </div>
               </>
