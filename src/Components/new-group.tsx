@@ -1,14 +1,13 @@
-import {
-  arrayUnion,
-  doc,
-  serverTimestamp,
-  updateDoc,
-} from "firebase/firestore";
+import { Avatar, Button, IconButton, Input } from "@chakra-ui/react";
+import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import moment from "moment";
 import React, { useContext, useState } from "react";
+import { BiAddToQueue, BiMinus } from "react-icons/bi";
 import { AppContext } from "../Context/AuthContext";
 import { auth, db, storage } from "../firebase-config";
+import { MdCancel, MdOutlineAdd } from "react-icons/md";
+import { AiOutlineUpload } from "react-icons/ai";
 
 function NewGroup() {
   const { users, setUsers, eachUser, setEachUser, setPartner } =
@@ -34,7 +33,6 @@ function NewGroup() {
         { name: friend?.name!, avatar: friend?.avatar!, uid: friend?.uid! },
       ]);
     }
-    console.log(moment().format());
   };
 
   const removeFriend = (index: number) => {
@@ -75,39 +73,82 @@ function NewGroup() {
 
   return (
     <div>
-      <h1>Amigos:</h1>
-      <ul>
-        {eachUser?.friends.map((item, index) => (
-          <li>
-            <img src={item.avatar} alt="Avatar"></img>
-            {item.name}
-            <button onClick={() => addFriend(index)}>Selecionar</button>
-          </li>
+      <h1 className="text-lg font-semibold font-sans">Amigos:</h1>
+      <div className="max-h-60 overflow-x-auto">
+        {eachUser?.friends.map((user, index) => (
+          <div className="flex justify-between mt-2 p-1 shadow-lg bg-[#FDFDFC] rounded-full rounded-l-full border-b border-l border-skyblue">
+            <Avatar src={user.avatar} size="sm" />
+            <p className="text-base font-sans font-semibold px-10">
+              {user.name}
+            </p>
+            <IconButton
+              aria-label="Adicionar ao grupo"
+              icon={<MdOutlineAdd size={24} color="white" />}
+              bg="blue.500"
+              rounded="full"
+              size="sm"
+              onClick={() => addFriend(index)}
+            />
+          </div>
         ))}
-      </ul>
-      <div>
-        <ul>
-          {groupUsers.length > 1 &&
-            groupUsers.slice(1).map((item, index) => (
-              <li>
-                {item.name}
-                <button onClick={() => removeFriend(index)}>Remover</button>
-              </li>
-            ))}
-        </ul>
       </div>
+      {groupUsers.length > 1 && (
+        <div className="mt-4">
+          <h1 className="text-lg font-semibold font-sans">Membros</h1>
+          <div className="flex flex-wrap mt-1">
+            {groupUsers.slice(1).map((item, index) => (
+              <>
+                <p className="text-base font-sans">{item.name}</p>
+                <IconButton
+                  aria-label="remover"
+                  icon={<MdCancel size={18} color="#C53030" />}
+                  onClick={() => removeFriend(index)}
+                  size="xs"
+                  bg="none"
+                  rounded="full"
+                >
+                  Remover
+                </IconButton>
+              </>
+            ))}
+          </div>
+        </div>
+      )}
       <div>
-        <input
+        <Input
+          className="mt-24"
+          rounded="full"
           type="text"
-          placeholder="Nome do grupo"
-          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Dê um nome ao grupo"
+          onChange={(e: React.FormEvent<HTMLInputElement>) =>
+            setTitle(e.currentTarget.value)
+          }
           value={title}
-        ></input>
-        <input
-          type="file"
-          onChange={(e) => setGroupImg(e.target.files?.[0])}
-        ></input>
-        <button onClick={createGroup}>Criar grupo</button>
+        ></Input>
+        <div className="flex justify-between mt-4">
+          <p className="font-sans text-lg font-medium leading-[45px]">
+            Qual será a foto do grupo?
+          </p>
+          <IconButton
+            icon={<AiOutlineUpload />}
+            aria-label="Search database"
+            rounded="50%"
+            size="lg"
+            colorScheme="messenger"
+            onClick={() => {
+              document.getElementById("group-img")?.click();
+            }}
+          />
+          <input
+            className="hidden"
+            type="file"
+            id="group-img"
+            onChange={(e) => setGroupImg(e.target.files?.[0])}
+          ></input>
+        </div>
+        <Button onClick={createGroup} colorScheme="messenger" className="mt-5">
+          Criar grupo
+        </Button>
       </div>
     </div>
   );

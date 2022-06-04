@@ -5,16 +5,18 @@ import { auth, db } from "../firebase-config";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import moment from "moment";
 import { Link, useNavigate } from "react-router-dom";
-import { Avatar, Button, IconButton } from "@chakra-ui/react";
+import { Avatar, Button, IconButton, useDisclosure } from "@chakra-ui/react";
 import { onAuthStateChanged } from "firebase/auth";
 import { AiOutlineUserAdd } from "react-icons/ai";
 import { FaTelegramPlane } from "react-icons/fa";
 import { MdGroupAdd } from "react-icons/md";
+import GroupModal from "../Styled-components/modal";
 
 function UserChats() {
   const { eachUser, setEachUser, setUsers, setPartner, setGroupId } =
     useContext(AppContext);
   const [chatList, setChatList] = useState<any[]>([]);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   let navigate = useNavigate();
 
@@ -75,7 +77,11 @@ function UserChats() {
   };
 
   return (
-    <div className="h-screen">
+    <div className="h-screen overflow-scroll">
+      <div className="fixed bottom-16 right-4">
+        <GroupModal />
+      </div>
+
       <div className="inline-block">
         <h1 className="p-2 text-md text-stone-100 rounded-br-lg font-sans font-bold bg-skyblue">
           Conversas
@@ -162,14 +168,6 @@ function UserChats() {
       ) : (
         <></>
       )}
-      <IconButton
-        aria-label="Novo grupo"
-        icon={<MdGroupAdd size={25} color="white" />}
-        className="sticky bottom-10"
-        rounded="full"
-        bg="#2ABCB8"
-        onClick={() => navigate("/new-group")}
-      />
     </div>
   );
 }
