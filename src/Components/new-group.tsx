@@ -8,6 +8,7 @@ import { AppContext } from "../Context/AuthContext";
 import { auth, db, storage } from "../firebase-config";
 import { MdCancel, MdOutlineAdd } from "react-icons/md";
 import { AiOutlineUpload } from "react-icons/ai";
+import { useNavigate } from "react-router";
 
 function NewGroup() {
   const { users, setUsers, eachUser, setEachUser, setPartner } =
@@ -24,6 +25,7 @@ function NewGroup() {
       uid: eachUser?.uid!,
     },
   ]);
+  let navigate = useNavigate();
 
   const addFriend = (index: number) => {
     const friend = eachUser?.friends[index];
@@ -50,6 +52,7 @@ function NewGroup() {
 
     if (groupUsers.length == 1 || !title) return;
 
+    console.log("Ok");
     uploadBytes(storageRef, groupImg).then((res) => console.log("success"));
 
     getDownloadURL(ref(storage, `groupIcon/${uniqueId}`)).then(async (url) => {
@@ -69,6 +72,7 @@ function NewGroup() {
         });
       });
     });
+    navigate("/group-chat");
   };
 
   return (
@@ -93,22 +97,23 @@ function NewGroup() {
         ))}
       </div>
       {groupUsers.length > 1 && (
-        <div className="mt-4">
+        <div className="mt-24">
           <h1 className="text-lg font-semibold font-sans">Membros</h1>
-          <div className="flex flex-wrap mt-1">
+          <div className="flex flex-wrap mt-1 ">
             {groupUsers.slice(1).map((item, index) => (
               <>
-                <p className="text-base font-sans">{item.name}</p>
+                <p className="py-1 rounded-lg text-base font-sans bg-stone-300">
+                  {item.name}
+                </p>
                 <IconButton
+                  className="mt-1"
                   aria-label="remover"
                   icon={<MdCancel size={18} color="#C53030" />}
                   onClick={() => removeFriend(index)}
                   size="xs"
                   bg="none"
                   rounded="full"
-                >
-                  Remover
-                </IconButton>
+                />
               </>
             ))}
           </div>
@@ -116,7 +121,7 @@ function NewGroup() {
       )}
       <div>
         <Input
-          className="mt-24"
+          className="mt-4"
           rounded="full"
           type="text"
           placeholder="Dê um nome ao grupo"
@@ -146,6 +151,7 @@ function NewGroup() {
             onChange={(e) => setGroupImg(e.target.files?.[0])}
           ></input>
         </div>
+        {groupImg !== null ? <p>{groupImg.name}</p> : <></>}
         <Button onClick={createGroup} colorScheme="messenger" className="mt-5">
           Criar grupo
         </Button>

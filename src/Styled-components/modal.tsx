@@ -36,9 +36,6 @@ function GroupModal() {
             <NewGroup />
           </ModalBody>
           <ModalFooter>
-            {/*  <Button colorScheme="blue" mr={3} onClick={onClose}>
-              Close
-            </Button> */}
             <Button variant="ghost" onClick={onClose} bg="gray.200">
               Cancelar
             </Button>

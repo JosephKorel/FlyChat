@@ -63,6 +63,7 @@ function UserChats() {
 
   const groupTalk = (index: number) => {
     setGroupId(chatList[index].id);
+    navigate("/group-chat");
   };
 
   const startChat = (index: number) => {
@@ -71,9 +72,13 @@ function UserChats() {
   };
 
   const lastMsg = (chat: any) => {
-    return chat.messages.slice(-1)[0].content.length > 40
-      ? chat.messages.slice(-1)[0].content.slice(0, 40) + "..."
-      : chat.messages.slice(-1)[0].content;
+    if (chat.messages.length !== 0) {
+      return chat.messages.slice(-1)[0].content.length > 40
+        ? chat.messages.slice(-1)[0].content.slice(0, 40) + "..."
+        : chat.messages.slice(-1)[0].content;
+    } else {
+      return "";
+    }
   };
 
   return (
@@ -94,35 +99,24 @@ function UserChats() {
             <div className="w-[98%] m-auto">
               {chatList.map((chat, index) => (
                 <div>
-                  {chat.users.length > 2 ? (
+                  {chat.title ? (
                     <>
-                      <div className="flex align-center justify-between mt-4 p-1 shadow-lg bg-[#FDFDFC] rounded-full rounded-l-full border-b border-l border-skyblue">
-                        <div className="">
+                      <div
+                        className="flex align-center mt-4 p-1 shadow-lg bg-[#FDFDFC] rounded-full rounded-l-full border-b border-l border-skyblue"
+                        onClick={() => groupTalk(index)}
+                      >
+                        <div>
                           <Avatar src={chat.groupIcon} />
                         </div>
-                        <div>
-                          <p className="text-lg font-sans font-semibold px-10 leading-[45px]">
+                        <div className="ml-2">
+                          <p className="text-lg font-sans font-semibold ">
                             {chat.title}
-                          </p>{" "}
+                          </p>
                           <p className="text-sm text-stone-400">
                             {lastMsg(chat)}
                           </p>
                         </div>
-                        <IconButton
-                          className="mt-1"
-                          aria-label="Enviar mensagem"
-                          icon={<FaTelegramPlane size={32} color="#48D6D2" />}
-                          bg="transparent"
-                          rounded="full"
-                        />
                       </div>
-                      {/* <li>
-                        <img src={chat.groupIcon}></img>
-                        {chat.title}
-                        <Link to="/group-chat" onClick={() => groupTalk(index)}>
-                          Conversar
-                        </Link>
-                      </li> */}
                     </>
                   ) : (
                     <>

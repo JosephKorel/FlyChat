@@ -1,8 +1,10 @@
+import { Avatar, IconButton } from "@chakra-ui/react";
 import { doc, DocumentData, getDoc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import moment from "moment";
 import React, { useContext, useState, useEffect, FormEvent } from "react";
 import { useDocumentData } from "react-firebase-hooks/firestore";
+import { BiArrowBack } from "react-icons/bi";
 import { useNavigate } from "react-router";
 import {
   AppContext,
@@ -120,7 +122,41 @@ function GroupChat() {
   };
 
   return (
-    <div>
+    <div
+      className="h-screen"
+      style={{ background: `url(${eachUser?.chatBg})` }}
+    >
+      <div className="py-1 flex align-center bg-water-700">
+        <div>
+          <IconButton
+            className="mt-1"
+            aria-label="Voltar"
+            icon={<BiArrowBack size={20} color="white" />}
+            bg="none"
+            onClick={() => navigate("/user-chats")}
+          />
+          <Avatar src={currChat?.groupIcon} />
+        </div>
+        <div className="pl-4 flex flex-col">
+          <p className="text-lg mt-1 font-sans font-semibold text-stone-100">
+            {currChat?.title}
+          </p>
+          <div className="flex text-sm font-sans font-semibold text-stone-500">
+            <>
+              {currChat?.users.map((user, index, users) =>
+                user.uid == auth.currentUser?.uid ? (
+                  <p>Você{index !== users.length - 1 && "," + "\u00A0"}</p>
+                ) : (
+                  <p>
+                    {user.name}
+                    {index !== users.length - 1 && "," + "and"}
+                  </p>
+                )
+              )}
+            </>
+          </div>
+        </div>
+      </div>
       {currChat && (
         <>
           <div>

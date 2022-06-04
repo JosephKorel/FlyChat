@@ -9,7 +9,7 @@ function Navbar() {
   let location = useLocation().pathname;
   return (
     <>
-      {location === "/chat" ? (
+      {location === "/chat" || location == "/group-chat" ? (
         <></>
       ) : (
         <div className="bg-skyblue">

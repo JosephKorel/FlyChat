@@ -131,7 +131,7 @@ function ChatPage() {
 
   return (
     <div
-      className={`h-screen`}
+      className="h-screen"
       style={{ background: `url(${eachUser?.chatBg})` }}
     >
       <div className="py-1 flex align-center bg-water-700">
