@@ -52,7 +52,6 @@ function NewGroup() {
 
     if (groupUsers.length == 1 || !title) return;
 
-    console.log("Ok");
     uploadBytes(storageRef, groupImg).then((res) => console.log("success"));
 
     getDownloadURL(ref(storage, `groupIcon/${uniqueId}`)).then(async (url) => {

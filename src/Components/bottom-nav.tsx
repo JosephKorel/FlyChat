@@ -11,7 +11,9 @@ function BottomNav() {
   let navigate = useNavigate();
   return (
     <>
-      {location == "/chat" || location == "/group-chat" ? (
+      {location == "/chat" ||
+      location == "/group-chat" ||
+      location == "/group-config" ? (
         <></>
       ) : (
         <div className="flex align-center justify-around p3 bg-stone-100 border-t-[1px] border-skyblue sticky bottom-0 w-full">

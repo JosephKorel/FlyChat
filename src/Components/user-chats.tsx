@@ -10,7 +10,8 @@ import { onAuthStateChanged } from "firebase/auth";
 import { AiOutlineUserAdd } from "react-icons/ai";
 import { FaTelegramPlane } from "react-icons/fa";
 import { MdGroupAdd } from "react-icons/md";
-import GroupModal from "../Styled-components/modal";
+import GroupModal from "../Styled-components/new-group-modal";
+import NewGroup from "./new-group";
 
 function UserChats() {
   const { eachUser, setEachUser, setUsers, setPartner, setGroupId } =

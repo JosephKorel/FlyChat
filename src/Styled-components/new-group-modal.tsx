@@ -10,6 +10,7 @@ import {
   useDisclosure,
   IconButton,
 } from "@chakra-ui/react";
+import React from "react";
 import { MdGroupAdd } from "react-icons/md";
 import NewGroup from "../Components/new-group";
 

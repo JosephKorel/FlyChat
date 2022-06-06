@@ -1,24 +1,26 @@
-import { Avatar, IconButton } from "@chakra-ui/react";
+import { Avatar, IconButton, Input } from "@chakra-ui/react";
 import { doc, DocumentData, getDoc, updateDoc } from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+
 import moment from "moment";
 import React, { useContext, useState, useEffect, FormEvent } from "react";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import { BiArrowBack } from "react-icons/bi";
+import { RiSendPlane2Fill } from "react-icons/ri";
 import { useNavigate } from "react-router";
 import {
   AppContext,
+  chatInterface,
   eachUserInt,
   groupChatInt,
   userInterface,
 } from "../Context/AuthContext";
-import { auth, db, storage } from "../firebase-config";
+import { auth, db } from "../firebase-config";
+import GroupConfig from "./group-config";
 
 function GroupChat() {
   const { eachUser, groupId, setEachUser } = useContext(AppContext);
   const [currChat, setCurrChat] = useState<groupChatInt | null>(null);
   const [message, setMessage] = useState<string>("");
-  const [icon, setIcon] = useState<any>(null);
 
   let navigate = useNavigate();
 
@@ -82,52 +84,46 @@ function GroupChat() {
     setMessage("");
   };
 
-  const changeIcon = () => {
-    let uniqueId = "";
-    const storageRef = ref(storage, `groupIcon/${uniqueId}`);
-
-    uploadBytes(storageRef, icon).then((res) => console.log("success"));
-
-    getDownloadURL(ref(storage, `groupIcon/${uniqueId}`)).then((url) => {
-      currChat?.users.forEach(async (user) => {
-        const docRef = doc(db, "eachUser", `${user.uid}`);
-        const docSnap = await getDoc(docRef);
-        const docData = docSnap.data();
-        const chats: groupChatInt[] = docData?.groupChat;
-
-        chats.forEach((item) => {
-          if (item.id == groupId) {
-            item.groupIcon = url;
-          }
-        });
-
-        await updateDoc(docRef, { groupChat: chats });
+  const groupUsers = () => {
+    const list = document.getElementById("group-users");
+    if (currChat) {
+      const sortedUsers = currChat.users.sort((a, b) => {
+        if (a.uid == auth.currentUser?.uid!) return -1;
+        return 0;
       });
-    });
+
+      const breakPoint = sortedUsers.length > 3 ? ", ..." : "";
+      return (
+        <p id="group-users" className="whitespace-nowrap w-56">
+          Você, {""}
+          {sortedUsers?.slice(1, 2).map((user) => (
+            <>{user.name}</>
+          ))}
+          {breakPoint}
+        </p>
+      );
+    }
   };
 
-  const deleteGroup = () => {
-    currChat?.users.forEach(async (user) => {
-      const docRef = doc(db, "eachUser", `${user.uid}`);
-      const docSnap = await getDoc(docRef);
-      const docData = docSnap.data();
-      const chats: groupChatInt[] = docData?.groupChat;
-
-      const filteredChat = chats.filter((item) => item.id !== groupId);
-
-      await updateDoc(docRef, { groupChat: filteredChat });
-    });
-
-    navigate("/user-chats");
+  const msgPlace = (msg: chatInterface) => {
+    return msg.senderuid == eachUser?.uid ? "flex-row-reverse mr-1" : "";
   };
+
+  const msgShape = (msg: chatInterface) => {
+    return msg.senderuid == eachUser?.uid
+      ? "rounded-tl-3xl rounded-br-3xl px-3"
+      : "rounded-tr-3xl rounded-bl-3xl px-3";
+  };
+
+  const otherMsg = (msg: chatInterface) => {};
 
   return (
     <div
       className="h-screen"
       style={{ background: `url(${eachUser?.chatBg})` }}
     >
-      <div className="py-1 flex align-center bg-water-700">
-        <div>
+      <div className="py-1 flex align-center justify-between bg-water-700">
+        <div className="flex">
           <IconButton
             className="mt-1"
             aria-label="Voltar"
@@ -136,77 +132,62 @@ function GroupChat() {
             onClick={() => navigate("/user-chats")}
           />
           <Avatar src={currChat?.groupIcon} />
-        </div>
-        <div className="pl-4 flex flex-col">
-          <p className="text-lg mt-1 font-sans font-semibold text-stone-100">
-            {currChat?.title}
-          </p>
-          <div className="flex text-sm font-sans font-semibold text-stone-500">
-            <>
-              {currChat?.users.map((user, index, users) =>
-                user.uid == auth.currentUser?.uid ? (
-                  <p>Você{index !== users.length - 1 && "," + "\u00A0"}</p>
-                ) : (
-                  <p>
-                    {user.name}
-                    {index !== users.length - 1 && "," + "and"}
-                  </p>
-                )
-              )}
-            </>
+          <div className="pl-4 flex flex-col">
+            <p className="text-lg mt-1 font-sans font-semibold text-stone-100">
+              {currChat?.title}
+            </p>
+            <div className="flex text-sm font-sans font-normal text-stone-500">
+              {groupUsers()}
+            </div>
           </div>
+        </div>
+        <div onClick={() => navigate("/group-config")} className="float-right">
+          <GroupConfig />
         </div>
       </div>
       {currChat && (
         <>
           <div>
-            <img src={currChat.groupIcon} alt="ícone"></img>
-            <input
-              type="file"
-              onChange={(e) => setIcon(e.target.files?.[0])}
-            ></input>
-            <button onClick={changeIcon}>Alterar ícone</button>
-            {currChat?.users[0].uid == auth.currentUser?.uid && (
-              <button onClick={deleteGroup}>Excluir grupo</button>
-            )}
-            <button onClick={deleteGroup}>Excluir grupo</button>
-            <h1>{currChat.title}</h1>
-            <h2>Usuários:</h2>
-            {currChat.users.map((item) => (
-              <>
-                <ul>
-                  <li>
-                    <img src={item.avatar} alt="avatar"></img>
-                    {item.name}
-                  </li>
-                </ul>
-              </>
-            ))}
-          </div>
-          <div>
             {currChat.messages.length > 0 && (
               <>
-                <h2>Mensagens:</h2>
                 {currChat.messages.map((msg) => (
-                  <ul>
-                    <li>
-                      <img></img>
-                      <strong>{msg.sender}:</strong>
-                      {msg.content} at:{msg.time}
-                    </li>
-                  </ul>
+                  <div className={`flex ${msgPlace(msg)} mt-2`}>
+                    <div
+                      className={`flex flex-col max-w-[70%] bg-skyblue ${msgShape(
+                        msg
+                      )}`}
+                    >
+                      <div className={``}>
+                        <p className={`text-sm text-stone-100 font-sans pt-1`}>
+                          {msg.content}
+                        </p>
+                      </div>
+                      <p className={`text-xs text-stone-300`}>{msg.time}</p>
+                    </div>
+                  </div>
                 ))}
               </>
             )}
           </div>
-          <div>
-            <input
+          <div className="w-full py-2 m-auto absolute bottom-0 flex align-center justify-around">
+            <Input
+              bg="white"
+              rounded="full"
+              width="80%"
               type="text"
               placeholder="Digite sua mensagem"
               value={message}
-              onChange={(e) => setMessage(e.target.value)}
-            ></input>
-            <button onClick={sendMsg}>Enviar</button>
+              onChange={(e: React.FormEvent<HTMLInputElement>) =>
+                setMessage(e.currentTarget.value)
+              }
+            ></Input>
+            <IconButton
+              aria-label="Enviar"
+              icon={<RiSendPlane2Fill size={20} color="white" />}
+              bg="blue.500"
+              rounded="full"
+              onClick={sendMsg}
+            />
           </div>
         </>
       )}

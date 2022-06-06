@@ -20,6 +20,7 @@ import BottomNav from "./Components/bottom-nav";
 import { useContext } from "react";
 import FriendList from "./Components/friends";
 import AddFriend from "./Components/add-friend";
+import GroupConfig from "./Components/group-config";
 function App() {
   const { isAuth } = useContext(AppContext);
   return (
@@ -37,6 +38,7 @@ function App() {
             <Route path="/chat" element={<ChatPage />} />
             <Route path="/new-group" element={<NewGroup />} />
             <Route path="/group-chat" element={<GroupChat />} />
+            <Route path="/group-config" element={<GroupConfig />} />
             <Route path="/friends" element={<FriendList />} />
             <Route path="/add-friend" element={<AddFriend />} />
           </Routes>
