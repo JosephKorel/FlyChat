@@ -4,20 +4,16 @@ import { doc, DocumentData, getDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../firebase-config";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import moment from "moment";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Avatar, Button, IconButton, useDisclosure } from "@chakra-ui/react";
 import { onAuthStateChanged } from "firebase/auth";
 import { AiOutlineUserAdd } from "react-icons/ai";
-import { FaTelegramPlane } from "react-icons/fa";
-import { MdGroupAdd } from "react-icons/md";
 import GroupModal from "../Styled-components/new-group-modal";
-import NewGroup from "./new-group";
 
 function UserChats() {
   const { eachUser, setEachUser, setUsers, setPartner, setGroupId } =
     useContext(AppContext);
   const [chatList, setChatList] = useState<any[]>([]);
-  const { isOpen, onOpen, onClose } = useDisclosure();
 
   let navigate = useNavigate();
 
@@ -25,6 +21,18 @@ function UserChats() {
     const docRef = doc(db, "allUsers", "list");
     const docSnap: DocumentData = await getDoc(docRef);
     setUsers(docSnap.data().users);
+  };
+
+  const getChats = () => {
+    let chatArr: any[] = [];
+    if (eachUser) {
+      eachUser.groupChat.forEach((chat) => chatArr.push(chat));
+      eachUser.chats.forEach((chat) => chatArr.push(chat));
+    }
+    const sortedChat = chatArr.sort(
+      (a, b) => moment(b.at).valueOf() - moment(a.at).valueOf()
+    );
+    setChatList(sortedChat);
   };
 
   useEffect(() => {
@@ -40,27 +48,16 @@ function UserChats() {
   useEffect(() => {
     document.body.style.backgroundColor = "#F0EFEB";
     getUsers();
+    getChats();
   }, []);
 
   const [eachUserDoc] = useDocumentData(
     doc(db, "eachUser", `${auth.currentUser?.uid}`)
   );
 
-  const getChats = () => {
-    let chatArr: any[] = [];
-    if (eachUser) {
-      eachUser.groupChat.forEach((chat) => chatArr.push(chat));
-      eachUser.chats.forEach((chat) => chatArr.push(chat));
-    }
-    const sortedChat = chatArr.sort(
-      (a, b) => moment(b.at).valueOf() - moment(a.at).valueOf()
-    );
-    setChatList(sortedChat);
-  };
-
   useEffect(() => {
     getChats();
-  }, []);
+  }, [eachUserDoc]);
 
   const groupTalk = (index: number) => {
     setGroupId(chatList[index].id);
@@ -87,7 +84,6 @@ function UserChats() {
       <div className="fixed bottom-16 right-4">
         <GroupModal />
       </div>
-
       <div className="inline-block">
         <h1 className="p-2 text-md text-stone-100 rounded-br-lg font-sans font-bold bg-skyblue">
           Conversas

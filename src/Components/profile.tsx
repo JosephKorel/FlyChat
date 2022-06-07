@@ -1,12 +1,10 @@
 import {
-  arrayUnion,
   collection,
   doc,
   DocumentData,
   getDoc,
   getDocs,
   query,
-  serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
 import React, { useState, useEffect, useContext } from "react";
@@ -14,25 +12,40 @@ import {
   AppContext,
   eachUserInt,
   userInterface,
-  chatInterface,
   eachChat,
   groupChatInt,
 } from "../Context/AuthContext";
 import { auth, db, storage } from "../firebase-config";
 import { useDocumentData } from "react-firebase-hooks/firestore";
-import { Link } from "react-router-dom";
-import { updateProfile } from "firebase/auth";
+import { signOut, updateProfile } from "firebase/auth";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import moment from "moment";
+import {
+  Avatar,
+  IconButton,
+  Input,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  Button,
+  useDisclosure,
+} from "@chakra-ui/react";
+import { BsPencilFill } from "react-icons/bs";
+import { AiFillCamera, AiOutlineUpload } from "react-icons/ai";
+import { FaCheck } from "react-icons/fa";
+import { useNavigate } from "react-router";
 
 function Profile() {
-  const { users, setUsers, eachUser, setEachUser, setPartner, setGroupId } =
-    useContext(AppContext);
-  const [searchFriend, setSearchFriend] = useState<string>("");
-  const [searchRes, setSearchRes] = useState<userInterface[]>([]);
+  const { setUsers, eachUser, setEachUser, setIsAuth } = useContext(AppContext);
   const [username, setUsername] = useState<string>("");
   const [profileImg, setProfileImg] = useState<any | null>(null);
   const [bgImg, setBgImg] = useState<any | null>(null);
+  const [editName, setEditName] = useState<boolean>(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  let navigate = useNavigate();
 
   //Atualização em tempo-real
   const [eachUserDoc] = useDocumentData(
@@ -70,46 +83,6 @@ function Profile() {
       getEachUser(auth.currentUser.uid);
     }
   }, [allUsersDoc]);
-
-  useEffect(() => {
-    const otherUsers = users.filter(
-      (item) => item.uid !== auth.currentUser?.uid
-    );
-    const search: userInterface[] = otherUsers.filter((item) =>
-      item.name.toLowerCase().includes(searchFriend.toLowerCase())
-    );
-    let results: userInterface[] = [];
-
-    if (eachUser?.friends.length !== 0) {
-      for (let i = 0; i < search.length; i++) {
-        eachUser?.friends.forEach((item) => {
-          if (item.name !== search[i].name) results.push(search[i]);
-        });
-      }
-      setSearchRes(results);
-    } else setSearchRes(search);
-  }, [searchFriend]);
-
-  const addFriend = async (index: number) => {
-    const friendId = searchRes[index].uid;
-    const myDoc = doc(db, "eachUser", `${auth.currentUser?.uid}`);
-    const friendDoc = doc(db, "eachUser", `${friendId}`);
-
-    await updateDoc(friendDoc, {
-      requests: arrayUnion({
-        name: auth.currentUser?.displayName,
-        uid: auth.currentUser?.uid,
-        avatar: auth.currentUser?.photoURL,
-      }),
-    });
-    await updateDoc(myDoc, {
-      sentReq: arrayUnion({
-        name: searchRes[index].name,
-        avatar: searchRes[index].avatar,
-        uid: searchRes[index].uid,
-      }),
-    });
-  };
 
   const removeFriend = async (index: number) => {
     const docRef = doc(db, "eachUser", `${auth.currentUser?.uid}`);
@@ -151,15 +124,12 @@ function Profile() {
     });
   };
 
-  const startChat = async (index: number) => {
-    const friend: userInterface | undefined = eachUser?.friends[index];
-
-    setPartner(friend?.uid!);
-  };
-
   const changeUsername = async () => {
     if (auth.currentUser) {
-      if (username == "") return;
+      if (username == "") {
+        setEditName(false);
+        return;
+      }
 
       //Alterar o perfil e depois em eachUser
       const docRef = doc(db, "eachUser", `${auth.currentUser.uid}`);
@@ -403,10 +373,6 @@ function Profile() {
     }
   };
 
-  const startGroupChat = (index: number) => {
-    setGroupId(eachUser?.groupChat[index].id!);
-  };
-
   const changeBg = async () => {
     if (auth.currentUser) {
       const storageRef = ref(storage, `chatBg/${auth.currentUser.uid}`);
@@ -426,88 +392,164 @@ function Profile() {
     }
   };
 
+  const logOut = async () => {
+    signOut(auth).then(() => {
+      setIsAuth(false);
+      navigate("/");
+    });
+  };
+
+  const changeProfileImgComponent = (
+    <>
+      <div className="flex justify-between mt-4">
+        <p className="font-sans text-base font-medium leading-[45px]">
+          Qual será sua nova foto?
+        </p>
+        <IconButton
+          icon={<AiOutlineUpload />}
+          aria-label="Search database"
+          rounded="50%"
+          size="lg"
+          colorScheme="messenger"
+          onClick={() => {
+            document.getElementById("profile-img")?.click();
+          }}
+        />
+        <input
+          className="hidden"
+          type="file"
+          id="profile-img"
+          onChange={(e) => setProfileImg(e.target.files?.[0])}
+        ></input>
+      </div>
+      {profileImg ? <p>{profileImg.name}</p> : <></>}
+      <Button
+        onClick={changeProfileImg}
+        colorScheme="messenger"
+        className="mt-5"
+      >
+        Confirmar
+      </Button>
+    </>
+  );
+
+  const ModalComponent = (component: React.ReactNode) => {
+    return (
+      <>
+        <Modal isOpen={isOpen} onClose={onClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Alterar foto de perfil</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>{component}</ModalBody>
+            <ModalFooter>
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  onClose();
+                  setProfileImg(null);
+                }}
+                bg="gray.200"
+              >
+                Cancelar
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      </>
+    );
+  };
+
   return (
-    <div>
+    <div className="h-screen">
       <div className="inline-block">
         <h1 className="p-2 px-4 text-md text-stone-100 rounded-br-lg font-sans font-bold bg-skyblue">
           Perfil
         </h1>
       </div>
-      <div>
-        <img src={eachUser?.avatar || ""} alt="User Avatar"></img>
-        <h1>{eachUser?.name}</h1>
+      <div className="w-5/6 m-auto text-center mt-4">
+        <div className="flex justify-center">
+          <Avatar src={eachUser?.avatar || ""} size="2xl"></Avatar>
+          <IconButton
+            className="mt-1 ml-20"
+            aria-label="Alterar foto"
+            icon={<AiFillCamera size={20} color="white" />}
+            bg="#2A6FDB"
+            rounded="full"
+            position="absolute"
+            onClick={onOpen}
+          />
+        </div>
+        <div className="mt-2">
+          <Input
+            width="w-1/2"
+            className="text-center font-sans text-xl font-semibold"
+            value={editName ? username : eachUser?.name}
+            disabled={editName ? false : true}
+            variant="flushed"
+            onChange={(e: React.FormEvent<HTMLInputElement>) =>
+              setUsername(e.currentTarget.value)
+            }
+          ></Input>
+          {editName ? (
+            <IconButton
+              className="ml-4"
+              position="absolute"
+              aria-label="Mudar nome"
+              rounded="full"
+              bg="#2A6FDB"
+              size="sm"
+              icon={<FaCheck color="white" />}
+              onClick={() => {
+                changeUsername();
+                setEditName(false);
+              }}
+            />
+          ) : (
+            <IconButton
+              className="ml-4"
+              position="absolute"
+              aria-label="Mudar nome"
+              rounded="full"
+              bg="#2A6FDB"
+              size="sm"
+              icon={<BsPencilFill color="white" />}
+              onClick={() => setEditName(true)}
+            />
+          )}
+        </div>
       </div>
-      <div>
-        <h2>Configurações</h2>
-        <input
-          type="text"
-          placeholder="Username"
-          onChange={(e) => setUsername(e.target.value)}
-          value={username}
-        ></input>
-        <button onClick={changeUsername}>Alterar</button>
-        <br></br>
+      <div className="ml-4 mt-4">
+        <h1 className="text-xl font-sans font-semibold">
+          Plano de fundo atual
+        </h1>
+        <div
+          style={{ background: `url(${eachUser?.chatBg})` }}
+          className="w-32 h-48 border-2 border-stone-700 rounded-lg mt-4"
+        ></div>
         <input
           type="file"
-          onChange={(e) => setProfileImg(e.target.files?.[0])}
-        ></input>
-        <button onClick={changeProfileImg}>Alterar</button>
-        <h3>Alterar plano de fundo</h3>
-        <h4>Plano de fundo atual:</h4>
-        <img src={eachUser?.chatBg} alt="background"></img>
-        <input
-          type="file"
+          className="hidden"
+          id="chat-img"
           onChange={(e) => setBgImg(e.target.files?.[0])}
         ></input>
-        <button onClick={changeBg}>Alterar plano de fundo</button>
+        <Button
+          className="mt-4"
+          onClick={() => {
+            bgImg ? changeBg() : document.getElementById("chat-img")?.click();
+          }}
+          colorScheme="messenger"
+        >
+          {bgImg ? "Confirmar" : "Alterar"}
+        </Button>
+        {bgImg ? <p className="mt-2">{bgImg.name}</p> : <></>}
       </div>
-      <div>Adicionar amigos:</div>
-      <input
-        type="text"
-        placeholder="Procurar amigo"
-        value={searchFriend}
-        onChange={(e) => setSearchFriend(e.target.value)}
-      ></input>
-      <div>
-        <ul>
-          {searchFriend &&
-            searchRes.map((item, index) => (
-              <li>
-                <img src={item.avatar} alt="Avatar"></img>
-                {item.name}
-                {eachUser?.sentReq.filter((obj) => obj.uid == item.uid)
-                  .length == 1 ? (
-                  <h2>Solicitação enviada</h2>
-                ) : (
-                  <button onClick={() => addFriend(index)}>Adicionar</button>
-                )}
-              </li>
-            ))}
-        </ul>
+      <div className="ml-4 mt-4">
+        <Button colorScheme="red" onClick={logOut}>
+          Sair
+        </Button>
       </div>
-      <div>
-        {eachUser?.groupChat.length !== 0 && (
-          <>
-            <h1>Grupos:</h1>
-            {eachUser?.groupChat.map((item, index) => (
-              <ul>
-                <li>
-                  <img src={item.groupIcon}></img>
-                  {item.title}
-                  <Link to="/group-chat" onClick={() => startGroupChat(index)}>
-                    Conversar
-                  </Link>
-                </li>
-              </ul>
-            ))}
-          </>
-        )}
-      </div>
-      <div>
-        <button>
-          <Link to="/new-group">Novo grupo</Link>
-        </button>
-      </div>
+      {ModalComponent(changeProfileImgComponent)}
     </div>
   );
 }

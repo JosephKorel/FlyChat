@@ -28,10 +28,6 @@ function AddFriend() {
   const [searchRes, setSearchRes] = useState<userInterface[]>([]);
   const { users, eachUser, setEachUser } = useContext(AppContext);
 
-  useEffect(() => {
-    document.body.style.backgroundColor = "#fffff5";
-  }, []);
-
   const [eachUserDoc] = useDocumentData(
     doc(db, "eachUser", `${auth.currentUser?.uid}`)
   );

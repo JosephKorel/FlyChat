@@ -106,16 +106,20 @@ function GroupChat() {
   };
 
   const msgPlace = (msg: chatInterface) => {
-    return msg.senderuid == eachUser?.uid ? "flex-row-reverse mr-1" : "";
+    return msg.senderuid == eachUser?.uid ? "flex-row-reverse mr-1" : "ml-1";
   };
 
   const msgShape = (msg: chatInterface) => {
     return msg.senderuid == eachUser?.uid
-      ? "rounded-tl-3xl rounded-br-3xl px-3"
-      : "rounded-tr-3xl rounded-bl-3xl px-3";
+      ? "rounded-tl-3xl rounded-br-3xl px-3 bg-skyblue text-stone-100"
+      : "rounded-tr-3xl rounded-bl-3xl px-3 bg-stone-300 text-stone-900 mt-0";
   };
 
-  const otherMsg = (msg: chatInterface) => {};
+  const myMsg = (msg: chatInterface) => {
+    if (msg.senderuid == eachUser?.uid) {
+      return true;
+    }
+  };
 
   return (
     <div
@@ -151,19 +155,51 @@ function GroupChat() {
             {currChat.messages.length > 0 && (
               <>
                 {currChat.messages.map((msg) => (
-                  <div className={`flex ${msgPlace(msg)} mt-2`}>
-                    <div
-                      className={`flex flex-col max-w-[70%] bg-skyblue ${msgShape(
-                        msg
-                      )}`}
-                    >
-                      <div className={``}>
-                        <p className={`text-sm text-stone-100 font-sans pt-1`}>
-                          {msg.content}
-                        </p>
-                      </div>
-                      <p className={`text-xs text-stone-300`}>{msg.time}</p>
-                    </div>
+                  <div className={`flex ${msgPlace(msg)} mt-2 mb-2`}>
+                    {myMsg(msg) ? (
+                      <>
+                        <div className={`max-w-[80%] ${msgShape(msg)}`}>
+                          <p className={`text-sm font-sans p-1 leading-3`}>
+                            {msg.content}
+                          </p>
+                          <p
+                            className={`text-xs ${
+                              myMsg(msg)
+                                ? "text-stone-300"
+                                : "text-stone-700 flex flex-row-reverse"
+                            }`}
+                          >
+                            {msg.time}
+                          </p>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div>
+                          <p className="text-xs font-sans bg-stone-300 rounded-t-xl px-1 inline-block border-2 border-stone-300">
+                            {msg.sender}
+                          </p>
+                          <div
+                            className={`min-w-[120px] max-w-[200px] ${msgShape(
+                              msg
+                            )}`}
+                          >
+                            <p className={`text-sm font-sans pt-1`}>
+                              {msg.content}
+                            </p>
+                            <p
+                              className={`text-xs ${
+                                myMsg(msg)
+                                  ? "text-stone-300"
+                                  : "text-stone-700 flex flex-row-reverse"
+                              }`}
+                            >
+                              {msg.time}
+                            </p>
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </div>
                 ))}
               </>
