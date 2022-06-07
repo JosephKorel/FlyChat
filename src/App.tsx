@@ -25,8 +25,8 @@ function App() {
   const { isAuth } = useContext(AppContext);
 
   useEffect(() => {
-    document.body.style.backgroundColor = "#F0EFEB";
-  }, []);
+    document.body.style.backgroundColor = isAuth ? "#F0EFEB" : "#A4EFED";
+  }, [isAuth]);
 
   return (
     <ChakraProvider>

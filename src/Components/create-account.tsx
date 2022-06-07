@@ -42,13 +42,12 @@ function CreateAccount() {
       name,
       avatar: photo,
       uid: userId,
-      status: "",
+      chatBg: "./default_svg.png",
       friends: [],
       requests: [],
       sentReq: [],
       chats: [],
       groupChat: [],
-      chatBg: "./default_svg.png",
     });
   };
 

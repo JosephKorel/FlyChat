@@ -1,22 +1,19 @@
-import React, { FormEvent, useState, useContext } from "react";
-import {
-  RecaptchaVerifier,
-  signInWithPhoneNumber,
-  updateProfile,
-  useDeviceLanguage,
-} from "firebase/auth";
-import {
-  doc,
-  DocumentData,
-  getDoc,
-  setDoc,
-  updateDoc,
-} from "firebase/firestore";
+import React, { useState, useContext } from "react";
+import { updateProfile } from "firebase/auth";
+import { doc, DocumentData, getDoc, setDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { AppContext, userInterface } from "../Context/AuthContext";
-import { auth, db, provider, storage } from "../firebase-config";
+import { AppContext } from "../Context/AuthContext";
+import { auth, db, storage } from "../firebase-config";
 import { useNavigate } from "react-router";
 import { requestOTP, verifyOTP } from "../Login-functions/phone-auth";
+import {
+  Button,
+  IconButton,
+  Input,
+  InputGroup,
+  InputLeftAddon,
+} from "@chakra-ui/react";
+import { AiOutlineUpload } from "react-icons/ai";
 declare global {
   interface Window {
     recaptchaVerifier: any;
@@ -31,6 +28,7 @@ function PhoneAccount() {
   const [avatar, setAvatar] = useState<any>(null);
   const [name, setName] = useState<string>("");
   const [disable, setDisable] = useState<boolean>(true);
+  const [success, setSuccess] = useState<boolean>(false);
   const { setIsAuth } = useContext(AppContext);
 
   auth.useDeviceLanguage();
@@ -49,6 +47,7 @@ function PhoneAccount() {
       name,
       avatar: photo,
       uid: userId,
+      chatBg: "./default_svg.png",
       friends: [],
       requests: [],
       sentReq: [],
@@ -102,51 +101,157 @@ function PhoneAccount() {
         setIsAuth(true);
       }
 
-      navigate("/user-chats");
+      navigate("/profile");
     }
   };
 
   return (
     <div>
       {isVer ? (
-        <div>
-          <label>Nome de usuário</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          ></input>
-          <label>Foto de usuário</label>
-          <input
-            type="file"
-            onChange={(e) => setAvatar(e.target.files?.[0])}
-          ></input>
-          <button onClick={() => setAvatar(defaultAvatar)}>
-            Usar foto automática
-          </button>
-          <button onClick={setProfile}>Registrar</button>
-        </div>
+        <>
+          {/* <div>
+            <input
+              type="file"
+              onChange={(e) => setAvatar(e.target.files?.[0])}
+            ></input>
+            <button onClick={() => setAvatar(defaultAvatar)}>
+              Usar foto automática
+            </button>
+            <button onClick={setProfile}>Registrar</button>
+          </div>
+          <br></br> */}
+          <div className="flex flex-col">
+            <div className="w-5/6 m-auto mt-4">
+              <label className="font-sans text-lg font-medium">Nome</label>
+              <Input
+                className="mt-1"
+                type="text"
+                background="white"
+                _focus={{ bg: "white" }}
+                value={name}
+                onChange={(e: React.FormEvent<HTMLInputElement>) =>
+                  setName(e.currentTarget.value)
+                }
+              ></Input>
+              <div className="flex justify-around mt-4">
+                <p className="font-sans text-lg font-medium leading-[45px]">
+                  Selecione uma foto de perfil
+                </p>
+                <IconButton
+                  icon={<AiOutlineUpload />}
+                  aria-label="Search database"
+                  rounded="50%"
+                  size="lg"
+                  colorScheme="messenger"
+                  onClick={() => {
+                    document.getElementById("phoneacc-avatar")?.click();
+                  }}
+                />
+              </div>
+              <input
+                className="hidden"
+                type="file"
+                id="phoneacc-avatar"
+                onChange={(e) => setAvatar(e.target.files?.[0])}
+              ></input>
+            </div>
+            {avatar != null ? (
+              <>
+                <p className="w-5/6 m-auto">{avatar?.name}</p>
+                <Button
+                  className="m-auto mt-8 w-5/6"
+                  onClick={setProfile}
+                  colorScheme="messenger"
+                >
+                  Continuar
+                </Button>
+              </>
+            ) : (
+              <Button
+                className="m-auto mt-4 w-5/6"
+                colorScheme="messenger"
+                onClick={() => {
+                  setAvatar(defaultAvatar);
+                  setProfile();
+                }}
+              >
+                Talvez mais tarde
+              </Button>
+            )}
+          </div>
+        </>
       ) : (
-        <div>
-          <form onSubmit={(e) => requestOTP(e, number, setDisable)}>
-            <input
-              type="text"
-              value={number}
-              onChange={(e) => setNumber(e.target.value)}
-            ></input>
-            <input
-              type="text"
-              id="create-acc-code"
-              onChange={() =>
-                verifyOTP("create-acc-code", setIsVer, setProfile, null)
-              }
-              placeholder="Código"
-              disabled={disable}
-            ></input>
-            <input type="submit" placeholder="Continuar"></input>
-            <div id="recaptcha-container"></div>
-          </form>
-        </div>
+        <>
+          {/* <div>
+            <form onSubmit={(e) => requestOTP(e, number, setDisable)}>
+              <input
+                type="text"
+                value={number}
+                onChange={(e) => setNumber(e.target.value)}
+              ></input>
+              <input
+                type="text"
+                id="create-acc-code"
+                onChange={() =>
+                  verifyOTP("create-acc-code", setIsVer, setProfile, null)
+                }
+                placeholder="Código"
+                disabled={disable}
+              ></input>
+              <input type="submit" placeholder="Continuar"></input>
+              <div id="recaptcha-container"></div>
+            </form>
+          </div>
+          <br></br> */}
+          <div className="flex flex-col align-center flex-1">
+            <form
+              onSubmit={(e) => {
+                requestOTP(e, number, setDisable);
+                setSuccess(true);
+              }}
+              className="w-5/6 m-auto mt-4"
+              id="phone-form"
+            >
+              <InputGroup className="mt-4">
+                <InputLeftAddon children="+55" />
+                <Input
+                  placeholder="Número de telefone"
+                  type="text"
+                  value={number}
+                  background="white"
+                  _focus={{ bg: "white" }}
+                  onChange={(e: React.FormEvent<HTMLInputElement>) =>
+                    setNumber(e.currentTarget.value)
+                  }
+                ></Input>
+              </InputGroup>
+              <p className={success ? "py-2 text-sm text-stone-900" : "hidden"}>
+                Você receberá um SMS com um código de verificação.
+              </p>
+              <Input
+                type="text"
+                className="mt-4"
+                id="create-acc-code"
+                onChange={() => {
+                  verifyOTP("create-acc-code", setIsVer, null, null);
+                }}
+                background="white"
+                _focus={{ bg: "white" }}
+                placeholder="Código de segurança"
+                disabled={disable}
+              ></Input>
+              <Button
+                className="m-auto mt-4 w-full"
+                colorScheme="messenger"
+                type="submit"
+                disabled={success}
+              >
+                Enviar código de segurança
+              </Button>
+              <div id="recaptcha-container"></div>
+            </form>
+          </div>
+        </>
       )}
     </div>
   );

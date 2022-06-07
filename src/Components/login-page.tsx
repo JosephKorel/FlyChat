@@ -19,10 +19,6 @@ function Login() {
   const [success, setSuccess] = useState<boolean>(false);
   let navigate = useNavigate();
 
-  useEffect(() => {
-    document.body.style.backgroundColor = "#A4EFED";
-  }, []);
-
   const createUser = async (
     name: string | undefined | null,
     userId: string | undefined,
@@ -38,7 +34,7 @@ function Login() {
       name,
       avatar: photo,
       uid: userId,
-      status: "",
+      chatBg: "./default_svg.png",
       friends: [],
       requests: [],
       sentReq: [],
