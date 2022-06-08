@@ -21,10 +21,10 @@ function BottomNav() {
             <IconButton
               aria-label="chats"
               variant="flushed"
-              color={location == "/user-chats" ? "#2a6fdb" : "blackAlpha.800"}
+              color={location == "/" ? "#2a6fdb" : "blackAlpha.800"}
               icon={<AiFillWechat size={25} />}
               size="md"
-              onClick={() => navigate("/user-chats")}
+              onClick={() => navigate("/")}
             ></IconButton>
           </div>
           <div>

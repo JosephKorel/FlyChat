@@ -1,16 +1,6 @@
 import { Button, IconButton, Input } from "@chakra-ui/react";
-import {
-  createUserWithEmailAndPassword,
-  signInWithPopup,
-  updateProfile,
-} from "firebase/auth";
-import {
-  doc,
-  DocumentData,
-  getDoc,
-  setDoc,
-  updateDoc,
-} from "firebase/firestore";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { doc, DocumentData, getDoc, setDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useContext, useState } from "react";
 import { FcPhoneAndroid } from "react-icons/fc";
@@ -117,7 +107,7 @@ function CreateAccount() {
         setIsAuth(true);
       }
 
-      navigate("/user-chats");
+      navigate("/");
     }
   };
 

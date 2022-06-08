@@ -101,7 +101,7 @@ function PhoneAccount() {
         setIsAuth(true);
       }
 
-      navigate("/profile");
+      navigate("/");
     }
   };
 
@@ -109,17 +109,6 @@ function PhoneAccount() {
     <div>
       {isVer ? (
         <>
-          {/* <div>
-            <input
-              type="file"
-              onChange={(e) => setAvatar(e.target.files?.[0])}
-            ></input>
-            <button onClick={() => setAvatar(defaultAvatar)}>
-              Usar foto automática
-            </button>
-            <button onClick={setProfile}>Registrar</button>
-          </div>
-          <br></br> */}
           <div className="flex flex-col">
             <div className="w-5/6 m-auto mt-4">
               <label className="font-sans text-lg font-medium">Nome</label>
@@ -182,27 +171,6 @@ function PhoneAccount() {
         </>
       ) : (
         <>
-          {/* <div>
-            <form onSubmit={(e) => requestOTP(e, number, setDisable)}>
-              <input
-                type="text"
-                value={number}
-                onChange={(e) => setNumber(e.target.value)}
-              ></input>
-              <input
-                type="text"
-                id="create-acc-code"
-                onChange={() =>
-                  verifyOTP("create-acc-code", setIsVer, setProfile, null)
-                }
-                placeholder="Código"
-                disabled={disable}
-              ></input>
-              <input type="submit" placeholder="Continuar"></input>
-              <div id="recaptcha-container"></div>
-            </form>
-          </div>
-          <br></br> */}
           <div className="flex flex-col align-center flex-1">
             <form
               onSubmit={(e) => {

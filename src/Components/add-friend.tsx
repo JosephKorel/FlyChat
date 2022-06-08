@@ -57,6 +57,7 @@ function AddFriend() {
         eachUser?.friends.forEach((item) => {
           if (item.name !== search[i].name) results.push(search[i]);
         });
+
         setSearchRes(results);
       }
     } else setSearchRes(search);

@@ -29,7 +29,7 @@ function App() {
         {isAuth ? (
           <>
             <Route path="/profile" element={<Profile />} />
-            <Route path="/user-chats" element={<UserChats />} />
+            <Route path="/" element={<UserChats />} />
             <Route path="/chat" element={<ChatPage />} />
             <Route path="/new-group" element={<NewGroup />} />
             <Route path="/group-chat" element={<GroupChat />} />

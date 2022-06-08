@@ -25,7 +25,7 @@ function Navbar() {
             <div className="inline-block">
               <h1 className="p-2 px-4 text-md text-stone-100 rounded-br-lg font-sans font-bold bg-skyblue">
                 {location == "/profile" && "Perfil"}
-                {location == "/user-chats" && "Conversas"}
+                {location == "/" && "Conversas"}
                 {location == "/friends" && "Amigos"}
                 {location == "/add-friend" && "Adicionar Amigo"}
               </h1>

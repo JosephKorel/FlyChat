@@ -65,7 +65,7 @@ function Login() {
     signInWithEmailAndPassword(auth, email, password)
       .then(() => {
         setIsAuth(true);
-        navigate("/user-chats");
+        navigate("/");
       })
       .catch((error) => console.log(error));
   };
@@ -79,7 +79,7 @@ function Login() {
       const docSnap: DocumentData = await getDoc(docRef);
       setEachUser(docSnap.data());
       setIsAuth(true);
-      navigate("/user-chats");
+      navigate("/");
     });
   };
 

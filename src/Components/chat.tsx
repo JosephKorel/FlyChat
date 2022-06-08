@@ -136,70 +136,74 @@ function ChatPage() {
   };
 
   return (
-    <div
-      className="h-screen"
-      style={{ background: `url(${eachUser?.chatBg})` }}
-    >
-      <div className="w-full py-1 sticky top-0 z-10 flex align-center bg-water-700">
+    <>
+      <div
+        className="h-screen"
+        style={{ background: `url(${eachUser?.chatBg})` }}
+      >
+        <div className="w-full py-1 sticky top-0 z-10 flex align-center bg-water-700">
+          <div>
+            <IconButton
+              className="mt-1"
+              aria-label="Voltar"
+              icon={<BiArrowBack size={20} color="white" />}
+              bg="none"
+              onClick={() => navigate("/")}
+            />
+            <Avatar src={currFriend?.avatar} />
+          </div>
+          <p className="text-lg mt-1 font-sans leading-10 pl-6 font-semibold text-stone-100">
+            {currFriend?.name}
+          </p>
+        </div>
         <div>
-          <IconButton
-            className="mt-1"
-            aria-label="Voltar"
-            icon={<BiArrowBack size={20} color="white" />}
-            bg="none"
-            onClick={() => navigate("/user-chats")}
-          />
-          <Avatar src={currFriend?.avatar} />
-        </div>
-        <p className="text-lg mt-1 font-sans leading-10 pl-6 font-semibold text-stone-100">
-          {currFriend?.name}
-        </p>
-      </div>
-      <div>
-        {currChat !== null && (
-          <>
-            {currChat?.messages.map((msg) => (
-              <>
-                <div className={`flex ${msgPlace(msg)} mt-2`}>
-                  <div className={`flex flex-col max-w-[70%] ${msgShape(msg)}`}>
-                    <p className={`text-sm font-sans pt-1`}>{msg.content}</p>
-                    <p
-                      className={`text-xs ${
-                        myMsg(msg)
-                          ? "text-stone-300"
-                          : "text-stone-700 flex flex-row-reverse"
-                      }`}
+          {currChat !== null && (
+            <>
+              {currChat?.messages.map((msg) => (
+                <>
+                  <div className={`flex ${msgPlace(msg)} mt-2`}>
+                    <div
+                      className={`flex flex-col max-w-[70%] ${msgShape(msg)}`}
                     >
-                      {msg.time}
-                    </p>
+                      <p className={`text-sm font-sans pt-1`}>{msg.content}</p>
+                      <p
+                        className={`text-xs ${
+                          myMsg(msg)
+                            ? "text-stone-300"
+                            : "text-stone-700 flex flex-row-reverse"
+                        }`}
+                      >
+                        {msg.time}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </>
-            ))}
-          </>
-        )}
-        <div className="w-full py-2 m-auto fixed bottom-0 flex align-center justify-around">
-          <Input
-            bg="white"
-            rounded="full"
-            width="80%"
-            type="text"
-            placeholder="Digite sua mensagem"
-            value={message}
-            onChange={(e: React.FormEvent<HTMLInputElement>) =>
-              setMessage(e.currentTarget.value)
-            }
-          ></Input>
-          <IconButton
-            aria-label="Enviar"
-            icon={<RiSendPlane2Fill size={20} color="white" />}
-            bg="blue.500"
-            rounded="full"
-            onClick={sendMsg}
-          />
+                </>
+              ))}
+            </>
+          )}
         </div>
       </div>
-    </div>
+      <div className="w-full py-2 m-auto sticky bottom-0 flex align-center justify-around">
+        <Input
+          bg="white"
+          rounded="full"
+          width="80%"
+          type="text"
+          placeholder="Digite sua mensagem"
+          value={message}
+          onChange={(e: React.FormEvent<HTMLInputElement>) =>
+            setMessage(e.currentTarget.value)
+          }
+        ></Input>
+        <IconButton
+          aria-label="Enviar"
+          icon={<RiSendPlane2Fill size={20} color="white" />}
+          bg="blue.500"
+          rounded="full"
+          onClick={sendMsg}
+        />
+      </div>
+    </>
   );
 }
 
