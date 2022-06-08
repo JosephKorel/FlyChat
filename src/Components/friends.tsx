@@ -48,11 +48,6 @@ function FriendList() {
         <>
           {eachUser?.friends.length > 0 ? (
             <>
-              <div className="inline-block">
-                <h1 className="p-2 text-md text-stone-100 rounded-br-lg font-sans font-bold bg-skyblue">
-                  Amigos
-                </h1>
-              </div>
               <div className="w-[95%] m-auto mt-4">
                 {eachUser?.friends.map((user, index) => (
                   <div className="flex align-center justify-between mt-4 p-1 shadow-lg bg-[#FDFDFC] rounded-full rounded-l-full border-b border-l border-skyblue">

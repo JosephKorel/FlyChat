@@ -16,7 +16,7 @@ function BottomNav() {
       location == "/group-config" ? (
         <></>
       ) : (
-        <div className="flex align-center justify-around p3 bg-stone-100 border-t-[1px] border-skyblue sticky bottom-0 w-full">
+        <div className="flex align-center justify-around p3 bg-stone-100 border-t-[1px] border-skyblue fixed bottom-0 w-full">
           <div>
             <IconButton
               aria-label="chats"

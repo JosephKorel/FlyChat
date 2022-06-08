@@ -50,15 +50,15 @@ function AddFriend() {
     const search: userInterface[] = otherUsers.filter((item) =>
       item.name.toLowerCase().includes(searchFriend.toLowerCase())
     );
-    let results: userInterface[] = [];
 
     if (eachUser?.friends.length !== 0) {
       for (let i = 0; i < search.length; i++) {
+        let results: userInterface[] = [];
         eachUser?.friends.forEach((item) => {
           if (item.name !== search[i].name) results.push(search[i]);
         });
+        setSearchRes(results);
       }
-      setSearchRes(results);
     } else setSearchRes(search);
   }, [searchFriend]);
 
@@ -174,17 +174,13 @@ function AddFriend() {
 
   return (
     <>
-      <div className="inline-block">
-        <h1 className="p-2 text-md text-stone-100 rounded-br-lg font-sans font-bold bg-skyblue">
-          Adicionar amigos
-        </h1>
-      </div>
       <div className="h-screen w-5/6 m-auto">
         <h1 className="text-2xl font-semibold font-sans mt-8">
           Procurar amigo
         </h1>
         <InputGroup className="mt-4">
           <Input
+            bg="white"
             type="text"
             placeholder="Nome"
             value={searchFriend}

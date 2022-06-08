@@ -140,7 +140,7 @@ function ChatPage() {
       className="h-screen"
       style={{ background: `url(${eachUser?.chatBg})` }}
     >
-      <div className="py-1 flex align-center bg-water-700">
+      <div className="w-full py-1 sticky top-0 z-10 flex align-center bg-water-700">
         <div>
           <IconButton
             className="mt-1"
@@ -178,7 +178,7 @@ function ChatPage() {
             ))}
           </>
         )}
-        <div className="w-full py-2 m-auto absolute bottom-0 flex align-center justify-around">
+        <div className="w-full py-2 m-auto fixed bottom-0 flex align-center justify-around">
           <Input
             bg="white"
             rounded="full"
