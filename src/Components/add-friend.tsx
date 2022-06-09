@@ -171,7 +171,7 @@ function AddFriend() {
 
   return (
     <>
-      <div className="h-screen w-5/6 m-auto">
+      <div className="h-screen w-5/6 sm:w-2/3 m-auto">
         <h1 className="text-2xl font-semibold font-sans mt-8">
           Procurar amigo
         </h1>
@@ -190,7 +190,7 @@ function AddFriend() {
         <div>
           {searchFriend &&
             searchRes.map((item, index) => (
-              <div className="flex align-center mt-3">
+              <div className="flex align-center sm:justify-between mt-3">
                 <Avatar src={item.avatar} name={item.name} />
                 <p
                   className={`${

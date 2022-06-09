@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useState } from "react";
+import React, { createContext, ReactNode, useEffect, useState } from "react";
 import useLocalStorage from "../local-storage";
 
 export interface usersList {
@@ -80,6 +80,12 @@ type AppContextType = {
   setPartner: (newState: string) => void;
   groupId: string | null;
   setGroupId: (newState: string) => void;
+  chatID: string | null;
+  setChatID: (newState: string) => void;
+  chatPage: ReactNode | null;
+  setChatPage: (newState: ReactNode) => void;
+  isMobile: boolean;
+  setIsMobile: (newState: boolean) => void;
 };
 
 const InitialValue = {
@@ -93,6 +99,12 @@ const InitialValue = {
   setPartner: () => {},
   groupId: null,
   setGroupId: () => {},
+  chatID: null,
+  setChatID: () => {},
+  chatPage: null,
+  setChatPage: () => {},
+  isMobile: false,
+  setIsMobile: () => {},
 };
 
 export const AppContext = createContext<AppContextType>(InitialValue);
@@ -103,6 +115,21 @@ export const AppContextProvider = ({ children }: Props) => {
   const [eachUser, setEachUser] = useState<eachUserInt | null>(null);
   const [partner, setPartner] = useState<string | null>(null);
   const [groupId, setGroupId] = useState<string | null>(null);
+  const [chatID, setChatID] = useState<string | null>(null);
+  const [chatPage, setChatPage] = useState<React.ReactNode | null>(null);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+
+  const handleResize = () => {
+    if (window.innerWidth < 1024) {
+      setIsMobile(true);
+    } else {
+      setIsMobile(false);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("resize", handleResize);
+  });
   return (
     <AppContext.Provider
       value={{
@@ -116,6 +143,12 @@ export const AppContextProvider = ({ children }: Props) => {
         setPartner,
         groupId,
         setGroupId,
+        chatID,
+        setChatID,
+        chatPage,
+        setChatPage,
+        isMobile,
+        setIsMobile,
       }}
     >
       {children}

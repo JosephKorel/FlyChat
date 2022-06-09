@@ -54,7 +54,6 @@ function FriendList() {
     const friendDoc = doc(db, "eachUser", `${friend?.uid}`);
     const docSnap: DocumentData = await getDoc(docRef);
     const frDocSnap: DocumentData = await getDoc(friendDoc);
-    const currentDoc = docSnap.data();
     const currentFrdDoc: eachUserInt = frDocSnap.data();
 
     const filteredFr = eachUser?.friends.filter(
@@ -141,7 +140,7 @@ function FriendList() {
           <>
             {eachUser?.friends.length > 0 ? (
               <>
-                <div className="w-[95%] m-auto mt-4">
+                <div className="w-[95%] sm:w-2/3 m-auto mt-4">
                   {eachUser?.friends.map((user, index) => (
                     <div className="flex align-center justify-between mt-4 p-1 shadow-lg bg-[#FDFDFC] rounded-full rounded-l-full border-b border-l border-skyblue">
                       <div className="">

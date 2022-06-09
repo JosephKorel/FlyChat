@@ -116,8 +116,7 @@ function Login() {
               className="mt-4"
               id="code"
               onChange={() => {
-                verifyOTP("code", null, null, setIsAuth);
-                navigate("/profile");
+                verifyOTP("code", null, null, setIsAuth, navigate);
               }}
               background="white"
               _focus={{ bg: "white" }}

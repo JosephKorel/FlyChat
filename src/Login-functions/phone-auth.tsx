@@ -1,6 +1,7 @@
 import React, { FormEvent } from "react";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { auth } from "../firebase-config";
+import { useNavigate } from "react-router";
 declare global {
   interface Window {
     recaptchaVerifier: any;
@@ -43,9 +44,11 @@ export const verifyOTP = (
   inputId: string,
   setIsVer: ((state: boolean) => void) | null,
   setProfile: (() => void) | null,
-  setIsAuth: ((state: boolean) => void) | null
+  setIsAuth: ((state: boolean) => void) | null,
+  nav: ((data: string) => void) | null
 ) => {
   let codeInput = document.getElementById(inputId) as HTMLInputElement;
+
   if (codeInput.value.length === 6) {
     let confirmationRes = window.confirmationRes;
     confirmationRes
@@ -54,6 +57,7 @@ export const verifyOTP = (
         setIsVer && setIsVer(true);
         setProfile && setProfile();
         setIsAuth && setIsAuth(true);
+        nav && nav("/");
       })
       .catch((error: ErrorCallback) => console.log(error));
   }

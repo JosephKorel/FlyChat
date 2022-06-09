@@ -15,8 +15,9 @@ import { useContext, useEffect } from "react";
 import FriendList from "./Components/friends";
 import AddFriend from "./Components/add-friend";
 import GroupConfig from "./Components/group-config";
+import WebPage from "./Components/web-page";
 function App() {
-  const { isAuth } = useContext(AppContext);
+  const { isAuth, isMobile } = useContext(AppContext);
 
   useEffect(() => {
     document.body.style.backgroundColor = isAuth ? "#F0EFEB" : "#A4EFED";
@@ -24,7 +25,7 @@ function App() {
 
   return (
     <ChakraProvider>
-      <Navbar />
+      {isMobile && <Navbar />}
       <Routes>
         {isAuth ? (
           <>
@@ -36,6 +37,7 @@ function App() {
             <Route path="/group-config" element={<GroupConfig />} />
             <Route path="/friends" element={<FriendList />} />
             <Route path="/add-friend" element={<AddFriend />} />
+            <Route path="web-chat" element={<WebPage />} />
           </>
         ) : (
           <>
@@ -45,7 +47,7 @@ function App() {
           </>
         )}
       </Routes>
-      {isAuth && <BottomNav />}
+      {isAuth && isMobile && <BottomNav />}
     </ChakraProvider>
   );
 }

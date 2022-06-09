@@ -16,7 +16,7 @@ import { useNavigate } from "react-router";
 import { RiSendPlane2Fill } from "react-icons/ri";
 
 function ChatPage() {
-  const { eachUser, setEachUser, partner } = useContext(AppContext);
+  const { eachUser, setEachUser, partner, isMobile } = useContext(AppContext);
   const [message, setMessage] = useState<string>("");
   const [currFriend, setCurrFriend] = useState<userInterface | null>(null);
   const [currChat, setCurrChat] = useState<eachChat | null>(null);
@@ -142,14 +142,16 @@ function ChatPage() {
         style={{ background: `url(${eachUser?.chatBg})` }}
       >
         <div className="w-full py-1 sticky top-0 z-10 flex align-center bg-water-700">
-          <div>
-            <IconButton
-              className="mt-1"
-              aria-label="Voltar"
-              icon={<BiArrowBack size={20} color="white" />}
-              bg="none"
-              onClick={() => navigate("/")}
-            />
+          <div className={`${!isMobile && "ml-4"}`}>
+            {isMobile && (
+              <IconButton
+                className="mt-1"
+                aria-label="Voltar"
+                icon={<BiArrowBack size={20} color="white" />}
+                bg="none"
+                onClick={() => navigate("/")}
+              />
+            )}
             <Avatar src={currFriend?.avatar} />
           </div>
           <p className="text-lg mt-1 font-sans leading-10 pl-6 font-semibold text-stone-100">

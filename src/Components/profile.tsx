@@ -84,46 +84,6 @@ function Profile() {
     }
   }, [allUsersDoc]);
 
-  const removeFriend = async (index: number) => {
-    const docRef = doc(db, "eachUser", `${auth.currentUser?.uid}`);
-    const friend: userInterface | undefined = eachUser?.friends[index];
-    const friendDoc = doc(db, "eachUser", `${friend?.uid}`);
-    const docSnap: DocumentData = await getDoc(docRef);
-    const frDocSnap: DocumentData = await getDoc(friendDoc);
-    const currentDoc = docSnap.data();
-    const currentFrdDoc: eachUserInt = frDocSnap.data();
-    const filteredFr = currentDoc.friends.filter(
-      (item: userInterface) => item.name !== friend?.name
-    );
-    const filteredMe = currentFrdDoc.friends.filter(
-      (item: userInterface) => item.name !== auth.currentUser?.displayName
-    );
-
-    const friendIndex = eachUser?.chats.findIndex((item) =>
-      item.users.filter((obj) => obj.uid == friend?.uid)
-    );
-
-    const myIndex = currentFrdDoc.chats.findIndex((item) =>
-      item.users.filter((obj) => obj.uid == eachUser?.uid)
-    );
-
-    const myNewChat = eachUser?.chats.slice();
-    myNewChat?.splice(friendIndex!, 1);
-
-    const newFrdChat = currentFrdDoc.chats.slice();
-    newFrdChat?.splice(myIndex!, 1);
-
-    await updateDoc(docRef, {
-      friends: filteredFr,
-      chats: myNewChat,
-    });
-
-    await updateDoc(friendDoc, {
-      friends: filteredMe,
-      chats: newFrdChat,
-    });
-  };
-
   const changeUsername = async () => {
     if (auth.currentUser) {
       if (username == "") {
@@ -539,7 +499,7 @@ function Profile() {
         </Button>
         {bgImg ? <p className="mt-2">{bgImg.name}</p> : <></>}
       </div>
-      <div className="ml-4 mt-4">
+      <div className="ml-4 mt-4 md:mt-20">
         <Button colorScheme="red" onClick={logOut}>
           Sair
         </Button>

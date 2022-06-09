@@ -1,8 +1,7 @@
 import { Avatar, IconButton, Input } from "@chakra-ui/react";
 import { doc, DocumentData, getDoc, updateDoc } from "firebase/firestore";
-
 import moment from "moment";
-import React, { useContext, useState, useEffect, FormEvent } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import { BiArrowBack } from "react-icons/bi";
 import { RiSendPlane2Fill } from "react-icons/ri";
@@ -10,15 +9,13 @@ import { useNavigate } from "react-router";
 import {
   AppContext,
   chatInterface,
-  eachUserInt,
   groupChatInt,
-  userInterface,
 } from "../Context/AuthContext";
 import { auth, db } from "../firebase-config";
 import GroupConfig from "./group-config";
 
 function GroupChat() {
-  const { eachUser, groupId, setEachUser } = useContext(AppContext);
+  const { eachUser, groupId, setEachUser, isMobile } = useContext(AppContext);
   const [currChat, setCurrChat] = useState<groupChatInt | null>(null);
   const [message, setMessage] = useState<string>("");
 
@@ -128,14 +125,16 @@ function GroupChat() {
         style={{ background: `url(${eachUser?.chatBg})` }}
       >
         <div className="w-full py-1 sticky top-0 flex align-center justify-between bg-water-700">
-          <div className="flex">
-            <IconButton
-              className="mt-1"
-              aria-label="Voltar"
-              icon={<BiArrowBack size={20} color="white" />}
-              bg="none"
-              onClick={() => navigate("/")}
-            />
+          <div className={` flex ${!isMobile && "ml-4"}`}>
+            {isMobile && (
+              <IconButton
+                className="mt-1"
+                aria-label="Voltar"
+                icon={<BiArrowBack size={20} color="white" />}
+                bg="none"
+                onClick={() => navigate("/")}
+              />
+            )}
             <Avatar src={currChat?.groupIcon} />
             <div className="pl-4 flex flex-col">
               <p className="text-lg mt-1 font-sans font-semibold text-stone-100">

@@ -5,23 +5,17 @@ import { auth, db } from "../firebase-config";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
-import { Avatar, Button, IconButton, useDisclosure } from "@chakra-ui/react";
+import { Avatar, Button } from "@chakra-ui/react";
 import { onAuthStateChanged } from "firebase/auth";
 import { AiOutlineUserAdd } from "react-icons/ai";
 import GroupModal from "../Styled-components/new-group-modal";
 
 function UserChats() {
-  const { eachUser, setEachUser, setUsers, setPartner, setGroupId } =
+  const { eachUser, setEachUser, setUsers, setPartner, setGroupId, setChatID } =
     useContext(AppContext);
   const [chatList, setChatList] = useState<any[]>([]);
 
   let navigate = useNavigate();
-
-  const getUsers = async () => {
-    const docRef = doc(db, "allUsers", "list");
-    const docSnap: DocumentData = await getDoc(docRef);
-    setUsers(docSnap.data().users);
-  };
 
   const getChats = () => {
     let chatArr: any[] = [];
@@ -32,6 +26,7 @@ function UserChats() {
     const sortedChat = chatArr.sort(
       (a, b) => moment(b.at).valueOf() - moment(a.at).valueOf()
     );
+
     setChatList(sortedChat);
   };
 
@@ -47,7 +42,6 @@ function UserChats() {
 
   useEffect(() => {
     document.body.style.backgroundColor = "#F0EFEB";
-    getUsers();
     getChats();
   }, []);
 
@@ -87,7 +81,7 @@ function UserChats() {
       {eachUser ? (
         <>
           {eachUser?.friends.length > 0 ? (
-            <div className="w-[98%] m-auto">
+            <div className="w-[98%] sm:w-2/3 lg:w-[98%] m-auto">
               {chatList.map((chat, index) => (
                 <div>
                   {chat.title ? (
