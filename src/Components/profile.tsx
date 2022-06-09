@@ -462,11 +462,6 @@ function Profile() {
 
   return (
     <div className="h-screen">
-      {/*  <div className="inline-block">
-        <h1 className="p-2 px-4 text-md text-stone-100 rounded-br-lg font-sans font-bold bg-skyblue">
-          Perfil
-        </h1>
-      </div> */}
       <div className="w-5/6 m-auto text-center mt-4">
         <div className="flex justify-center">
           <Avatar src={eachUser?.avatar || ""} size="2xl"></Avatar>
