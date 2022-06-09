@@ -53,12 +53,8 @@ function AddFriend() {
 
     if (eachUser?.friends.length !== 0) {
       for (let i = 0; i < search.length; i++) {
-        let results: userInterface[] = [];
-        eachUser?.friends.forEach((item) => {
-          if (item.name !== search[i].name) results.push(search[i]);
-        });
-
-        setSearchRes(results);
+        search.filter((item) => item !== eachUser?.friends[i]);
+        setSearchRes(search);
       }
     } else setSearchRes(search);
   }, [searchFriend]);
