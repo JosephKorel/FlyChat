@@ -1,4 +1,10 @@
-import { Button, Input, InputGroup, InputLeftAddon } from "@chakra-ui/react";
+import {
+  Avatar,
+  Button,
+  Input,
+  InputGroup,
+  InputLeftAddon,
+} from "@chakra-ui/react";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { doc, DocumentData, getDoc, setDoc } from "firebase/firestore";
 import React, { useContext, useState, useEffect } from "react";

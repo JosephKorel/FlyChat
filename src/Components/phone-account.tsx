@@ -34,7 +34,6 @@ function PhoneAccount() {
   auth.useDeviceLanguage();
 
   let navigate = useNavigate();
-  let defaultAvatar = "./default_avatar.png";
 
   const createUser = async (name: string, userId: string, photo: string) => {
     const docRef = doc(db, "eachUser", `${userId}`);
@@ -71,15 +70,15 @@ function PhoneAccount() {
   };
 
   const setProfile = async () => {
-    if (name && avatar) {
-      if (avatar == defaultAvatar) {
+    if (name) {
+      if (avatar == null) {
         await updateProfile(auth.currentUser!, {
           displayName: name,
-          photoURL: avatar,
+          photoURL: "",
         });
 
-        createUser(name, auth.currentUser?.uid!, avatar);
-        submitUser(name, auth.currentUser?.uid!, avatar);
+        createUser(name, auth.currentUser?.uid!, "");
+        submitUser(name, auth.currentUser?.uid!, "");
 
         setIsAuth(true);
       } else {
@@ -101,7 +100,7 @@ function PhoneAccount() {
         setIsAuth(true);
       }
 
-      navigate("/");
+      navigate("/profile");
     }
   };
 
@@ -111,7 +110,9 @@ function PhoneAccount() {
         <>
           <div className="flex flex-col">
             <div className="w-5/6 m-auto mt-4">
-              <label className="font-sans text-lg font-medium">Nome</label>
+              <label className="font-sans text-lg font-medium">
+                Como você quer ser chamado?
+              </label>
               <Input
                 className="mt-1"
                 type="text"
@@ -159,10 +160,7 @@ function PhoneAccount() {
               <Button
                 className="m-auto mt-4 w-5/6"
                 colorScheme="messenger"
-                onClick={() => {
-                  setAvatar(defaultAvatar);
-                  setProfile();
-                }}
+                onClick={setProfile}
               >
                 Talvez mais tarde
               </Button>

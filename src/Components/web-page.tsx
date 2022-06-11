@@ -79,8 +79,20 @@ function WebPage() {
 
   return (
     <>
-      <div className="flex w-[95%] float-right">
-        <div className="w-1/3">{page}</div>
+      <div className="flex w-[96%] float-right">
+        <div className="w-1/3 border-r-2 border-diamond flex-grow">
+          <>
+            <div className="sticky top-0 w-full z-10">
+              <h1 className="p-2 text-4xl font-extrabold text-stone-100 font-dancing bg-skyblue">
+                <span className="text-2xl italic text-paleyellow-800 font-sans font-normal">
+                  Fly
+                </span>
+                Chat
+              </h1>
+            </div>
+            {page}
+          </>
+        </div>
         <div className="w-2/3">{chatList && <>{chatPage}</>}</div>
       </div>
       <div className="flex flex-col justify-around p3  bg-skyblue rounded-r-2xl fixed left-0 h-2/3">

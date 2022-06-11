@@ -25,7 +25,7 @@ function App() {
 
   return (
     <ChakraProvider>
-      {isMobile && <Navbar />}
+      {isAuth && isMobile && <Navbar />}
       <Routes>
         {isAuth ? (
           <>

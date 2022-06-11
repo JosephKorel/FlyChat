@@ -91,7 +91,7 @@ function AddFriend() {
     const id: number = Date.now();
 
     const filteredReq = currentDoc?.requests.filter(
-      (item: userInterface) => item.name !== friend?.name
+      (item: userInterface) => item.uid !== friend?.uid
     );
 
     const filteredSentReq = frdDocData.sentReq.filter(
