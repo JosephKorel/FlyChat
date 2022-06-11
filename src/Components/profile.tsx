@@ -247,7 +247,9 @@ function Profile() {
       if (profileImg == null) return;
 
       //Upload de imagem
-      uploadBytes(storageRef, profileImg).then((res) => console.log("success"));
+      await uploadBytes(storageRef, profileImg).then((res) =>
+        console.log("success")
+      );
 
       //Pegar o URL da imagem
       getDownloadURL(ref(storage, `profileImg/${auth.currentUser.uid}`)).then(
@@ -327,6 +329,7 @@ function Profile() {
               requests: item.requests,
               sentReq: item.sentReq,
             });
+            onClose();
           });
         }
       );

@@ -71,21 +71,15 @@ function CreateAccount() {
   };
 
   const setProfile = async () => {
-    if (name && avatar) {
-      const docRef = doc(db, "eachUser", `${auth.currentUser?.uid}`);
-      const allUsersDoc = doc(db, "allUsers", "list");
-      const docData = await getDoc(allUsersDoc);
-      const docResult: DocumentData | undefined = docData.data();
-      const usersList: userInterface[] = docResult?.users;
-
-      if (avatar == defaultAvatar) {
+    if (name) {
+      if (avatar == null) {
         await updateProfile(auth.currentUser!, {
           displayName: name,
-          photoURL: avatar,
+          photoURL: "",
         });
 
-        createUser(name, auth.currentUser?.uid!, avatar);
-        submitUser(name, auth.currentUser?.uid!, avatar);
+        createUser(name, auth.currentUser?.uid!, "");
+        submitUser(name, auth.currentUser?.uid!, "");
 
         setIsAuth(true);
       } else {
@@ -107,7 +101,7 @@ function CreateAccount() {
         setIsAuth(true);
       }
 
-      navigate("/");
+      navigate("/profile");
     }
   };
 
@@ -116,7 +110,9 @@ function CreateAccount() {
       {isReg ? (
         <div className="flex flex-col">
           <div className="w-5/6 m-auto mt-4">
-            <label className="font-sans text-lg font-medium">Nome</label>
+            <label className="font-sans text-lg font-medium">
+              Como você quer ser chamado?
+            </label>
             <Input
               className="mt-1"
               type="text"
@@ -164,18 +160,11 @@ function CreateAccount() {
             <Button
               className="m-auto mt-4 w-5/6"
               colorScheme="messenger"
-              onClick={() => {
-                setAvatar(defaultAvatar);
-                setProfile();
-              }}
+              onClick={setProfile}
             >
               Talvez mais tarde
             </Button>
           )}
-          <button onClick={() => setAvatar(defaultAvatar)}>
-            Usar foto automática
-          </button>
-          <button onClick={setProfile}>Continuar</button>
         </div>
       ) : (
         <div className="flex flex-col">
