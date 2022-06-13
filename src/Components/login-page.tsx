@@ -16,7 +16,7 @@ import { FcGoogle, FcPhoneAndroid } from "react-icons/fc";
 import { RiLoginBoxLine } from "react-icons/ri";
 
 function Login() {
-  const { setIsAuth, setEachUser } = useContext(AppContext);
+  const { setIsAuth, setEachUser, isMobile } = useContext(AppContext);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [phoneLogin, setPhoneLogin] = useState(false);
@@ -24,6 +24,10 @@ function Login() {
   const [disable, setDisable] = useState<boolean>(true);
   const [success, setSuccess] = useState<boolean>(false);
   let navigate = useNavigate();
+
+  useEffect(() => {
+    document.body.style.backgroundColor = "#A4EFED";
+  }, []);
 
   const createUser = async (
     name: string | undefined | null,
@@ -71,7 +75,7 @@ function Login() {
     signInWithEmailAndPassword(auth, email, password)
       .then(() => {
         setIsAuth(true);
-        navigate("/");
+        isMobile ? navigate("/profile") : navigate("/");
       })
       .catch((error) => console.log(error));
   };
@@ -85,20 +89,20 @@ function Login() {
       const docSnap: DocumentData = await getDoc(docRef);
       setEachUser(docSnap.data());
       setIsAuth(true);
-      navigate("/");
+      isMobile ? navigate("/profile") : navigate("/");
     });
   };
 
   return (
     <div>
       {phoneLogin ? (
-        <div className="flex flex-col align-center flex-1">
+        <div className="flex flex-col w-5/6 lg:w-1/2 m-auto align-center flex-1">
           <form
             onSubmit={(e) => {
               requestOTP(e, number, setDisable);
               setSuccess(true);
             }}
-            className="w-5/6 m-auto mt-4"
+            className="mt-4"
             id="phone-form"
           >
             <InputGroup className="mt-4">
@@ -141,8 +145,8 @@ function Login() {
         </div>
       ) : (
         <div className="flex flex-col">
-          <div className="flex flex-col">
-            <div className="w-5/6 m-auto mt-4">
+          <div className="flex flex-col w-5/6 lg:w-1/2 m-auto">
+            <div className=" mt-4">
               <Input
                 className="mt-4"
                 type="text"
@@ -167,7 +171,7 @@ function Login() {
               ></Input>
             </div>
             <Button
-              className="m-auto mt-4 w-5/6"
+              className="m-auto mt-4 w-5/6 lg:w-full"
               leftIcon={<RiLoginBoxLine />}
               onClick={signIn}
               colorScheme="messenger"
@@ -175,7 +179,7 @@ function Login() {
               Entrar
             </Button>
             <Button
-              className="m-auto mt-4 w-5/6"
+              className="m-auto mt-4 w-5/6 lg:w-full"
               leftIcon={<FcGoogle />}
               onClick={googleSignIn}
               colorScheme="gray"
@@ -183,7 +187,7 @@ function Login() {
               Continuar com o Google
             </Button>
             <Button
-              className="m-auto mt-4 w-5/6"
+              className="m-auto mt-4 w-5/6 lg:w-full"
               leftIcon={<FcPhoneAndroid />}
               onClick={(e: EventInit) => setPhoneLogin(true)}
               colorScheme="gray"
@@ -191,7 +195,7 @@ function Login() {
               Entrar com celular
             </Button>
           </div>
-          <div className="flex align-center justify-center mt-4 w-5/6 m-auto">
+          <div className="flex align-center justify-center mt-4 w-5/6 lg:w-1/2 m-auto">
             <div className="flex-grow flex flex-col align-center justify-center">
               <div className="border border-stone-800  h-0"></div>
             </div>
@@ -201,7 +205,7 @@ function Login() {
             </div>
           </div>
           <Button
-            className="m-auto mt-4 w-5/6"
+            className="m-auto mt-4 w-5/6 lg:w-1/2"
             onClick={() => navigate("/create-account")}
             colorScheme="messenger"
           >

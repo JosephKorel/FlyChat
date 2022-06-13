@@ -171,7 +171,7 @@ function AddFriend() {
 
   return (
     <>
-      <div className="h-screen w-5/6 sm:w-2/3 m-auto">
+      <div className="h-screen w-5/6 sm:w-2/3 lg:w-[95%] m-auto">
         <h1 className="text-2xl font-semibold font-sans mt-8">
           Procurar amigo
         </h1>

@@ -24,12 +24,11 @@ declare global {
 function PhoneAccount() {
   const [isVer, setIsVer] = useState<boolean>(false);
   const [number, setNumber] = useState<string>("");
-  const [pswError, setPswError] = useState<boolean>(false);
   const [avatar, setAvatar] = useState<any>(null);
   const [name, setName] = useState<string>("");
   const [disable, setDisable] = useState<boolean>(true);
   const [success, setSuccess] = useState<boolean>(false);
-  const { setIsAuth } = useContext(AppContext);
+  const { setIsAuth, isMobile } = useContext(AppContext);
 
   auth.useDeviceLanguage();
 
@@ -100,7 +99,7 @@ function PhoneAccount() {
         setIsAuth(true);
       }
 
-      navigate("/profile");
+      isMobile ? navigate("/profile") : navigate("/");
     }
   };
 
@@ -108,8 +107,8 @@ function PhoneAccount() {
     <div>
       {isVer ? (
         <>
-          <div className="flex flex-col">
-            <div className="w-5/6 m-auto mt-4">
+          <div className="flex flex-col w-5/6 lg:w-1/2 m-auto">
+            <div className=" mt-4">
               <label className="font-sans text-lg font-medium">
                 Como você quer ser chamado?
               </label>
@@ -158,7 +157,7 @@ function PhoneAccount() {
               </>
             ) : (
               <Button
-                className="m-auto mt-4 w-5/6"
+                className="m-auto mt-4 w-full"
                 colorScheme="messenger"
                 onClick={setProfile}
               >
@@ -169,13 +168,13 @@ function PhoneAccount() {
         </>
       ) : (
         <>
-          <div className="flex flex-col align-center flex-1">
+          <div className="flex flex-col w-5/6 m-auto lg:w-1/2 align-center flex-1">
             <form
               onSubmit={(e) => {
                 requestOTP(e, number, setDisable);
                 setSuccess(true);
               }}
-              className="w-5/6 m-auto mt-4"
+              className="mt-4"
               id="phone-form"
             >
               <InputGroup className="mt-4">

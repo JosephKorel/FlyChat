@@ -39,7 +39,8 @@ import { FaCheck } from "react-icons/fa";
 import { useNavigate } from "react-router";
 
 function Profile() {
-  const { setUsers, eachUser, setEachUser, setIsAuth } = useContext(AppContext);
+  const { setUsers, eachUser, setEachUser, setIsAuth, isMobile } =
+    useContext(AppContext);
   const [username, setUsername] = useState<string>("");
   const [profileImg, setProfileImg] = useState<any | null>(null);
   const [bgImg, setBgImg] = useState<any | null>(null);
@@ -358,7 +359,7 @@ function Profile() {
   const logOut = async () => {
     signOut(auth).then(() => {
       setIsAuth(false);
-      navigate("/");
+      isMobile ? navigate("/") : navigate("/login");
     });
   };
 

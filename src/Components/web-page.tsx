@@ -1,34 +1,41 @@
 import React, { useContext, useState, useEffect } from "react";
-import { AppContext, userInterface } from "../Context/AuthContext";
+import { AppContext } from "../Context/AuthContext";
 import { doc, DocumentData, getDoc } from "firebase/firestore";
 import { auth, db } from "../firebase-config";
 import moment from "moment";
 import { onAuthStateChanged } from "firebase/auth";
 import UserChats from "./user-chats";
 import { useDocumentData } from "react-firebase-hooks/firestore";
-import { Avatar, IconButton, Input } from "@chakra-ui/react";
+import { Avatar, IconButton } from "@chakra-ui/react";
 import ChatPage from "./chat";
 import GroupChat from "./group-chat";
 import { FaUserFriends } from "react-icons/fa";
 import { AiFillWechat } from "react-icons/ai";
-import { useLocation, useNavigate } from "react-router";
 import { IoMdPersonAdd } from "react-icons/io";
 import FriendList from "./friends";
 import AddFriend from "./add-friend";
+import Profile from "./profile";
+import { useNavigate } from "react-router";
+
+interface Page {
+  component: React.ReactNode;
+  title: string;
+}
 
 function WebPage() {
-  const [page, setPage] = useState<React.ReactNode>(<UserChats />);
+  const [page, setPage] = useState<Page | null>(null);
   const {
+    isAuth,
     setGroupId,
     setPartner,
     setEachUser,
     eachUser,
     setChatPage,
     chatPage,
-    isMobile,
-    setIsMobile,
   } = useContext(AppContext);
   const [chatList, setChatList] = useState<any[] | undefined>(undefined);
+  const [showNav, setShowNav] = useState<boolean>(false);
+  let navigate = useNavigate();
 
   const getChats = () => {
     let chatArr: any[] = [];
@@ -48,12 +55,11 @@ function WebPage() {
         setChatPage(<ChatPage />);
       }
     }
-    /*    sortedChat[0].title
-      ? setGroupId(sortedChat[0].id)
-      : setPartner(sortedChat[0].id); */
 
     setChatList(sortedChat);
   };
+
+  console.log(page);
 
   useEffect(() => {
     onAuthStateChanged(auth, async (user) => {
@@ -66,7 +72,8 @@ function WebPage() {
   }, [onAuthStateChanged]);
 
   useEffect(() => {
-    setPage(() => <UserChats />);
+    !isAuth && navigate("/login");
+    setPage({ component: <UserChats />, title: "userChats" });
   }, []);
 
   const [eachUserDoc] = useDocumentData(
@@ -79,8 +86,8 @@ function WebPage() {
 
   return (
     <>
-      <div className="flex w-[96%] float-right">
-        <div className="w-1/3 border-r-2 border-diamond flex-grow">
+      <div className="flex w-full m-auto">
+        <div className="w-1/3 border-r-2 flex-grow">
           <>
             <div className="sticky top-0 w-full z-10">
               <h1 className="p-2 text-4xl font-extrabold text-stone-100 font-dancing bg-skyblue">
@@ -90,40 +97,68 @@ function WebPage() {
                 Chat
               </h1>
             </div>
-            {page}
+            {page?.component}
           </>
         </div>
-        <div className="w-2/3">{chatList && <>{chatPage}</>}</div>
+        {chatList && (
+          <>
+            {chatList.length > 0 ? (
+              <div className="w-2/3">
+                <>{chatPage}</>
+              </div>
+            ) : (
+              <div className="w-2/3 h-screen bg-skyblue text-center flex flex-col align-center justify-center">
+                <h1 className="text-7xl italic text-paleyellow-800 font-sans font-normal mb-2">
+                  Fly
+                </h1>
+                <h1 className="p-2 text-9xl font-extrabold text-stone-100 font-dancing bg-skyblue">
+                  Chat
+                </h1>
+              </div>
+            )}
+          </>
+        )}
       </div>
-      <div className="flex flex-col justify-around p3  bg-skyblue rounded-r-2xl fixed left-0 h-2/3">
+      <div className="flex flex-col justify-around rounded-tr-2xl rounded-br-2xl bg-water fixed left-0 top-[20%] h-2/3">
         <div>
           <IconButton
             aria-label="chats"
             variant="flushed"
-            color={page == <UserChats /> ? "white" : "blackAlpha.800"}
+            color={page?.title == "userChats" ? "white" : "blackAlpha.800"}
             icon={<AiFillWechat size={25} />}
             size="md"
+            onClick={() =>
+              setPage({ component: <UserChats />, title: "userChats" })
+            }
           ></IconButton>
         </div>
         <div>
           <IconButton
             aria-label="friends"
             variant="flushed"
-            color={page == <FriendList /> ? "#2a6fdb" : "blackAlpha.800"}
+            color={page?.title == "friends" ? "white" : "blackAlpha.800"}
             icon={<FaUserFriends size={25} />}
             size="md"
+            onClick={() =>
+              setPage({ component: <FriendList />, title: "friends" })
+            }
           ></IconButton>
         </div>
         <div>
           <IconButton
             aria-label="friends"
             variant="flushed"
-            color={page == <AddFriend /> ? "#2a6fdb" : "blackAlpha.800"}
+            color={page?.title == "addFriend" ? "white" : "#222427"}
             icon={<IoMdPersonAdd size={25} />}
             size="md"
+            onClick={() =>
+              setPage({ component: <AddFriend />, title: "addFriend" })
+            }
           ></IconButton>
         </div>
-        <div>
+        <div
+          onClick={() => setPage({ component: <Profile />, title: "profile" })}
+        >
           <Avatar
             src={auth.currentUser?.photoURL!}
             size="sm"

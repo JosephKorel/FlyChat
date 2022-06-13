@@ -16,6 +16,7 @@ import FriendList from "./Components/friends";
 import AddFriend from "./Components/add-friend";
 import GroupConfig from "./Components/group-config";
 import WebPage from "./Components/web-page";
+
 function App() {
   const { isAuth, isMobile } = useContext(AppContext);
 
@@ -27,21 +28,31 @@ function App() {
     <ChakraProvider>
       {isAuth && isMobile && <Navbar />}
       <Routes>
-        {isAuth ? (
+        {isMobile ? (
           <>
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/" element={<UserChats />} />
-            <Route path="/chat" element={<ChatPage />} />
-            <Route path="/new-group" element={<NewGroup />} />
-            <Route path="/group-chat" element={<GroupChat />} />
-            <Route path="/group-config" element={<GroupConfig />} />
-            <Route path="/friends" element={<FriendList />} />
-            <Route path="/add-friend" element={<AddFriend />} />
-            <Route path="web-chat" element={<WebPage />} />
+            {isAuth ? (
+              <>
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/" element={<UserChats />} />
+                <Route path="/chat" element={<ChatPage />} />
+                <Route path="/new-group" element={<NewGroup />} />
+                <Route path="/group-chat" element={<GroupChat />} />
+                <Route path="/group-config" element={<GroupConfig />} />
+                <Route path="/friends" element={<FriendList />} />
+                <Route path="/add-friend" element={<AddFriend />} />
+              </>
+            ) : (
+              <>
+                <Route path="/" element={<Login />} />
+                <Route path="/create-account" element={<CreateAccount />} />
+                <Route path="/phone-account" element={<PhoneAccount />} />
+              </>
+            )}
           </>
         ) : (
           <>
-            <Route path="/" element={<Login />} />
+            <Route path="/" element={<WebPage />} />
+            <Route path="/login" element={<Login />} />
             <Route path="/create-account" element={<CreateAccount />} />
             <Route path="/phone-account" element={<PhoneAccount />} />
           </>

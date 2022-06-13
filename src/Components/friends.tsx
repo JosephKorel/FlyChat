@@ -24,12 +24,9 @@ import { TiDelete } from "react-icons/ti";
 
 function FriendList() {
   let navigate = useNavigate();
-  const { eachUser, setEachUser, isAuth, setPartner } = useContext(AppContext);
+  const { eachUser, setEachUser, setPartner, isMobile } =
+    useContext(AppContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  useEffect(() => {
-    document.body.style.backgroundColor = "#F0EFEB";
-  }, []);
 
   useEffect(() => {
     onAuthStateChanged(auth, async (user) => {
@@ -69,9 +66,6 @@ function FriendList() {
     const filteredFrdChats = currentFrdDoc.chats.filter(
       (chat) => chat.users[1].uid !== eachUser?.uid
     );
-
-    console.log(eachUser?.friends);
-    console.log(eachUser?.friends.filter((frd) => frd.uid !== friend?.uid));
 
     await updateDoc(docRef, {
       friends: filteredFr,
@@ -135,12 +129,12 @@ function FriendList() {
 
   return (
     <>
-      <div className="">
+      <div>
         {eachUser ? (
           <>
             {eachUser?.friends.length > 0 ? (
               <>
-                <div className="w-[95%] sm:w-2/3 m-auto mt-4">
+                <div className="w-[95%] sm:w-2/3 lg:w-[95%] m-auto mt-4">
                   {eachUser?.friends.map((user, index) => (
                     <div className="flex align-center justify-between mt-4 p-1 shadow-lg bg-[#FDFDFC] rounded-full rounded-l-full border-b border-l border-skyblue">
                       <div className="">
@@ -160,7 +154,11 @@ function FriendList() {
                     </div>
                   ))}
                 </div>
-                <div className="fixed bottom-16 float-right right-4 z-10">
+                <div
+                  className={`fixed  ${
+                    isMobile ? "right-4 bottom-16" : "left-0 bottom-1/4"
+                  }`}
+                >
                   <IconButton
                     aria-label="Gerenciar amigos"
                     icon={<IoPersonRemove color="white" />}

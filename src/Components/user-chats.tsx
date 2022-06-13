@@ -11,7 +11,7 @@ import { AiOutlineUserAdd } from "react-icons/ai";
 import GroupModal from "../Styled-components/new-group-modal";
 
 function UserChats() {
-  const { eachUser, setEachUser, setUsers, setPartner, setGroupId, setChatID } =
+  const { eachUser, setEachUser, setUsers, setPartner, setGroupId, isMobile } =
     useContext(AppContext);
   const [chatList, setChatList] = useState<any[]>([]);
 
@@ -75,9 +75,20 @@ function UserChats() {
 
   return (
     <div>
-      <div className="fixed bottom-16 right-4">
-        <GroupModal />
-      </div>
+      {eachUser && (
+        <>
+          {eachUser.friends.length > 0 && (
+            <div
+              className={`fixed  ${
+                isMobile ? "right-4 bottom-16" : "left-0 bottom-1/4"
+              }`}
+            >
+              <GroupModal />
+            </div>
+          )}
+        </>
+      )}
+
       {eachUser ? (
         <>
           {eachUser?.friends.length > 0 ? (

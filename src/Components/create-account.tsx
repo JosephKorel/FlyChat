@@ -6,11 +6,11 @@ import React, { useContext, useState } from "react";
 import { FcPhoneAndroid } from "react-icons/fc";
 import { AiOutlineUpload } from "react-icons/ai";
 import { useNavigate } from "react-router";
-import { AppContext, userInterface } from "../Context/AuthContext";
+import { AppContext } from "../Context/AuthContext";
 import { auth, db, storage } from "../firebase-config";
 
 function CreateAccount() {
-  const { setIsAuth } = useContext(AppContext);
+  const { setIsAuth, isMobile } = useContext(AppContext);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [pswError, setPswError] = useState<boolean>(false);
@@ -19,7 +19,6 @@ function CreateAccount() {
   const [name, setName] = useState<string>("");
   const input = document.getElementById("psw") as HTMLInputElement;
   let navigate = useNavigate();
-  let defaultAvatar = "./default_avatar.png";
 
   const createUser = async (name: string, userId: string, photo: string) => {
     const docRef = doc(db, "eachUser", `${userId}`);
@@ -101,15 +100,15 @@ function CreateAccount() {
         setIsAuth(true);
       }
 
-      navigate("/profile");
+      isMobile ? navigate("/profile") : navigate("/");
     }
   };
 
   return (
     <div>
       {isReg ? (
-        <div className="flex flex-col">
-          <div className="w-5/6 m-auto mt-4">
+        <div className="flex flex-col w-5/6 lg:w-1/2 m-auto">
+          <div className=" mt-4">
             <label className="font-sans text-lg font-medium">
               Como você quer ser chamado?
             </label>
@@ -149,7 +148,7 @@ function CreateAccount() {
             <>
               <p className="w-5/6 m-auto">{avatar?.name}</p>
               <Button
-                className="m-auto mt-8 w-5/6"
+                className="m-auto mt-8 w-full"
                 onClick={setProfile}
                 colorScheme="messenger"
               >
@@ -158,7 +157,7 @@ function CreateAccount() {
             </>
           ) : (
             <Button
-              className="m-auto mt-4 w-5/6"
+              className="m-auto mt-4 w-full"
               colorScheme="messenger"
               onClick={setProfile}
             >
@@ -167,8 +166,8 @@ function CreateAccount() {
           )}
         </div>
       ) : (
-        <div className="flex flex-col">
-          <div className="text-center w-5/6 m-auto">
+        <div className="flex flex-col w-5/6 lg:w-1/2 m-auto">
+          <div className="text-center ">
             <Input
               className="mt-4"
               type="text"
@@ -206,13 +205,13 @@ function CreateAccount() {
             <p className="text-center pt-1">As senhas precisam ser iguais</p>
           )}
           <Button
-            className="m-auto mt-4 w-5/6"
+            className="m-auto mt-4 w-5/6 lg:w-full"
             onClick={createAccount}
             colorScheme="messenger"
           >
             Criar conta
           </Button>
-          <div className="flex align-center justify-center mt-4 w-5/6 m-auto">
+          <div className="flex align-center justify-center mt-4 w-full m-auto">
             <div className="flex-grow flex flex-col align-center justify-center">
               <div className="border border-stone-800  h-0"></div>
             </div>
@@ -222,7 +221,7 @@ function CreateAccount() {
             </div>
           </div>
           <Button
-            className="m-auto mt-4 w-5/6"
+            className="m-auto mt-4 w-5/6 lg:w-full"
             leftIcon={<FcPhoneAndroid />}
             onClick={() => navigate("/phone-account")}
             colorScheme="gray"

@@ -137,10 +137,7 @@ function ChatPage() {
 
   return (
     <>
-      <div
-        className="h-screen"
-        style={{ background: `url(${eachUser?.chatBg})` }}
-      >
+      <div className="" style={{ background: `url(${eachUser?.chatBg})` }}>
         <div className="w-full py-1 sticky top-0 z-10 flex align-center bg-water-700">
           <div className={`${!isMobile && "ml-4"}`}>
             {isMobile && (
@@ -184,8 +181,14 @@ function ChatPage() {
             </>
           )}
         </div>
+        <div className="h-20 w-5/6 m-auto bg-black"></div>
+        <div className="h-44 w-5/6 m-auto bg-black"></div>
+        <div className="h-44 w-5/6 m-auto bg-black"></div>
+        <div className="h-44 w-5/6 m-auto bg-paleyellow flex flex-col-reverse text-7xl mb-5">
+          HELLO
+        </div>
       </div>
-      <div className="w-full py-2 m-auto sticky bottom-0 flex align-center justify-around">
+      <div className="w-full lg:w-2/3 py-2 m-auto sticky bottom-0 flex align-center justify-around lg:justify-center">
         <Input
           bg="white"
           rounded="full"
