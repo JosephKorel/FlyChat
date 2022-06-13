@@ -2,3 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
+.leftnav{
+ animation: navtransition .3s backwards ease-in-out;
+}
+
+@keyframes navtransition {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.hidenav{
+  animation: navoff .3s forwards ease-in-out;
+}
+
+@keyframes navoff {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+    

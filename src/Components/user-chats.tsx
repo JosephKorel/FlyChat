@@ -11,7 +11,7 @@ import { AiOutlineUserAdd } from "react-icons/ai";
 import GroupModal from "../Styled-components/new-group-modal";
 
 function UserChats() {
-  const { eachUser, setEachUser, setUsers, setPartner, setGroupId, isMobile } =
+  const { eachUser, setEachUser, setPartner, setGroupId, isMobile } =
     useContext(AppContext);
   const [chatList, setChatList] = useState<any[]>([]);
 
@@ -41,7 +41,7 @@ function UserChats() {
   }, [onAuthStateChanged]);
 
   useEffect(() => {
-    document.body.style.backgroundColor = "#F0EFEB";
+    document.body.style.background = "#F0EFEB";
     getChats();
   }, []);
 
@@ -74,7 +74,7 @@ function UserChats() {
   };
 
   return (
-    <div>
+    <div className="h-screen">
       {eachUser && (
         <>
           {eachUser.friends.length > 0 && (
@@ -88,17 +88,16 @@ function UserChats() {
           )}
         </>
       )}
-
       {eachUser ? (
         <>
           {eachUser?.friends.length > 0 ? (
-            <div className="w-[98%] sm:w-2/3 lg:w-[98%] m-auto">
+            <div className="w-[98%] sm:w-2/3 lg:w-[98%] m-auto py-4">
               {chatList.map((chat, index) => (
                 <div>
                   {chat.title ? (
                     <>
                       <div
-                        className="flex align-center mt-4 p-1 shadow-lg bg-[#FDFDFC] rounded-full rounded-l-full border-b border-l border-skyblue"
+                        className="flex align-center mt-4 p-1 shadow-lg bg-[#FDFDFC] rounded-full rounded-l-full border-b border-l border-skyblue cursor-pointer"
                         onClick={() => groupTalk(index)}
                       >
                         <div>
@@ -117,7 +116,7 @@ function UserChats() {
                   ) : (
                     <>
                       <div
-                        className=" flex align-center mt-4 p-1 shadow-lg bg-[#FDFDFC] rounded-full border-b border-l border-skyblue"
+                        className=" flex align-center mt-4 p-1 shadow-lg bg-[#FDFDFC] rounded-full border-b border-l border-skyblue cursor-pointer"
                         onClick={() => startChat(index)}
                       >
                         <div>

@@ -426,7 +426,7 @@ function Profile() {
 
   return (
     <div className="h-screen">
-      <div className="w-5/6 m-auto text-center mt-4">
+      <div className="w-5/6 m-auto text-center pt-4">
         <div className="flex justify-center">
           <Avatar src={eachUser?.avatar || ""} size="2xl"></Avatar>
           <IconButton
@@ -478,32 +478,7 @@ function Profile() {
           )}
         </div>
       </div>
-      <div className="ml-4 mt-4">
-        <h1 className="text-xl font-sans font-semibold">
-          Plano de fundo atual
-        </h1>
-        <div
-          style={{ background: `url(${eachUser?.chatBg})` }}
-          className="w-32 h-48 border-2 border-stone-700 rounded-lg mt-4"
-        ></div>
-        <input
-          type="file"
-          className="hidden"
-          id="chat-img"
-          onChange={(e) => setBgImg(e.target.files?.[0])}
-        ></input>
-        <Button
-          className="mt-4"
-          onClick={() => {
-            bgImg ? changeBg() : document.getElementById("chat-img")?.click();
-          }}
-          colorScheme="messenger"
-        >
-          {bgImg ? "Confirmar" : "Alterar"}
-        </Button>
-        {bgImg ? <p className="mt-2">{bgImg.name}</p> : <></>}
-      </div>
-      <div className="ml-4 mt-4 md:mt-20">
+      <div className="text-center mt-4 md:mt-20">
         <Button colorScheme="red" onClick={logOut}>
           Sair
         </Button>
