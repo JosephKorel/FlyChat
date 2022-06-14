@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { AppContext } from "../Context/AuthContext";
-import { doc, DocumentData, getDoc, updateDoc } from "firebase/firestore";
+import { doc, DocumentData, getDoc } from "firebase/firestore";
 import { auth, db } from "../firebase-config";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import moment from "moment";
@@ -11,7 +11,7 @@ import { AiOutlineUserAdd } from "react-icons/ai";
 import GroupModal from "../Styled-components/new-group-modal";
 
 function UserChats() {
-  const { eachUser, setEachUser, setPartner, setGroupId, isMobile } =
+  const { eachUser, setEachUser, setPartner, setGroupId, isMobile, setUsers } =
     useContext(AppContext);
   const [chatList, setChatList] = useState<any[]>([]);
 
@@ -35,6 +35,9 @@ function UserChats() {
       if (user) {
         const docRef = doc(db, "eachUser", user.uid);
         const docSnap: DocumentData = await getDoc(docRef);
+        const usersDoc = doc(db, "allUsers", "list");
+        const usersDocSnap: DocumentData = await getDoc(usersDoc);
+        setUsers(usersDocSnap.data().users);
         setEachUser(docSnap.data());
       }
     });

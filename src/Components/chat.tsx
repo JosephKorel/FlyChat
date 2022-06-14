@@ -141,7 +141,7 @@ function ChatPage() {
 
   return (
     <>
-      <div className="">
+      <div className="h-[95%]">
         <div className="w-full py-1 sticky top-0 z-10 flex align-center bg-water-700">
           <div className={`${!isMobile && "ml-4"}`}>
             {isMobile && (
@@ -159,12 +159,12 @@ function ChatPage() {
             {currFriend?.name}
           </p>
         </div>
-        <div>
-          {currChat !== null && (
-            <>
-              {currChat?.messages.map((msg) => (
-                <>
-                  <div className={`flex ${msgPlace(msg)} mt-2`}>
+        <div className="flex flex-col  h-full overflow-y-hidden">
+          <div className="lg:h-[720px] xl:h-[850px] overflow-y-auto ">
+            {currChat !== null && (
+              <>
+                {currChat?.messages.map((msg) => (
+                  <div className={`flex ${msgPlace(msg)} mt-2 `}>
                     <div
                       className={`flex flex-col max-w-[70%] ${msgShape(msg)}`}
                     >
@@ -180,22 +180,40 @@ function ChatPage() {
                       </p>
                     </div>
                   </div>
-                </>
-              ))}
-            </>
-          )}
+                ))}
+              </>
+            )}
+          </div>
+          <div className="text-center">
+            <Input
+              bg="white"
+              rounded="full"
+              width="80%"
+              type="text"
+              placeholder="Digite sua mensagem"
+              value={message}
+              onChange={(e: React.FormEvent<HTMLInputElement>) =>
+                setMessage(e.currentTarget.value)
+              }
+            ></Input>
+            <IconButton
+              aria-label="Enviar"
+              icon={<RiSendPlane2Fill size={20} color="white" />}
+              bg="blue.500"
+              rounded="full"
+              onClick={sendMsg}
+            />
+          </div>
         </div>
-        <div className="h-20 w-5/6 m-auto bg-black"></div>
+
+        {/* <div className="h-20 w-5/6 m-auto bg-black"></div>
         <div className="h-44 w-5/6 m-auto bg-black"></div>
         <div className="h-44 w-5/6 m-auto bg-black"></div>
         <div className="h-44 w-5/6 m-auto bg-paleyellow flex flex-col-reverse text-7xl mb-5">
           HELLO
-        </div>
-        <div className="h-44 w-5/6 m-auto bg-paleyellow flex flex-col-reverse text-7xl">
-          HELLO
-        </div>
+        </div> */}
       </div>
-      <div
+      {/* <div
         className="w-full py-2 m-auto sticky bottom-0 lg:bottom-4 flex align-center justify-around lg:justify-center"
         id="typediv"
       >
@@ -217,7 +235,7 @@ function ChatPage() {
           rounded="full"
           onClick={sendMsg}
         />
-      </div>
+      </div> */}
     </>
   );
 }

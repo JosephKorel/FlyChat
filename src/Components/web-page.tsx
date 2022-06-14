@@ -43,12 +43,10 @@ function WebPage() {
   const [chatList, setChatList] = useState<any[] | undefined>(undefined);
   const [showNav, setShowNav] = useState<boolean>(false);
   let navigate = useNavigate();
-  /* useEffect(() => {
-    document.body.style.background = 'url("./default_svg.png")';
-  }, []); */
 
   useEffect(() => {
     document.body.style.background = "#F0EFEB";
+    document.body.style.overflow = "hidden";
   }, []);
 
   const getChats = () => {
@@ -112,15 +110,13 @@ function WebPage() {
               Chat
             </h1>
           </div>
-          <div className="bg-paleyellow-700 z-10" /* bg-[#F0EFEB] */>
-            {page?.component}{" "}
-          </div>
+          <div className="overflow-y-auto">{page?.component}</div>
         </div>
         {chatList && (
           <>
             {chatList.length > 0 ? (
               <div
-                className="w-2/3"
+                className="w-2/3 overflow-auto"
                 style={{ background: "url('./default_svg.png')" }}
               >
                 <>{chatPage}</>
