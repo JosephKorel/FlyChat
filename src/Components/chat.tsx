@@ -141,7 +141,7 @@ function ChatPage() {
 
   return (
     <>
-      <div className="h-[95%]">
+      <div className={`${isMobile && "h-[95%]"}`}>
         <div className="w-full py-1 sticky top-0 z-10 flex align-center bg-water-700">
           <div className={`${!isMobile && "ml-4"}`}>
             {isMobile && (
@@ -213,29 +213,6 @@ function ChatPage() {
           HELLO
         </div> */}
       </div>
-      {/* <div
-        className="w-full py-2 m-auto sticky bottom-0 lg:bottom-4 flex align-center justify-around lg:justify-center"
-        id="typediv"
-      >
-        <Input
-          bg="white"
-          rounded="full"
-          width="80%"
-          type="text"
-          placeholder="Digite sua mensagem"
-          value={message}
-          onChange={(e: React.FormEvent<HTMLInputElement>) =>
-            setMessage(e.currentTarget.value)
-          }
-        ></Input>
-        <IconButton
-          aria-label="Enviar"
-          icon={<RiSendPlane2Fill size={20} color="white" />}
-          bg="blue.500"
-          rounded="full"
-          onClick={sendMsg}
-        />
-      </div> */}
     </>
   );
 }

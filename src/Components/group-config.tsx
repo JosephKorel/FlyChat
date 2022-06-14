@@ -13,21 +13,21 @@ import {
 } from "@chakra-ui/react";
 import { doc, DocumentData, getDoc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import React, { useContext, useState, useEffect, FormEvent } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import { AiFillCamera, AiOutlineUpload } from "react-icons/ai";
 import { BiArrowBack } from "react-icons/bi";
 import { MdSettings } from "react-icons/md";
-import { RiToolsFill } from "react-icons/ri";
 import { useLocation, useNavigate } from "react-router";
 import { AppContext, groupChatInt } from "../Context/AuthContext";
 import { auth, db, storage } from "../firebase-config";
 
 function GroupConfig() {
-  const { eachUser, groupId, setEachUser } = useContext(AppContext);
+  const { eachUser, groupId, setEachUser, isMobile, setChatPage, chatPage } =
+    useContext(AppContext);
   const [icon, setIcon] = useState<any>(null);
   const [currChat, setCurrChat] = useState<groupChatInt | null>(null);
-  const [hide, setHide] = useState<boolean>(true);
+
   const { isOpen, onOpen, onClose } = useDisclosure();
   let navigate = useNavigate();
   let location = useLocation().pathname;
@@ -100,7 +100,7 @@ function GroupConfig() {
       await updateDoc(docRef, { groupChat: filteredChat });
     });
 
-    navigate("/user-chats");
+    isMobile ? navigate("/user-chats") : navigate("/");
   };
 
   return (
@@ -215,7 +215,11 @@ function GroupConfig() {
             aria-label="Configurações"
             icon={<MdSettings size={20} color="white" />}
             bg="none"
-            onClick={() => navigate("/group-config")}
+            onClick={() => {
+              isMobile
+                ? navigate("/group-config")
+                : setChatPage(<GroupConfig />);
+            }}
           />
         </div>
       )}

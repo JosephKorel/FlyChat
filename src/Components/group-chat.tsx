@@ -15,7 +15,8 @@ import { auth, db } from "../firebase-config";
 import GroupConfig from "./group-config";
 
 function GroupChat() {
-  const { eachUser, groupId, setEachUser, isMobile } = useContext(AppContext);
+  const { eachUser, groupId, setEachUser, isMobile, setChatPage } =
+    useContext(AppContext);
   const [currChat, setCurrChat] = useState<groupChatInt | null>(null);
   const [message, setMessage] = useState<string>("");
 
@@ -118,13 +119,12 @@ function GroupChat() {
     }
   };
 
+  console.log(isMobile);
+
   return (
     <>
-      <div
-        className="h-screen"
-        style={{ background: `url(${eachUser?.chatBg})` }}
-      >
-        <div className="w-full py-1 sticky top-0 flex align-center justify-between bg-water-700">
+      <div className={`${isMobile && "h-[95%]"}`}>
+        <div className="w-full py-1 lg:pb-0 sticky top-0 flex align-center justify-between bg-water-700">
           <div className={` flex ${!isMobile && "ml-4"}`}>
             {isMobile && (
               <IconButton
@@ -146,7 +146,11 @@ function GroupChat() {
             </div>
           </div>
           <div
-            onClick={() => navigate("/group-config")}
+            /*  onClick={() => {
+              isMobile
+                ? navigate("/group-config")
+                : setChatPage(<GroupConfig />);
+            }} */
             className="float-right"
           >
             <GroupConfig />
@@ -154,28 +158,26 @@ function GroupChat() {
         </div>
         {currChat && (
           <>
-            <div>
+            <div className="flex flex-col overflow-hidden">
               {currChat.messages.length > 0 && (
-                <>
+                <div className="lg:h-[720px] xl:h-[850px] overflow-y-auto">
                   {currChat.messages.map((msg) => (
-                    <div className={`flex ${msgPlace(msg)} mt-2 mb-2`}>
+                    <div className={`flex ${msgPlace(msg)} mt-2 mb-2 `}>
                       {myMsg(msg) ? (
-                        <>
-                          <div className={`max-w-[80%] ${msgShape(msg)}`}>
-                            <p className={`text-sm font-sans p-1 leading-3`}>
-                              {msg.content}
-                            </p>
-                            <p
-                              className={`text-xs ${
-                                myMsg(msg)
-                                  ? "text-stone-300"
-                                  : "text-stone-700 flex flex-row-reverse"
-                              }`}
-                            >
-                              {msg.time}
-                            </p>
-                          </div>
-                        </>
+                        <div className={`max-w-[80%] ${msgShape(msg)}`}>
+                          <p className={`text-sm font-sans p-1 leading-3`}>
+                            {msg.content}
+                          </p>
+                          <p
+                            className={`text-xs ${
+                              myMsg(msg)
+                                ? "text-stone-300"
+                                : "text-stone-700 flex flex-row-reverse"
+                            }`}
+                          >
+                            {msg.time}
+                          </p>
+                        </div>
                       ) : (
                         <>
                           <div>
@@ -205,13 +207,33 @@ function GroupChat() {
                       )}
                     </div>
                   ))}
-                </>
+                </div>
               )}
+              <div className="text-center">
+                <Input
+                  bg="white"
+                  rounded="full"
+                  width="80%"
+                  type="text"
+                  placeholder="Digite sua mensagem"
+                  value={message}
+                  onChange={(e: React.FormEvent<HTMLInputElement>) =>
+                    setMessage(e.currentTarget.value)
+                  }
+                ></Input>
+                <IconButton
+                  aria-label="Enviar"
+                  icon={<RiSendPlane2Fill size={20} color="white" />}
+                  bg="blue.500"
+                  rounded="full"
+                  onClick={sendMsg}
+                />
+              </div>
             </div>
           </>
         )}
       </div>
-      <div className="w-full py-2 m-auto sticky bottom-0 flex align-center justify-around">
+      {/*  <div className="w-full py-2 m-auto sticky bottom-0 flex align-center justify-around">
         <Input
           bg="white"
           rounded="full"
@@ -230,7 +252,7 @@ function GroupChat() {
           rounded="full"
           onClick={sendMsg}
         />
-      </div>
+      </div> */}
     </>
   );
 }

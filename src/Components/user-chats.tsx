@@ -9,10 +9,19 @@ import { Avatar, Button } from "@chakra-ui/react";
 import { onAuthStateChanged } from "firebase/auth";
 import { AiOutlineUserAdd } from "react-icons/ai";
 import GroupModal from "../Styled-components/new-group-modal";
+import GroupChat from "./group-chat";
+import ChatPage from "./chat";
 
 function UserChats() {
-  const { eachUser, setEachUser, setPartner, setGroupId, isMobile, setUsers } =
-    useContext(AppContext);
+  const {
+    eachUser,
+    setEachUser,
+    setPartner,
+    setGroupId,
+    isMobile,
+    setUsers,
+    setChatPage,
+  } = useContext(AppContext);
   const [chatList, setChatList] = useState<any[]>([]);
 
   let navigate = useNavigate();
@@ -58,12 +67,12 @@ function UserChats() {
 
   const groupTalk = (index: number) => {
     setGroupId(chatList[index].id);
-    navigate("/group-chat");
+    isMobile ? navigate("/group-chat") : setChatPage(<GroupChat />);
   };
 
   const startChat = (index: number) => {
     setPartner(chatList[index].users[1].uid);
-    navigate("/chat");
+    isMobile ? navigate("/chat") : setChatPage(<ChatPage />);
   };
 
   const lastMsg = (chat: any) => {

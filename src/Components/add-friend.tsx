@@ -51,12 +51,16 @@ function AddFriend() {
       item.name.toLowerCase().includes(searchFriend.toLowerCase())
     );
 
-    if (eachUser?.friends.length !== 0) {
-      for (let i = 0; i < search.length; i++) {
-        search.filter((item) => item !== eachUser?.friends[i]);
-        setSearchRes(search);
-      }
-    } else setSearchRes(search);
+    const results = search.reduce<userInterface[]>((acc, curr) => {
+      const filter = eachUser?.friends.filter(
+        (friend) => friend.uid == curr.uid
+      );
+      filter?.length == 0 && acc.push(curr);
+
+      return acc;
+    }, []);
+
+    setSearchRes(results);
   }, [searchFriend]);
 
   const addFriend = async (index: number) => {
