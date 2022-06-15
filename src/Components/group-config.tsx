@@ -21,6 +21,7 @@ import { MdSettings } from "react-icons/md";
 import { useLocation, useNavigate } from "react-router";
 import { AppContext, groupChatInt } from "../Context/AuthContext";
 import { auth, db, storage } from "../firebase-config";
+import GroupChat from "./group-chat";
 
 function GroupConfig() {
   const { eachUser, groupId, setEachUser, isMobile, setChatPage, chatPage } =
@@ -103,17 +104,23 @@ function GroupConfig() {
     isMobile ? navigate("/user-chats") : navigate("/");
   };
 
+  const returnToChat = () => {
+    isMobile
+      ? navigate("/group-chat")
+      : setChatPage({ page: <GroupChat />, title: "group-chat" });
+  };
+
   return (
     <div>
-      {location == "/group-config" ? (
-        <>
+      {location == "/group-config" || chatPage?.title == "group-config" ? (
+        <div className={`${!isMobile && "bg-[#F0EFEB] h-screen"}`}>
           <div>
             <IconButton
               className="mt-1"
               aria-label="Voltar"
               icon={<BiArrowBack size={20} color="#2A6FDB" />}
               bg="none"
-              onClick={() => navigate("/group-chat")}
+              onClick={returnToChat}
             />
           </div>
           <div className="text-center mt-4">
@@ -207,7 +214,7 @@ function GroupConfig() {
               </ModalContent>
             </Modal>
           </>
-        </>
+        </div>
       ) : (
         <div>
           <IconButton
@@ -218,7 +225,7 @@ function GroupConfig() {
             onClick={() => {
               isMobile
                 ? navigate("/group-config")
-                : setChatPage(<GroupConfig />);
+                : setChatPage({ page: <GroupConfig />, title: "group-config" });
             }}
           />
         </div>

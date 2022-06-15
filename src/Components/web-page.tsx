@@ -61,10 +61,10 @@ function WebPage() {
     if (sortedChat.length > 0) {
       if (sortedChat[0].title) {
         setGroupId(sortedChat[0].id);
-        setChatPage(<GroupChat />);
+        setChatPage({ page: <GroupChat />, title: "group-chat" });
       } else {
         setPartner(sortedChat[0].users[1].uid);
-        setChatPage(<ChatPage />);
+        setChatPage({ page: <ChatPage />, title: "chat" });
       }
     }
 
@@ -119,7 +119,7 @@ function WebPage() {
                 className="w-2/3 overflow-auto"
                 style={{ background: "url('./default_svg.png')" }}
               >
-                <>{chatPage}</>
+                <>{chatPage?.page}</>
               </div>
             ) : (
               <div className="w-2/3 h-screen bg-skyblue text-center flex flex-col align-center justify-center">

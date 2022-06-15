@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { AppContext, eachUserInt, userInterface } from "../Context/AuthContext";
 import { doc, DocumentData, getDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../firebase-config";
@@ -21,10 +21,11 @@ import { AiOutlineUserAdd } from "react-icons/ai";
 import { FaTelegramPlane } from "react-icons/fa";
 import { IoPersonRemove } from "react-icons/io5";
 import { TiDelete } from "react-icons/ti";
+import ChatPage from "./chat";
 
 function FriendList() {
   let navigate = useNavigate();
-  const { eachUser, setEachUser, setPartner, isMobile } =
+  const { eachUser, setEachUser, setPartner, isMobile, setChatPage } =
     useContext(AppContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -42,7 +43,9 @@ function FriendList() {
     const friend: userInterface | undefined = eachUser?.friends[index];
 
     setPartner(friend?.uid!);
-    navigate("/chat");
+    isMobile
+      ? navigate("/chat")
+      : setChatPage({ page: <ChatPage />, title: "chat" });
   };
 
   const removeFriend = async (index: number) => {

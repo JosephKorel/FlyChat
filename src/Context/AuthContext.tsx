@@ -82,8 +82,8 @@ type AppContextType = {
   setGroupId: (newState: string) => void;
   chatID: string | null;
   setChatID: (newState: string) => void;
-  chatPage: ReactNode | null;
-  setChatPage: (newState: ReactNode) => void;
+  chatPage: { page: ReactNode; title?: string } | null;
+  setChatPage: (newState: { page: ReactNode; title: string }) => void;
   isMobile: boolean;
   setIsMobile: (newState: boolean) => void;
 };
@@ -116,7 +116,10 @@ export const AppContextProvider = ({ children }: Props) => {
   const [partner, setPartner] = useState<string | null>(null);
   const [groupId, setGroupId] = useState<string | null>(null);
   const [chatID, setChatID] = useState<string | null>(null);
-  const [chatPage, setChatPage] = useState<React.ReactNode | null>(null);
+  const [chatPage, setChatPage] = useState<{
+    page: ReactNode;
+    title?: string;
+  } | null>(null);
   const [isMobile, setIsMobile] = useState<boolean>(false);
 
   const handleResize = () => {

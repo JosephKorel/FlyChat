@@ -205,13 +205,6 @@ function ChatPage() {
             />
           </div>
         </div>
-
-        {/* <div className="h-20 w-5/6 m-auto bg-black"></div>
-        <div className="h-44 w-5/6 m-auto bg-black"></div>
-        <div className="h-44 w-5/6 m-auto bg-black"></div>
-        <div className="h-44 w-5/6 m-auto bg-paleyellow flex flex-col-reverse text-7xl mb-5">
-          HELLO
-        </div> */}
       </div>
     </>
   );

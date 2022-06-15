@@ -67,12 +67,16 @@ function UserChats() {
 
   const groupTalk = (index: number) => {
     setGroupId(chatList[index].id);
-    isMobile ? navigate("/group-chat") : setChatPage(<GroupChat />);
+    isMobile
+      ? navigate("/group-chat")
+      : setChatPage({ page: <GroupChat />, title: "group-chat" });
   };
 
   const startChat = (index: number) => {
     setPartner(chatList[index].users[1].uid);
-    isMobile ? navigate("/chat") : setChatPage(<ChatPage />);
+    isMobile
+      ? navigate("/chat")
+      : setChatPage({ page: <ChatPage />, title: "chat" });
   };
 
   const lastMsg = (chat: any) => {

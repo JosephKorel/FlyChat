@@ -145,14 +145,7 @@ function GroupChat() {
               </div>
             </div>
           </div>
-          <div
-            /*  onClick={() => {
-              isMobile
-                ? navigate("/group-config")
-                : setChatPage(<GroupConfig />);
-            }} */
-            className="float-right"
-          >
+          <div className="float-right">
             <GroupConfig />
           </div>
         </div>
