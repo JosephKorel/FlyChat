@@ -184,7 +184,7 @@ function ChatPage() {
               </>
             )}
           </div>
-          <div className="text-center">
+          <div className="flex align-center justify-center">
             <Input
               bg="white"
               rounded="full"
@@ -201,6 +201,7 @@ function ChatPage() {
               icon={<RiSendPlane2Fill size={20} color="white" />}
               bg="blue.500"
               rounded="full"
+              className={`${!isMobile && "ml-2"}`}
               onClick={sendMsg}
             />
           </div>
