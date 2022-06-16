@@ -23,7 +23,7 @@ function ChatPage() {
   let navigate = useNavigate();
 
   useEffect(() => {
-    /*  document.body.style.background = 'url("./default_svg.png")'; */
+    isMobile && (document.body.style.background = 'url("./default_svg.png")');
   }, []);
 
   const retrieveDoc = async () => {
@@ -141,7 +141,7 @@ function ChatPage() {
 
   return (
     <>
-      <div className={`${isMobile && "h-[95%]"}`}>
+      <div className={`${isMobile && "h-screen"}`}>
         <div className="w-full py-1 sticky top-0 z-10 flex align-center bg-water-700">
           <div className={`${!isMobile && "ml-4"}`}>
             {isMobile && (
@@ -159,8 +159,8 @@ function ChatPage() {
             {currFriend?.name}
           </p>
         </div>
-        <div className="flex flex-col  h-full overflow-y-hidden">
-          <div className="lg:h-[720px] xl:h-[850px] overflow-y-auto ">
+        <div className="flex flex-col h-full overflow-y-hidden">
+          <div className="h-[82%] lg:h-[720px] xl:h-[850px] overflow-y-auto ">
             {currChat !== null && (
               <>
                 {currChat?.messages.map((msg) => (
@@ -201,7 +201,7 @@ function ChatPage() {
               icon={<RiSendPlane2Fill size={20} color="white" />}
               bg="blue.500"
               rounded="full"
-              className={`${!isMobile && "ml-2"}`}
+              className="ml-2"
               onClick={sendMsg}
             />
           </div>

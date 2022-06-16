@@ -1,5 +1,5 @@
 import { AppContext } from "./Context/AuthContext";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import Navbar from "./Components/Navbar";
 import Profile from "./Components/profile";
 import ChatPage from "./Components/chat";
@@ -18,7 +18,13 @@ import GroupConfig from "./Components/group-config";
 import WebPage from "./Components/web-page";
 
 function App() {
-  const { isAuth, isMobile } = useContext(AppContext);
+  const { isAuth, isMobile, setIsMobile } = useContext(AppContext);
+  let navigate = useNavigate();
+
+  useEffect(() => {
+    window.innerWidth < 1024 && setIsMobile(true);
+    navigate("/");
+  }, [isMobile]);
 
   useEffect(() => {
     document.body.style.backgroundColor = isAuth ? "#F0EFEB" : "#A4EFED";
