@@ -123,16 +123,13 @@ export const AppContextProvider = ({ children }: Props) => {
   const [isMobile, setIsMobile] = useState<boolean>(false);
 
   const handleResize = () => {
-    if (window.innerWidth < 1024) {
-      setIsMobile(true);
-    } else {
-      setIsMobile(false);
-    }
+    window.innerWidth < 1024 ? setIsMobile(true) : setIsMobile(false);
   };
 
   useEffect(() => {
     window.addEventListener("resize", handleResize);
   });
+
   return (
     <AppContext.Provider
       value={{

@@ -29,6 +29,10 @@ function GroupConfig() {
   const [icon, setIcon] = useState<any>(null);
   const [currChat, setCurrChat] = useState<groupChatInt | null>(null);
 
+  useEffect(() => {
+    isMobile && (document.body.style.background = "#F0EFEB");
+  }, []);
+
   const { isOpen, onOpen, onClose } = useDisclosure();
   let navigate = useNavigate();
   let location = useLocation().pathname;
@@ -101,7 +105,7 @@ function GroupConfig() {
       await updateDoc(docRef, { groupChat: filteredChat });
     });
 
-    isMobile ? navigate("/user-chats") : navigate("/");
+    navigate("/");
   };
 
   const returnToChat = () => {

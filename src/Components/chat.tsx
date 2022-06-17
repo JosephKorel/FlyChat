@@ -159,8 +159,8 @@ function ChatPage() {
             {currFriend?.name}
           </p>
         </div>
-        <div className="flex flex-col h-full overflow-y-hidden">
-          <div className="h-[82%] lg:h-[720px] xl:h-[850px] overflow-y-auto ">
+        <div className="flex flex-col h-[90%] overflow-y-hidden">
+          <div className="h-full lg:h-[720px] xl:h-[850px] overflow-y-auto">
             {currChat !== null && (
               <>
                 {currChat?.messages.map((msg) => (

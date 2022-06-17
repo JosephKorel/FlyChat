@@ -9,13 +9,12 @@ import { auth, db, storage } from "../firebase-config";
 import { MdCancel, MdOutlineAdd } from "react-icons/md";
 import { AiOutlineUpload } from "react-icons/ai";
 import { useNavigate } from "react-router";
+import GroupChat from "./group-chat";
 
 function NewGroup() {
-  const { users, setUsers, eachUser, setEachUser, setPartner } =
-    useContext(AppContext);
+  const { eachUser, isMobile, setChatPage } = useContext(AppContext);
   const [title, setTitle] = useState<string>("");
   const [groupImg, setGroupImg] = useState<any | null>(null);
-  const [stgId, setStgId] = useState<string>("");
   const [groupUsers, setGroupUsers] = useState<
     { name: string; avatar: string; uid: string }[]
   >([
@@ -52,7 +51,9 @@ function NewGroup() {
 
     if (groupUsers.length == 1 || !title) return;
 
-    uploadBytes(storageRef, groupImg).then((res) => console.log("success"));
+    await uploadBytes(storageRef, groupImg).then((res) =>
+      console.log("success")
+    );
 
     getDownloadURL(ref(storage, `groupIcon/${uniqueId}`)).then(async (url) => {
       //Adiciona o grupo em cada usuário
@@ -71,13 +72,13 @@ function NewGroup() {
         });
       });
     });
-    navigate("/group-chat");
+    navigate("/");
   };
 
   return (
     <div>
       <h1 className="text-lg font-semibold font-sans">Amigos:</h1>
-      <div className="max-h-60 overflow-x-auto">
+      <div className="h-[300px] overflow-y-auto bg-[#F0EFEB] rounded-xl px-2">
         {eachUser?.friends.map((user, index) => (
           <div className="flex justify-between mt-2 p-1 shadow-lg bg-[#FDFDFC] rounded-full rounded-l-full border-b border-l border-skyblue">
             <Avatar src={user.avatar} size="sm" />

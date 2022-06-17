@@ -22,7 +22,7 @@ function App() {
   let navigate = useNavigate();
 
   useEffect(() => {
-    window.innerWidth < 1024 && setIsMobile(true);
+    window.innerWidth < 1024 ? setIsMobile(true) : setIsMobile(false);
     navigate("/");
   }, [isMobile]);
 
