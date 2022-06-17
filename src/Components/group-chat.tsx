@@ -96,15 +96,14 @@ function GroupChat() {
         return 0;
       });
       sortedUsers.slice(1).length >= 5 && (slicedUsers = sortedUsers.slice(1));
+
       return (
         <p id="group-users" className="whitespace-nowrap w-56 md:w-auto">
           Você, {""}
           {isMobile ? (
             <>
-              {" "}
               {list && groupHeader && (
                 <>
-                  {" "}
                   {groupHeader.offsetWidth - list.offsetWidth < 40 ? (
                     <>
                       {sortedUsers?.slice(1).map((user, index) => (
@@ -131,25 +130,12 @@ function GroupChat() {
             </>
           ) : (
             <>
-              {slicedUsers ? (
+              {sortedUsers.slice(1).map((user, index) => (
                 <>
-                  {slicedUsers.map((user, index) => (
-                    <>
-                      {user.name}
-                      {index !== sortedUsers.length - 2 && ", "}
-                    </>
-                  ))}
+                  {user.name}
+                  {index !== sortedUsers.length - 2 && ", "}
                 </>
-              ) : (
-                <>
-                  {sortedUsers.map((user, index) => (
-                    <>
-                      {user.name}
-                      {index !== sortedUsers.length - 2 && ", "}
-                    </>
-                  ))}
-                </>
-              )}
+              ))}
             </>
           )}
         </p>
