@@ -424,8 +424,12 @@ function Profile() {
     );
   };
 
+  useEffect(() => {
+    document.body.style.background = "url(./Meteor.svg)";
+  }, []);
+
   return (
-    <div className="h-screen">
+    <div className="h-screen ">
       <div className="w-5/6 m-auto text-center pt-4">
         <div className="flex justify-center">
           <Avatar src={eachUser?.avatar || ""} size="2xl"></Avatar>
@@ -445,7 +449,10 @@ function Profile() {
             className="text-center font-sans text-xl font-semibold"
             value={editName ? username : eachUser?.name}
             disabled={editName ? false : true}
-            variant="flushed"
+            variant="filled"
+            _disabled={{ background: "white" }}
+            _active={{ background: "white" }}
+            _focus={{ background: "white" }}
             onChange={(e: React.FormEvent<HTMLInputElement>) =>
               setUsername(e.currentTarget.value)
             }

@@ -53,8 +53,12 @@ function UserChats() {
   }, [onAuthStateChanged]);
 
   useEffect(() => {
-    document.body.style.background = "#F0EFEB";
+    /* document.body.style.background = "#F0EFEB"; */
     getChats();
+  }, []);
+
+  useEffect(() => {
+    document.body.style.background = "url(./Meteor.svg)";
   }, []);
 
   const [eachUserDoc] = useDocumentData(
@@ -90,12 +94,12 @@ function UserChats() {
   };
 
   return (
-    <div className="h-screen">
+    <div className="overflow-auto">
       {eachUser && (
         <>
           {eachUser.friends.length > 0 && (
             <div
-              className={`fixed  ${
+              className={`fixed z-10  ${
                 isMobile ? "right-4 bottom-16" : "left-0 bottom-1/4"
               }`}
             >
@@ -107,13 +111,13 @@ function UserChats() {
       {eachUser ? (
         <>
           {eachUser?.friends.length > 0 ? (
-            <div className="w-[98%] sm:w-2/3 lg:w-[98%] m-auto py-4">
+            <div className="w-[98%] sm:w-2/3 lg:w-[98%] m-auto py-1 h-[75vh]">
               {chatList.map((chat, index) => (
                 <div>
                   {chat.title ? (
                     <>
                       <div
-                        className="flex align-center mt-4 p-1 shadow-lg bg-[#FDFDFC] rounded-full rounded-l-full border-b border-l border-skyblue cursor-pointer"
+                        className="flex align-center mt-4 p-1 shadow-lg bg-stone-200 rounded-xl border-x-2 border-stone-800 cursor-pointer "
                         onClick={() => groupTalk(index)}
                       >
                         <div>
@@ -123,7 +127,7 @@ function UserChats() {
                           <p className="text-lg font-sans font-semibold ">
                             {chat.title}
                           </p>
-                          <p className="text-sm text-stone-400">
+                          <p className="text-sm text-stone-500">
                             {lastMsg(chat)}
                           </p>
                         </div>
@@ -132,7 +136,7 @@ function UserChats() {
                   ) : (
                     <>
                       <div
-                        className=" flex align-center mt-4 p-1 shadow-lg bg-[#FDFDFC] rounded-full border-b border-l border-skyblue cursor-pointer"
+                        className="flex align-center mt-4 p-1 shadow-lg bg-stone-200 rounded-xl border-x-2 border-stone-800 cursor-pointer text-stone-900"
                         onClick={() => startChat(index)}
                       >
                         <div>
@@ -142,7 +146,7 @@ function UserChats() {
                           <p className="text-lg font-sans font-semibold">
                             {chat.users[1].name}
                           </p>
-                          <p className="text-sm text-stone-400">
+                          <p className="text-sm text-stone-500">
                             {lastMsg(chat)}
                           </p>
                         </div>
@@ -151,6 +155,7 @@ function UserChats() {
                   )}
                 </div>
               ))}
+              {/*   <div className="bg-diamond w-full h-10">HELLO</div> */}
             </div>
           ) : (
             <div className="text-center">
@@ -178,3 +183,5 @@ function UserChats() {
 }
 
 export default UserChats;
+
+/* className="flex align-center mt-4 p-1 shadow-lg bg-[#FDFDFC] rounded-full rounded-l-full border-b border-l border-skyblue cursor-pointer" */

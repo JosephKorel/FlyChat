@@ -175,12 +175,13 @@ function AddFriend() {
 
   return (
     <>
-      <div className="w-5/6 sm:w-2/3 lg:w-[95%] m-auto pt-4">
+      <div className="w-5/6 sm:w-2/3 lg:w-[95%] m-auto pt-4 h-[80vh] overflow-auto text-stone-100">
         <h1 className="text-2xl font-semibold font-sans mt-8">
           Procurar amigo
         </h1>
         <InputGroup className="mt-4">
           <Input
+            color="blackAlpha.200"
             bg="white"
             type="text"
             placeholder="Nome"
@@ -191,34 +192,41 @@ function AddFriend() {
           ></Input>
           <InputRightElement children={<AiOutlineSearch size={20} />} />
         </InputGroup>
-        <div>
+        <div className="h-[50vh] overflow-auto">
           {searchFriend &&
             searchRes.map((item, index) => (
-              <div className="flex align-center justify-between mt-3">
-                <Avatar src={item.avatar} name={item.name} />
-                <p
-                  className={`${
-                    item.name.length > 14
-                      ? "text-md leading-6"
-                      : "text-xl leading-[45px]"
-                  }  font-sans font-semibold px-8 whitespace-nowrap`}
-                >
-                  {item.name}
-                </p>
-                {eachUser?.sentReq.filter((obj) => obj.uid == item.uid)
-                  .length == 1 ? (
-                  <Icon as={BsCheckSquareFill} w={10} h={10} color="blue.500" />
-                ) : (
-                  <IconButton
-                    aria-label="Adicionar"
-                    icon={<BsPlusLg color="white" />}
-                    onClick={() => addFriend(index)}
-                    size="md"
-                    bg="#48D6D2"
-                    className="mt-1"
-                  />
-                )}
-              </div>
+              <>
+                <div className="flex align-center justify-between mt-3">
+                  <Avatar src={item.avatar} name={item.name} />
+                  <p
+                    className={`${
+                      item.name.length > 14
+                        ? "text-md leading-6"
+                        : "text-xl leading-[45px]"
+                    }  font-sans font-semibold px-8 whitespace-nowrap`}
+                  >
+                    {item.name}
+                  </p>
+                  {eachUser?.sentReq.filter((obj) => obj.uid == item.uid)
+                    .length == 1 ? (
+                    <Icon
+                      as={BsCheckSquareFill}
+                      w={10}
+                      h={10}
+                      color="blue.500"
+                    />
+                  ) : (
+                    <IconButton
+                      aria-label="Adicionar"
+                      icon={<BsPlusLg color="white" />}
+                      onClick={() => addFriend(index)}
+                      size="md"
+                      bg="#48D6D2"
+                      className="mt-1"
+                    />
+                  )}
+                </div>
+              </>
             ))}
         </div>
         {eachUser?.sentReq.length !== 0 && (

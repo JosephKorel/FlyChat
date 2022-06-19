@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+body{
+  overflow-y: scroll;
+  height: 100vh;
+}
+
+
 .leftnav{
  animation: navtransition .3s backwards ease-in-out;
 }

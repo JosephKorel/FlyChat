@@ -132,14 +132,14 @@ function FriendList() {
 
   return (
     <>
-      <div>
+      <div className="overflow-auto">
         {eachUser ? (
           <>
             {eachUser?.friends.length > 0 ? (
               <>
-                <div className="w-[95%] sm:w-2/3 lg:w-[95%] m-auto pt-4">
+                <div className="w-[95%] sm:w-2/3 lg:w-[95%] m-auto pt-4 h-[80vh] overflow-auto">
                   {eachUser?.friends.map((user, index) => (
-                    <div className="flex align-center justify-between mt-4 p-1 shadow-lg bg-[#FDFDFC] rounded-full rounded-l-full border-b border-l border-skyblue">
+                    <div className="flex align-center justify-between mt-4 p-1 shadow-lg bg-stone-200 rounded-xl border-x-2 border-stone-800 text-stone-900">
                       <div className="">
                         <Avatar src={user.avatar} />
                       </div>
@@ -170,6 +170,11 @@ function FriendList() {
                     onClick={onOpen}
                   />
                 </div>
+              {/*   <div className="bg-diamond w-full h-10">HELLO</div>
+                <div className="bg-diamond w-full h-10">HELLO</div>
+                <div className="bg-diamond w-full h-10">HELLO</div>
+                <div className="bg-diamond w-full h-10">HELLO</div>
+                <div className="bg-diamond w-full h-10">HELLO</div> */}
                 {ModalComponent(removeFriends)}
               </>
             ) : (
