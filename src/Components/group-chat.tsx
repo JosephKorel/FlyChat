@@ -161,7 +161,7 @@ function GroupChat() {
 
   return (
     <>
-      <div className={`${isMobile && "h-screen"}`}>
+      <div className={`h-screen`}>
         <div className="w-full py-1 lg:pb-0 sticky top-0 flex align-center justify-between bg-water-700">
           <div className={` flex ${!isMobile && "ml-4"}`}>
             {isMobile && (
@@ -180,21 +180,6 @@ function GroupChat() {
               </p>
               <div className="flex text-sm font-sans font-normal text-stone-500">
                 {groupUsers()}
-                {/* {isMobile ? (
-                  groupUsers()
-                ) : (
-                  <>
-                    Você, {""}
-                    {sortedUsers.slice(1, 7).map((user, index) => (
-                      <p>
-                        {user.name}
-                        {index == sortedUsers.slice(1, 7).length - 2
-                          ? ", ..."
-                          : " ,"}
-                      </p>
-                    ))}
-                  </>
-                )} */}
               </div>
             </div>
           </div>
@@ -204,8 +189,8 @@ function GroupChat() {
         </div>
         {currChat && (
           <>
-            <div className="flex flex-col h-[90%] overflow-hidden">
-              <div className="h-[92%] lg:h-[720px] xl:h-[850px] overflow-y-auto">
+            <div className=" h-[84%] lg:h-[88%] bg-red-600">
+              <div className="h-full overflow-y-auto">
                 {currChat.messages.length > 0 && (
                   <>
                     {currChat.messages.map((msg) => (
@@ -257,30 +242,34 @@ function GroupChat() {
                   </>
                 )}
               </div>
-              <div className="text-center">
-                <Input
-                  bg="white"
-                  rounded="full"
-                  width="80%"
-                  type="text"
-                  placeholder="Digite sua mensagem"
-                  value={message}
-                  onChange={(e: React.FormEvent<HTMLInputElement>) =>
-                    setMessage(e.currentTarget.value)
-                  }
-                ></Input>
-                <IconButton
-                  aria-label="Enviar"
-                  icon={<RiSendPlane2Fill size={20} color="white" />}
-                  bg="blue.500"
-                  rounded="full"
-                  className="ml-2"
-                  onClick={sendMsg}
-                />
-              </div>
             </div>
           </>
         )}
+        <div
+          className={` ${
+            isMobile ? "fixed bottom-2" : "relative top-0 "
+          } w-full flex justify-center`}
+        >
+          <Input
+            bg="white"
+            rounded="full"
+            width="80%"
+            type="text"
+            placeholder="Digite sua mensagem"
+            value={message}
+            onChange={(e: React.FormEvent<HTMLInputElement>) =>
+              setMessage(e.currentTarget.value)
+            }
+          ></Input>
+          <IconButton
+            aria-label="Enviar"
+            icon={<RiSendPlane2Fill size={20} color="white" />}
+            bg="blue.500"
+            rounded="full"
+            className="ml-2"
+            onClick={sendMsg}
+          />
+        </div>
       </div>
     </>
   );

@@ -26,7 +26,7 @@ function Login() {
   let navigate = useNavigate();
 
   useEffect(() => {
-    document.body.style.backgroundColor = "#A4EFED";
+    document.body.style.background = "#A4EFED";
   }, []);
 
   const createUser = async (

@@ -141,7 +141,7 @@ function ChatPage() {
 
   return (
     <>
-      <div className={`${isMobile && "h-screen"} h-screen w-full`}>
+      <div className={` h-screen w-full`}>
         <div className="w-full py-1 sticky top-0 z-10 flex align-center bg-water-700">
           <div className={`${!isMobile && "ml-4"}`}>
             {isMobile && (
@@ -159,8 +159,8 @@ function ChatPage() {
             {currFriend?.name}
           </p>
         </div>
-        <div className="flex flex-col h-[84%] overflow-y-hidden">
-          <div className="h-full  overflow-y-auto">
+        <div className="h-[84%] lg:h-[88%]">
+          <div className="h-full overflow-y-auto">
             {currChat !== null && (
               <>
                 {currChat?.messages.map((msg) => (
@@ -184,32 +184,11 @@ function ChatPage() {
               </>
             )}
           </div>
-          {/*  <div className="flex align-center justify-center">
-            <Input
-              bg="white"
-              rounded="full"
-              width="80%"
-              type="text"
-              placeholder="Digite sua mensagem"
-              value={message}
-              onChange={(e: React.FormEvent<HTMLInputElement>) =>
-                setMessage(e.currentTarget.value)
-              }
-            ></Input>
-            <IconButton
-              aria-label="Enviar"
-              icon={<RiSendPlane2Fill size={20} color="white" />}
-              bg="blue.500"
-              rounded="full"
-              className="ml-2"
-              onClick={sendMsg}
-            />
-          </div> */}
         </div>
         <div
           className={` ${
-            isMobile ? "fixed bottom-2" : "relative top-4 xl:top-8 "
-          }w-full flex align-center justify-center`}
+            isMobile ? "fixed bottom-2" : "relative top-0 "
+          } w-full flex justify-center`}
         >
           <Input
             bg="white"

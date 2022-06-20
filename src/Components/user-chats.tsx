@@ -111,7 +111,7 @@ function UserChats() {
       {eachUser ? (
         <>
           {eachUser?.friends.length > 0 ? (
-            <div className="w-[98%] sm:w-2/3 lg:w-[98%] m-auto py-1 h-[75vh]">
+            <div className="w-[98%] sm:w-2/3 lg:w-[98%] m-auto py-1 h-[75vh] lg:h-[85vh]">
               {chatList.map((chat, index) => (
                 <div>
                   {chat.title ? (
