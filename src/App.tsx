@@ -27,7 +27,7 @@ function App() {
   }, [isMobile]);
 
   useEffect(() => {
-    document.body.style.backgroundColor = isAuth ? "#F0EFEB" : "#A4EFED";
+    document.body.style.background = isAuth ? 'url("./Meteor.svg")' : "#A4EFED";
   }, [isAuth]);
 
   return (

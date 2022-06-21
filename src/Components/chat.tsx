@@ -185,11 +185,7 @@ function ChatPage() {
             )}
           </div>
         </div>
-        <div
-          className={` ${
-            isMobile ? "fixed bottom-2" : "relative top-0 "
-          } w-full flex justify-center`}
-        >
+        <div className="w-full flex justify-center relative top-2 lg:top-0">
           <Input
             bg="white"
             rounded="full"

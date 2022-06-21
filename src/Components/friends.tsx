@@ -30,6 +30,10 @@ function FriendList() {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
+    document.body.style.background = "url(./Meteor.svg)";
+  }, []);
+
+  useEffect(() => {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         const docRef = doc(db, "eachUser", user.uid);
@@ -170,11 +174,7 @@ function FriendList() {
                     onClick={onOpen}
                   />
                 </div>
-              {/*   <div className="bg-diamond w-full h-10">HELLO</div>
-                <div className="bg-diamond w-full h-10">HELLO</div>
-                <div className="bg-diamond w-full h-10">HELLO</div>
-                <div className="bg-diamond w-full h-10">HELLO</div>
-                <div className="bg-diamond w-full h-10">HELLO</div> */}
+
                 {ModalComponent(removeFriends)}
               </>
             ) : (

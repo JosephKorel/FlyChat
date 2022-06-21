@@ -189,7 +189,7 @@ function GroupChat() {
         </div>
         {currChat && (
           <>
-            <div className=" h-[84%] lg:h-[88%] bg-red-600">
+            <div className=" h-[84%] lg:h-[88%]">
               <div className="h-full overflow-y-auto">
                 {currChat.messages.length > 0 && (
                   <>
@@ -247,7 +247,7 @@ function GroupChat() {
         )}
         <div
           className={` ${
-            isMobile ? "fixed bottom-2" : "relative top-0 "
+            isMobile ? "relative top-0" : "relative top-0 "
           } w-full flex justify-center`}
         >
           <Input

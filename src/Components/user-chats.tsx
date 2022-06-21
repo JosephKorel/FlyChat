@@ -53,12 +53,8 @@ function UserChats() {
   }, [onAuthStateChanged]);
 
   useEffect(() => {
-    /* document.body.style.background = "#F0EFEB"; */
-    getChats();
-  }, []);
-
-  useEffect(() => {
     document.body.style.background = "url(./Meteor.svg)";
+    getChats();
   }, []);
 
   const [eachUserDoc] = useDocumentData(
