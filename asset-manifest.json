@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/FlyChat/static/css/main.d4639f1d.css",
-    "main.js": "/FlyChat/static/js/main.1393b28f.js",
-    "static/js/787.be24b188.chunk.js": "/FlyChat/static/js/787.be24b188.chunk.js",
-    "index.html": "/FlyChat/index.html",
-    "main.d4639f1d.css.map": "/FlyChat/static/css/main.d4639f1d.css.map",
-    "main.1393b28f.js.map": "/FlyChat/static/js/main.1393b28f.js.map",
-    "787.be24b188.chunk.js.map": "/FlyChat/static/js/787.be24b188.chunk.js.map"
+    "main.css": "/static/css/main.e5c6bde5.css",
+    "main.js": "/static/js/main.d2ac628c.js",
+    "static/js/787.be24b188.chunk.js": "/static/js/787.be24b188.chunk.js",
+    "index.html": "/index.html",
+    "main.e5c6bde5.css.map": "/static/css/main.e5c6bde5.css.map",
+    "main.d2ac628c.js.map": "/static/js/main.d2ac628c.js.map",
+    "787.be24b188.chunk.js.map": "/static/js/787.be24b188.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.d4639f1d.css",
-    "static/js/main.1393b28f.js"
+    "static/css/main.e5c6bde5.css",
+    "static/js/main.d2ac628c.js"
   ]
 }
