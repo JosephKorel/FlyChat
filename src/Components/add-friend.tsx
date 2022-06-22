@@ -175,13 +175,13 @@ function AddFriend() {
 
   return (
     <>
-      <div className="w-5/6 sm:w-2/3 lg:w-[95%] m-auto pt-4 h-[80vh] overflow-auto text-stone-100">
+      <div className="w-5/6 sm:w-2/3 lg:w-[95%] m-auto pt-4 h-[80vh] lg:h-[90vh] overflow-auto text-stone-100">
         <h1 className="text-2xl font-semibold font-sans mt-8">
           Procurar amigo
         </h1>
         <InputGroup className="mt-4">
           <Input
-            color="blackAlpha.200"
+            color="black"
             bg="white"
             type="text"
             placeholder="Nome"

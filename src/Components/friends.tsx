@@ -22,6 +22,7 @@ import { FaTelegramPlane } from "react-icons/fa";
 import { IoPersonRemove } from "react-icons/io5";
 import { TiDelete } from "react-icons/ti";
 import ChatPage from "./chat";
+import AddFriend from "./add-friend";
 
 function FriendList() {
   let navigate = useNavigate();
@@ -174,25 +175,26 @@ function FriendList() {
                     onClick={onOpen}
                   />
                 </div>
-
                 {ModalComponent(removeFriends)}
               </>
             ) : (
-              <div className="text-center">
-                <h1 className="font-sans p-2 text-2xl font-medium text-center mt-5">
-                  Parece que você ainda não tem nenhum amigo.
-                </h1>
-                <Button
-                  className="m-auto mt-8 w-5/6"
-                  leftIcon={<AiOutlineUserAdd size={25} />}
-                  colorScheme="messenger"
-                  onClick={() => {
-                    navigate("/add-friend");
-                  }}
-                >
-                  Adicionar amigo
-                </Button>
-              </div>
+              <>
+                {isMobile && (
+                  <div className="text-center">
+                    <h1 className="font-sans p-2 text-2xl font-medium text-center mt-5 text-stone-100">
+                      Parece que você ainda não tem nenhum amigo.
+                    </h1>
+                    <Button
+                      className="m-auto mt-8 w-5/6"
+                      leftIcon={<AiOutlineUserAdd size={25} />}
+                      colorScheme="messenger"
+                      onClick={() => navigate("/add-friend")}
+                    >
+                      Adicionar amigo
+                    </Button>
+                  </div>
+                )}{" "}
+              </>
             )}
           </>
         ) : (

@@ -1,10 +1,4 @@
-import React, {
-  useContext,
-  useState,
-  useEffect,
-  MouseEventHandler,
-  MouseEvent,
-} from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { AppContext } from "../Context/AuthContext";
 import { doc, DocumentData, getDoc } from "firebase/firestore";
 import { auth, db } from "../firebase-config";
@@ -12,17 +6,20 @@ import moment from "moment";
 import { onAuthStateChanged } from "firebase/auth";
 import UserChats from "./user-chats";
 import { useDocumentData } from "react-firebase-hooks/firestore";
-import { Avatar, IconButton } from "@chakra-ui/react";
+import { Avatar, Button, IconButton } from "@chakra-ui/react";
 import ChatPage from "./chat";
 import GroupChat from "./group-chat";
 import { FaUserFriends } from "react-icons/fa";
-import { AiFillWechat, AiOutlineArrowRight } from "react-icons/ai";
+import {
+  AiFillWechat,
+  AiOutlineArrowRight,
+  AiOutlineUserAdd,
+} from "react-icons/ai";
 import { IoMdPersonAdd } from "react-icons/io";
 import FriendList from "./friends";
 import AddFriend from "./add-friend";
 import Profile from "./profile";
 import { useNavigate } from "react-router";
-import { BiLeftArrow, BiRightArrow } from "react-icons/bi";
 
 interface Page {
   component: React.ReactNode;
@@ -45,8 +42,12 @@ function WebPage() {
   let navigate = useNavigate();
 
   useEffect(() => {
-    document.body.style.background = "#F0EFEB";
     document.body.style.overflow = "hidden";
+  }, []);
+
+  useEffect(() => {
+    !isAuth && navigate("/login");
+    setPage({ component: <UserChats />, title: "userChats" });
   }, []);
 
   const getChats = () => {
@@ -81,11 +82,6 @@ function WebPage() {
     });
   }, [onAuthStateChanged]);
 
-  useEffect(() => {
-    !isAuth && navigate("/login");
-    setPage({ component: <UserChats />, title: "userChats" });
-  }, []);
-
   const [eachUserDoc] = useDocumentData(
     doc(db, "eachUser", `${auth.currentUser?.uid}`)
   );
@@ -98,6 +94,7 @@ function WebPage() {
     e.currentTarget.id !== "leftnav" && setShowNav(false);
   };
 
+  console.log(page?.title);
   return (
     <>
       <div className="flex w-full m-auto" onClick={closeNavbar}>
@@ -203,6 +200,29 @@ function WebPage() {
           </div>
         </div>
       </>
+      {eachUser?.friends.length === 0 && (
+        <>
+          {page?.title === "userChats" || page?.title === "friends" ? (
+            <div className="text-center fixed left-0 top-20 w-1/3">
+              <h1 className="font-sans p-2 text-xl xl:text-2xl font-medium text-center mt-5 text-stone-100">
+                Parece que você ainda não tem nenhum amigo.
+              </h1>
+              <Button
+                className="m-auto mt-8"
+                leftIcon={<AiOutlineUserAdd size={25} />}
+                colorScheme="messenger"
+                onClick={() =>
+                  setPage({ component: <AddFriend />, title: "addFriend" })
+                }
+              >
+                Adicionar amigo
+              </Button>
+            </div>
+          ) : (
+            <></>
+          )}
+        </>
+      )}
     </>
   );
 }

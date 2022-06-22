@@ -11,6 +11,7 @@ import { AiOutlineUserAdd } from "react-icons/ai";
 import GroupModal from "../Styled-components/new-group-modal";
 import GroupChat from "./group-chat";
 import ChatPage from "./chat";
+import AddFriend from "./add-friend";
 
 function UserChats() {
   const {
@@ -153,21 +154,23 @@ function UserChats() {
               ))}
             </div>
           ) : (
-            <div className="text-center">
-              <h1 className="font-sans p-2 text-2xl font-medium text-center mt-5">
-                Parece que você ainda não tem nenhum amigo.
-              </h1>
-              <Button
-                className="m-auto mt-8 w-5/6"
-                leftIcon={<AiOutlineUserAdd size={25} />}
-                colorScheme="messenger"
-                onClick={() => {
-                  navigate("/add-friend");
-                }}
-              >
-                Adicionar amigo
-              </Button>
-            </div>
+            <>
+              {isMobile && (
+                <div className="text-center">
+                  <h1 className="font-sans p-2 text-2xl font-medium text-center mt-5 text-stone-100">
+                    Parece que você ainda não tem nenhum amigo.
+                  </h1>
+                  <Button
+                    className="m-auto mt-8 w-5/6"
+                    leftIcon={<AiOutlineUserAdd size={25} />}
+                    colorScheme="messenger"
+                    onClick={() => navigate("/add-friend")}
+                  >
+                    Adicionar amigo
+                  </Button>
+                </div>
+              )}{" "}
+            </>
           )}
         </>
       ) : (
