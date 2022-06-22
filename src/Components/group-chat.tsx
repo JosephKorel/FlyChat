@@ -16,8 +16,7 @@ import { auth, db } from "../firebase-config";
 import GroupConfig from "./group-config";
 
 function GroupChat() {
-  const { eachUser, groupId, setEachUser, isMobile, setChatPage } =
-    useContext(AppContext);
+  const { eachUser, groupId, setEachUser, isMobile } = useContext(AppContext);
   const [currChat, setCurrChat] = useState<groupChatInt | null>(null);
   const [message, setMessage] = useState<string>("");
   let navigate = useNavigate();

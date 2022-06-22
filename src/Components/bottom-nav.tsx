@@ -1,14 +1,12 @@
 import { Avatar, IconButton } from "@chakra-ui/react";
-import React, { useContext } from "react";
+import React from "react";
 import { FaUserFriends } from "react-icons/fa";
 import { AiFillWechat } from "react-icons/ai";
 import { useLocation, useNavigate } from "react-router";
 import { IoMdPersonAdd } from "react-icons/io";
 import { auth } from "../firebase-config";
-import { AppContext } from "../Context/AuthContext";
 
 function BottomNav() {
-  const { isMobile } = useContext(AppContext);
   let location = useLocation().pathname;
   let navigate = useNavigate();
   return (

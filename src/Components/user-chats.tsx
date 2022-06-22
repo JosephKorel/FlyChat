@@ -151,7 +151,6 @@ function UserChats() {
                   )}
                 </div>
               ))}
-              {/*   <div className="bg-diamond w-full h-10">HELLO</div> */}
             </div>
           ) : (
             <div className="text-center">
