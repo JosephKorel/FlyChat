@@ -57,7 +57,6 @@ function FriendList() {
     const docRef = doc(db, "eachUser", `${auth.currentUser?.uid}`);
     const friend: userInterface | undefined = eachUser?.friends[index];
     const friendDoc = doc(db, "eachUser", `${friend?.uid}`);
-    const docSnap: DocumentData = await getDoc(docRef);
     const frDocSnap: DocumentData = await getDoc(friendDoc);
     const currentFrdDoc: eachUserInt = frDocSnap.data();
 
@@ -84,6 +83,7 @@ function FriendList() {
       friends: filteredMe,
       chats: filteredFrdChats,
     });
+    !isMobile && window.location.reload();
   };
 
   const ModalComponent = (component: React.ReactNode) => {
@@ -142,7 +142,7 @@ function FriendList() {
           <>
             {eachUser?.friends.length > 0 ? (
               <>
-                <div className="w-[95%] sm:w-2/3 lg:w-[95%] m-auto pt-4 h-[80vh] overflow-auto">
+                <div className="w-[98%] sm:w-2/3 lg:w-[95%] m-auto py-1 h-[80vh] overflow-auto">
                   {eachUser?.friends.map((user, index) => (
                     <div className="flex align-center justify-between mt-4 p-1 shadow-lg bg-stone-200 rounded-xl border-x-2 border-stone-800 text-stone-900">
                       <div className="">

@@ -192,7 +192,7 @@ function AddFriend() {
           ></Input>
           <InputRightElement children={<AiOutlineSearch size={20} />} />
         </InputGroup>
-        <div className="h-[50vh] overflow-auto">
+        <div className="max-h-[50vh] overflow-auto bg-red-600">
           {searchFriend &&
             searchRes.map((item, index) => (
               <>

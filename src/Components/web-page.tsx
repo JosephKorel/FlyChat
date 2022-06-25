@@ -50,6 +50,12 @@ function WebPage() {
     setPage({ component: <UserChats />, title: "userChats" });
   }, []);
 
+  const docUpdate = async (uid: string) => {
+    const docRef = doc(db, "eachUser", uid);
+    const docSnap: DocumentData = await getDoc(docRef);
+    setEachUser(docSnap.data());
+  };
+
   const getChats = () => {
     let chatArr: any[] = [];
     if (eachUser) {
@@ -75,9 +81,7 @@ function WebPage() {
   useEffect(() => {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        const docRef = doc(db, "eachUser", user.uid);
-        const docSnap: DocumentData = await getDoc(docRef);
-        setEachUser(docSnap.data());
+        docUpdate(user.uid);
       }
     });
   }, [onAuthStateChanged]);
@@ -87,14 +91,16 @@ function WebPage() {
   );
 
   useEffect(() => {
-    getChats();
+    if (auth.currentUser) {
+      getChats();
+      docUpdate(auth.currentUser.uid);
+    }
   }, [eachUserDoc]);
 
   const closeNavbar = (e: React.MouseEvent<HTMLDivElement>) => {
     e.currentTarget.id !== "leftnav" && setShowNav(false);
   };
 
-  console.log(page?.title);
   return (
     <>
       <div className="flex w-full m-auto" onClick={closeNavbar}>
