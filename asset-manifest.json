@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/FlyChat/static/css/main.c94277f6.css",
-    "main.js": "/FlyChat/static/js/main.f6375ab5.js",
+    "main.css": "/FlyChat/static/css/main.1f14555f.css",
+    "main.js": "/FlyChat/static/js/main.df0e2837.js",
     "static/js/787.be24b188.chunk.js": "/FlyChat/static/js/787.be24b188.chunk.js",
     "index.html": "/FlyChat/index.html",
-    "main.c94277f6.css.map": "/FlyChat/static/css/main.c94277f6.css.map",
-    "main.f6375ab5.js.map": "/FlyChat/static/js/main.f6375ab5.js.map",
+    "main.1f14555f.css.map": "/FlyChat/static/css/main.1f14555f.css.map",
+    "main.df0e2837.js.map": "/FlyChat/static/js/main.df0e2837.js.map",
     "787.be24b188.chunk.js.map": "/FlyChat/static/js/787.be24b188.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.c94277f6.css",
-    "static/js/main.f6375ab5.js"
+    "static/css/main.1f14555f.css",
+    "static/js/main.df0e2837.js"
   ]
 }
