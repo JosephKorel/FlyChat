@@ -141,7 +141,7 @@ function ChatPage() {
 
   return (
     <>
-      <div className={` h-screen w-full`}>
+      <div className={`h-[90vh] overflow-hidden lg:h-screen w-full`}>
         <div className="w-full py-1 sticky top-0 z-10 flex align-center bg-water-700">
           <div className={`${!isMobile && "ml-4"}`}>
             {isMobile && (
@@ -159,7 +159,7 @@ function ChatPage() {
             {currFriend?.name}
           </p>
         </div>
-        <div className="h-[84%] lg:h-[88%]">
+        <div className="h-[98%] lg:h-[85%]">
           <div className="h-full overflow-y-auto">
             {currChat !== null && (
               <>
@@ -183,9 +183,19 @@ function ChatPage() {
                 ))}
               </>
             )}
+            {/*   <div className="h-20 w-full bg-deepblue"></div>
+            <div className="h-20 w-full bg-deepblue"></div>
+            <div className="h-20 w-full bg-deepblue"></div>
+            <div className="h-20 w-full bg-deepblue"></div>
+            <div className="h-40 w-full bg-paleyellow"></div>
+            <div className="h-40 w-full bg-paleyellow"></div>
+            <div className="h-40 w-full bg-paleyellow"></div>
+            <div className="h-40 w-full bg-paleyellow"></div>
+            <div className="h-40 w-full bg-deepblue"></div>
+            <div className="h-40 w-full bg-deepblue"></div> */}
           </div>
         </div>
-        <div className="w-full flex justify-center relative top-2 lg:top-0">
+        <div className="w-full flex justify-center fixed lg:relative bottom-2 lg:top-0 xl:top-2">
           <Input
             bg="white"
             rounded="full"

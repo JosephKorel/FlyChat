@@ -22,11 +22,13 @@ import { BsPlusLg, BsCheckSquareFill } from "react-icons/bs";
 import { ImCross } from "react-icons/im";
 import moment from "moment";
 import { useDocumentData } from "react-firebase-hooks/firestore";
+import { useNavigate } from "react-router";
 
 function AddFriend() {
   const [searchFriend, setSearchFriend] = useState<string>("");
   const [searchRes, setSearchRes] = useState<userInterface[]>([]);
-  const { users, eachUser, setEachUser } = useContext(AppContext);
+  const { users, eachUser, setEachUser, isMobile } = useContext(AppContext);
+  let navigate = useNavigate();
 
   const [eachUserDoc] = useDocumentData(
     doc(db, "eachUser", `${auth.currentUser?.uid}`)
@@ -147,6 +149,8 @@ function AddFriend() {
         at: moment().format(),
       }),
     });
+
+    !isMobile && document.location.reload();
   };
 
   const refuseRequest = async (index: number) => {
@@ -192,7 +196,7 @@ function AddFriend() {
           ></Input>
           <InputRightElement children={<AiOutlineSearch size={20} />} />
         </InputGroup>
-        <div className="max-h-[50vh] overflow-auto bg-red-600">
+        <div className="max-h-[50vh] overflow-auto">
           {searchFriend &&
             searchRes.map((item, index) => (
               <>

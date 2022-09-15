@@ -26,7 +26,7 @@ function Login() {
   let navigate = useNavigate();
 
   useEffect(() => {
-    document.body.style.background = "#A4EFED";
+    document.body.style.background = "#2F2F2F";
   }, []);
 
   const createUser = async (
@@ -94,7 +94,7 @@ function Login() {
   };
 
   return (
-    <div>
+    <div className="p-2 py-4">
       {phoneLogin ? (
         <div className="flex flex-col w-5/6 lg:w-1/2 m-auto align-center flex-1">
           <form
@@ -144,74 +144,66 @@ function Login() {
           </form>
         </div>
       ) : (
-        <div className="flex flex-col">
-          <div className="flex flex-col w-5/6 lg:w-1/2 m-auto">
-            <div className=" mt-4">
-              <Input
-                className="mt-4"
+        <div className="flex flex-col p-2 rounded-md border border-lime font-sans">
+          <div className="flex flex-col justify-between items-center gap-5">
+            <h1 className="font-dancing text-center font-light text-5xl text-gray-100">
+              fly
+              <span className="font-title font-bold text-6xl drop-shadow-xl shadow-gray-100 text-lime">
+                CHAT
+              </span>
+              <span className="font-sans font-bold text-5xl text-lime">.</span>
+            </h1>
+            <p className="font-sans text-gray-200">ENTRE E CONVERSE UM POUCO</p>
+          </div>
+          <div className="flex flex-col w-11/12 lg:w-1/2 m-auto">
+            <div className="mt-4">
+              <input
+                className="mt-4 rounded-md w-full py-2 px-3 outline-none text-dark border border-transparent hover:border-lime focus:border-lime focus:ring-lime focus:outline-none"
                 type="text"
                 placeholder="Email"
-                background="white"
-                _focus={{ bg: "white" }}
                 value={email}
-                onChange={(e: React.FormEvent<HTMLInputElement>) =>
-                  setEmail(e.currentTarget.value)
-                }
-              ></Input>
-              <Input
-                className=" mt-4"
+                onChange={(e) => setEmail(e.currentTarget.value)}
+              />
+              <input
+                className="mt-4 rounded-md w-full py-2 px-3 outline-none text-dark border border-transparent hover:border-lime focus:border-lime focus:ring-lime focus:outline-none"
                 type="password"
                 placeholder="Senha"
-                background="white"
-                _focus={{ bg: "white" }}
                 value={password}
-                onChange={(e: React.FormEvent<HTMLInputElement>) => {
+                onChange={(e) => {
                   setPassword(e.currentTarget.value);
                 }}
-              ></Input>
+              />
             </div>
-            <Button
-              className="m-auto mt-4 w-5/6 lg:w-full"
-              leftIcon={<RiLoginBoxLine />}
+            <button
+              className="mt-4 flex justify-center items-center gap-2 rounded-md bg-lime font-semibold text-dark py-2 px-3"
               onClick={signIn}
-              colorScheme="messenger"
             >
-              Entrar
-            </Button>
-            <Button
-              className="m-auto mt-4 w-5/6 lg:w-full"
-              leftIcon={<FcGoogle />}
+              <RiLoginBoxLine />
+              <p>ENTRAR</p>
+            </button>
+            <button
+              className="mt-4 flex justify-center items-center gap-2 rounded-md bg-gray-200 font-semibold text-dark py-2 px-3"
               onClick={googleSignIn}
-              colorScheme="gray"
             >
-              Continuar com o Google
-            </Button>
-            <Button
-              className="m-auto mt-4 w-5/6 lg:w-full"
-              leftIcon={<FcPhoneAndroid />}
-              onClick={(e: EventInit) => setPhoneLogin(true)}
-              colorScheme="gray"
-            >
-              Entrar com celular
-            </Button>
+              <FcGoogle />
+              <p className="">CONTINUAR COM O GOOGLE</p>
+            </button>
           </div>
           <div className="flex align-center justify-center mt-4 w-5/6 lg:w-1/2 m-auto">
             <div className="flex-grow flex flex-col align-center justify-center">
-              <div className="border border-stone-800  h-0"></div>
+              <div className="border border-lime-400 h-0"></div>
             </div>
-            <p className="px-4">OU</p>
+            <p className="px-4 text-gray-200">OU</p>
             <div className="flex-grow flex flex-col align-center justify-center">
-              <div className="border border-stone-800  h-0"></div>
+              <div className="border border-lime-400 h-0"></div>
             </div>
           </div>
-
-          <Button
-            className="m-auto mt-4 w-5/6 lg:w-1/2"
+          <button
+            className="mt-4 flex justify-center items-center gap-2 rounded-md bg-lime font-semibold text-dark py-2 px-3"
             onClick={() => navigate("/create-account")}
-            colorScheme="messenger"
           >
-            Criar conta
-          </Button>
+            CRIAR CONTA
+          </button>
         </div>
       )}
     </div>
