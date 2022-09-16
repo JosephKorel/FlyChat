@@ -1,32 +1,47 @@
-import { Button, IconButton, Input } from "@chakra-ui/react";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { doc, DocumentData, getDoc, setDoc } from "firebase/firestore";
+import { arrayUnion, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import React, { useContext, useState } from "react";
-import { FcPhoneAndroid } from "react-icons/fc";
+import React, { useContext, useState, useEffect } from "react";
 import { AiOutlineUpload } from "react-icons/ai";
 import { useNavigate } from "react-router";
 import { AppContext } from "../Context/AuthContext";
 import { auth, db, storage } from "../firebase-config";
+import Alert from "../Styled-components/alert";
 
 function CreateAccount() {
   const { setIsAuth, isMobile } = useContext(AppContext);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [pswError, setPswError] = useState<boolean>(false);
+  const [error, setError] = useState("");
   const [isReg, setIsReg] = useState<boolean>(false);
   const [avatar, setAvatar] = useState<any>(null);
   const [name, setName] = useState<string>("");
+  const [msg, setMsg] = useState("");
   const input = document.getElementById("psw") as HTMLInputElement;
   let navigate = useNavigate();
 
-  const createUser = async (name: string, userId: string, photo: string) => {
+  useEffect(() => {
+    setTimeout(() => {
+      setMsg("");
+      setError("");
+    }, 2500);
+  }, [msg, error]);
+
+  const createUser = async (
+    name: string,
+    userId: string,
+    photo: string
+  ): Promise<void | null> => {
     const docRef = doc(db, "eachUser", `${userId}`);
     const docSnap = await getDoc(docRef);
 
     //Checa se o usuário já é cadastrado
-    if (docSnap.exists()) return;
+    if (docSnap.exists()) {
+      setError("Usuário já registrado");
+      return null;
+    }
 
+    //Cria o documento separado do usuário
     await setDoc(doc(db, "eachUser", `${userId}`), {
       name,
       avatar: photo,
@@ -38,105 +53,98 @@ function CreateAccount() {
       chats: [],
       groupChat: [],
     });
+
+    await updateDoc(doc(db, "allUsers", "list"), {
+      users: arrayUnion({ name, uid: userId, avatar: photo }),
+    });
   };
 
-  const submitUser = async (name: string, userId: string, photo: string) => {
-    const snapshot: DocumentData = await getDoc(doc(db, "allUsers", "list"));
-    const currentUsers: { name: string; uid: string; photo: string }[] =
-      snapshot.data().users;
-
-    if (currentUsers.some((item) => item.uid == auth.currentUser?.uid)) return;
-    else {
-      await setDoc(doc(db, "allUsers", "list"), {
-        users: [...currentUsers, { name, uid: userId, avatar: photo }],
-      });
-      console.log("success");
-    }
-  };
-
-  const createAccount = () => {
-    if (!email || !password) return;
+  const createAccount = async (): Promise<void | null> => {
+    if (!email || !password) return null;
 
     if (input.value !== password) {
-      setPswError(true);
-      return;
+      setError("As senhas devem ser iguais");
+      return null;
     }
 
-    createUserWithEmailAndPassword(auth, email, password)
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      setIsReg(true);
+    } catch (error) {
+      setError("Houve algum erro, tente novamente");
+    }
+
+    /* createUserWithEmailAndPassword(auth, email, password)
       .then((res) => {
         setIsReg(true);
       })
-      .catch((error) => console.log(error));
+      .catch((error) => console.log(error)); */
   };
 
-  const setProfile = async () => {
-    if (name) {
-      if (avatar == null) {
-        await updateProfile(auth.currentUser!, {
-          displayName: name,
-          photoURL: "",
-        });
+  const setProfile = async (): Promise<void | null> => {
+    if (name.length < 4) {
+      setError("Seu nome precisa ter pelo menos 4 caracteres");
+      return null;
+    }
 
-        createUser(name, auth.currentUser?.uid!, "");
-        submitUser(name, auth.currentUser?.uid!, "");
+    if (avatar == null) {
+      await updateProfile(auth.currentUser!, {
+        displayName: name,
+        photoURL: "",
+      });
 
-        setIsAuth(true);
-      } else {
-        const storageRef = ref(storage, `profileImg/${auth.currentUser?.uid}`);
-        await uploadBytes(storageRef, avatar).then(() =>
-          console.log("success")
+      createUser(name, auth.currentUser?.uid!, "");
+      /*  submitUser(name, auth.currentUser?.uid!, ""); */
+
+      setIsAuth(true);
+    } else {
+      const storageRef = ref(storage, `profileImg/${auth.currentUser?.uid}`);
+
+      try {
+        await uploadBytes(storageRef, avatar);
+        const url = await getDownloadURL(
+          ref(storage, `profileImg/${auth.currentUser!.uid}`)
         );
 
-        getDownloadURL(ref(storage, `profileImg/${auth.currentUser?.uid}`))
-          .then(async (url) => {
-            await updateProfile(auth.currentUser!, {
-              displayName: name,
-              photoURL: url,
-            });
-            createUser(name, auth.currentUser?.uid!, url);
-            submitUser(name, auth.currentUser?.uid!, url);
-          })
-          .catch((error) => console.log(error));
-        setIsAuth(true);
-      }
+        await updateProfile(auth.currentUser!, {
+          displayName: name,
+          photoURL: url,
+        });
 
-      isMobile ? navigate("/profile") : navigate("/");
+        createUser(name, auth.currentUser?.uid!, url);
+        setIsAuth(true);
+      } catch (error) {
+        setError("Houve algum erro, tente novamente");
+      }
     }
+
+    isMobile ? navigate("/profile") : navigate("/");
   };
 
   return (
-    <div>
+    <div className="bg-dark p-2 h-screen overflow-hidden relative">
+      {msg || error ? <Alert msg={msg} error={error} /> : <></>}
       {isReg ? (
-        <div className="flex flex-col w-5/6 lg:w-1/2 m-auto">
-          <div className=" mt-4">
-            <label className="font-sans text-lg font-medium">
-              Como você quer ser chamado?
+        <div className="flex flex-col w-11/12 lg:w-1/2 m-auto">
+          <div className="mt-4">
+            <label className="font-sans font-medium text-gray-200">
+              Como você gostaria de ser chamado(a)?
             </label>
-            <Input
-              className="mt-1"
+            <input
+              className="mt-2 rounded-md w-full py-2 px-3 outline-none text-dark border border-transparent hover:border-lime focus:border-lime focus:ring-lime focus:outline-none"
               type="text"
-              background="white"
-              _focus={{ bg: "white" }}
               value={name}
-              onChange={(e: React.FormEvent<HTMLInputElement>) =>
-                setName(e.currentTarget.value)
-              }
-            ></Input>
-            <div className="flex justify-around mt-4">
-              <p className="font-sans text-lg font-medium leading-[45px]">
-                Selecione uma foto de perfil
-              </p>
-              <IconButton
-                icon={<AiOutlineUpload />}
-                aria-label="Search database"
-                rounded="50%"
-                size="lg"
-                colorScheme="messenger"
-                onClick={() => {
-                  document.getElementById("avatar-input")?.click();
-                }}
-              />
-            </div>
+              onChange={(e) => setName(e.currentTarget.value)}
+            />
+            <button
+              className="mt-4 w-full flex justify-center items-center gap-2 rounded-md bg-lime font-semibold text-dark py-2 px-3"
+              onClick={() => {
+                document.getElementById("avatar-input")?.click();
+              }}
+            >
+              <p>SELECIONAR FOTO DE PERFIL</p>
+              <AiOutlineUpload size={20} />
+            </button>
             <input
               className="hidden"
               type="file"
@@ -145,73 +153,55 @@ function CreateAccount() {
             ></input>
           </div>
           {avatar != null ? (
-            <>
-              <p className="w-5/6 m-auto">{avatar?.name}</p>
-              <Button
-                className="m-auto mt-8 w-full"
+            <div className="flex flex-col gap-4 mt-1">
+              <p className="text-gray-200 font-semibold">{avatar?.name}</p>
+              <button
+                className="w-full rounded-md bg-lime font-semibold text-dark py-2 px-3"
                 onClick={setProfile}
-                colorScheme="messenger"
               >
-                Continuar
-              </Button>
-            </>
+                CONTINUAR
+              </button>
+            </div>
           ) : (
-            <Button
-              className="m-auto mt-4 w-full"
-              colorScheme="messenger"
+            <button
+              className="mt-4 w-full rounded-md bg-gray-200 font-semibold text-dark py-2 px-3"
               onClick={setProfile}
             >
-              Talvez mais tarde
-            </Button>
+              TALVEZ MAIS TARDE
+            </button>
           )}
         </div>
       ) : (
-        <div className="flex flex-col w-5/6 lg:w-1/2 m-auto">
-          <div className="text-center ">
-            <Input
-              className="mt-4"
+        <div className="flex flex-col w-11/12 lg:w-1/2 m-auto">
+          <div className="text-center">
+            <input
+              className="mt-4 rounded-md w-full py-2 px-3 outline-none text-dark border border-transparent hover:border-lime focus:border-lime focus:ring-lime focus:outline-none"
               type="text"
               placeholder="Email"
-              background="white"
-              _focus={{ bg: "white" }}
               value={email}
-              onChange={(e: React.FormEvent<HTMLInputElement>) =>
-                setEmail(e.currentTarget.value)
-              }
-            ></Input>
-            <Input
+              onChange={(e) => setEmail(e.currentTarget.value)}
+            />
+            <input
               type="password"
               placeholder="Senha"
               id="psw"
-              className="mt-4"
-              background="white"
-              _focus={{ bg: "white" }}
-            ></Input>
-            <Input
-              className="mt-4"
+              className="mt-4 rounded-md w-full py-2 px-3 outline-none text-dark border border-transparent hover:border-lime focus:border-lime focus:ring-lime focus:outline-none"
+            ></input>
+            <input
+              className="mt-4 rounded-md w-full py-2 px-3 outline-none text-dark border border-transparent hover:border-lime focus:border-lime focus:ring-lime focus:outline-none"
               type="password"
               placeholder="Digite a senha novamente"
               value={password}
-              isInvalid={pswError}
-              background="white"
-              _focus={{ bg: "white" }}
-              onChange={(e: React.FormEvent<HTMLInputElement>) => {
-                setPassword(e.currentTarget.value);
-                setPswError(false);
-              }}
-            ></Input>
+              onChange={(e) => setPassword(e.currentTarget.value)}
+            />
           </div>
-          {pswError && (
-            <p className="text-center pt-1">As senhas precisam ser iguais</p>
-          )}
-          <Button
-            className="m-auto mt-4 w-5/6 lg:w-full"
+          <button
+            className="mt-4 rounded-md bg-lime font-semibold text-dark py-2 px-3"
             onClick={createAccount}
-            colorScheme="messenger"
           >
-            Criar conta
-          </Button>
-          <div className="flex align-center justify-center mt-4 w-full m-auto">
+            CONTINUAR
+          </button>
+          {/* <div className="flex align-center justify-center mt-4 w-full m-auto">
             <div className="flex-grow flex flex-col align-center justify-center">
               <div className="border border-stone-800  h-0"></div>
             </div>
@@ -220,14 +210,14 @@ function CreateAccount() {
               <div className="border border-stone-800  h-0"></div>
             </div>
           </div>
-          <Button
+           <Button
             className="m-auto mt-4 w-5/6 lg:w-full"
             leftIcon={<FcPhoneAndroid />}
             onClick={() => navigate("/phone-account")}
             colorScheme="gray"
           >
             Criar conta com número de celular
-          </Button>
+          </Button> */}
         </div>
       )}
     </div>

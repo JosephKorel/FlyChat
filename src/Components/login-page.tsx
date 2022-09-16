@@ -1,19 +1,21 @@
-import {
-  Avatar,
-  Button,
-  Input,
-  InputGroup,
-  InputLeftAddon,
-} from "@chakra-ui/react";
+import { Button, Input, InputGroup, InputLeftAddon } from "@chakra-ui/react";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
-import { doc, DocumentData, getDoc, setDoc } from "firebase/firestore";
+import {
+  arrayUnion,
+  doc,
+  DocumentData,
+  getDoc,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 import React, { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { AppContext } from "../Context/AuthContext";
 import { auth, db, provider } from "../firebase-config";
 import { requestOTP, verifyOTP } from "../Login-functions/phone-auth";
-import { FcGoogle, FcPhoneAndroid } from "react-icons/fc";
+import { FcGoogle } from "react-icons/fc";
 import { RiLoginBoxLine } from "react-icons/ri";
+import Alert from "../Styled-components/alert";
 
 function Login() {
   const { setIsAuth, setEachUser, isMobile } = useContext(AppContext);
@@ -23,22 +25,32 @@ function Login() {
   const [number, setNumber] = useState<string>("");
   const [disable, setDisable] = useState<boolean>(true);
   const [success, setSuccess] = useState<boolean>(false);
+  const [error, setError] = useState("Houve algum erro");
   let navigate = useNavigate();
 
   useEffect(() => {
-    document.body.style.background = "#2F2F2F";
-  }, []);
+    setTimeout(() => {
+      setError("");
+    }, 2500);
+  }, [error]);
+
+  const isRegistered = async (userId: string): Promise<boolean> => {
+    const docRef = doc(db, "eachUser", `${userId}`);
+    const docSnap = await getDoc(docRef);
+
+    return docSnap.exists() ? true : false;
+  };
 
   const createUser = async (
     name: string | undefined | null,
     userId: string | undefined,
     photo: string | undefined | null
-  ) => {
-    const docRef = doc(db, "eachUser", `${userId}`);
-    const docSnap = await getDoc(docRef);
-
+  ): Promise<void | null> => {
     //Checa se o usuário já é cadastrado
-    if (docSnap.exists()) return;
+    const registered = await isRegistered(userId!);
+    if (registered) {
+      return null;
+    }
 
     await setDoc(doc(db, "eachUser", `${userId}`), {
       name,
@@ -50,6 +62,10 @@ function Login() {
       sentReq: [],
       chats: [],
       groupChat: [],
+    });
+
+    await updateDoc(doc(db, "allUsers", "list"), {
+      users: arrayUnion({ name, uid: userId, avatar: photo }),
     });
   };
 
@@ -71,30 +87,40 @@ function Login() {
     }
   };
 
-  const signIn = () => {
-    signInWithEmailAndPassword(auth, email, password)
-      .then(() => {
-        setIsAuth(true);
-        isMobile ? navigate("/profile") : navigate("/");
-      })
-      .catch((error) => console.log(error));
-  };
-
-  const googleSignIn = () => {
-    signInWithPopup(auth, provider).then(async (res) => {
-      createUser(res.user.displayName, res.user.uid, res.user.photoURL);
-      submitUser(res.user.displayName, res.user.uid, res.user.photoURL);
-
-      const docRef = doc(db, "eachUser", res.user.uid);
-      const docSnap: DocumentData = await getDoc(docRef);
-      setEachUser(docSnap.data());
+  const signIn = async (): Promise<void | null> => {
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
       setIsAuth(true);
       isMobile ? navigate("/profile") : navigate("/");
-    });
+    } catch (error) {
+      setError("Houve algum erro, tente novamente");
+    }
+  };
+
+  const googleSignIn = async (): Promise<void | null> => {
+    try {
+      const user = await signInWithPopup(auth, provider);
+      const registered = await isRegistered(user.user.uid);
+      if (registered) {
+        setIsAuth(true);
+        isMobile ? navigate("/profile") : navigate("/");
+      } else {
+        await createUser(
+          user.user.displayName,
+          user.user.uid,
+          user.user.photoURL
+        );
+        setIsAuth(true);
+        isMobile ? navigate("/profile") : navigate("/");
+      }
+    } catch (error) {
+      setError("Houve algum erro, tente novamente");
+    }
   };
 
   return (
-    <div className="p-2 py-4">
+    <div className="p-2 py-4 bg-dark h-screen relative overflow-hidden">
+      {error && <Alert error={error} />}
       {phoneLogin ? (
         <div className="flex flex-col w-5/6 lg:w-1/2 m-auto align-center flex-1">
           <form
@@ -199,7 +225,7 @@ function Login() {
             </div>
           </div>
           <button
-            className="mt-4 flex justify-center items-center gap-2 rounded-md bg-lime font-semibold text-dark py-2 px-3"
+            className="mt-4 rounded-md bg-lime font-semibold text-dark py-2 px-3"
             onClick={() => navigate("/create-account")}
           >
             CRIAR CONTA
