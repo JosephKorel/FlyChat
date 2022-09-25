@@ -25,7 +25,7 @@ function Login() {
   const [number, setNumber] = useState<string>("");
   const [disable, setDisable] = useState<boolean>(true);
   const [success, setSuccess] = useState<boolean>(false);
-  const [error, setError] = useState("Houve algum erro");
+  const [error, setError] = useState("");
   let navigate = useNavigate();
 
   useEffect(() => {
@@ -69,24 +69,6 @@ function Login() {
     });
   };
 
-  const submitUser = async (
-    name: string | undefined | null,
-    userId: string | undefined,
-    photo: string | undefined | null
-  ) => {
-    const snapshot: DocumentData = await getDoc(doc(db, "allUsers", "list"));
-    const currentUsers: { name: string; uid: string; photo: string }[] =
-      snapshot.data().users;
-
-    if (currentUsers.some((item) => item.uid == auth.currentUser?.uid)) return;
-    else {
-      await setDoc(doc(db, "allUsers", "list"), {
-        users: [...currentUsers, { name, uid: userId, avatar: photo }],
-      });
-      console.log("success");
-    }
-  };
-
   const signIn = async (): Promise<void | null> => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
@@ -119,7 +101,7 @@ function Login() {
   };
 
   return (
-    <div className="p-2 py-4 bg-dark h-screen relative overflow-hidden">
+    <div className="px-2 bg-dark h-screen relative overflow-hidden flex flex-col justify-center items-center">
       {error && <Alert error={error} />}
       {phoneLogin ? (
         <div className="flex flex-col w-5/6 lg:w-1/2 m-auto align-center flex-1">

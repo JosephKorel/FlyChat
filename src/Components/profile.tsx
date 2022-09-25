@@ -424,26 +424,37 @@ function Profile() {
     );
   };
 
-  useEffect(() => {
+  /*   useEffect(() => {
     document.body.style.background = "url(./Meteor.svg)";
-  }, []);
+  }, []); */
+
+  console.log(eachUser?.avatar);
 
   return (
-    <div className="h-screen ">
-      <div className="w-5/6 m-auto text-center pt-4">
-        <div className="flex justify-center">
-          <Avatar src={eachUser?.avatar || ""} size="2xl"></Avatar>
+    <div className="h-screen bg-dark flex flex-col justify-around items-center">
+      <div className="w-5/6 mb-16 text-center">
+        <div className="flex justify-center relative">
+          <Avatar
+            src={eachUser?.avatar || ""}
+            size="xl"
+            referrerPolicy="no-referrer"
+          ></Avatar>
+          {/* <img
+            src={eachUser?.avatar}
+            className="w-20"
+            referrerPolicy="no-referrer"
+          ></img> */}
           <IconButton
-            className="mt-1 ml-20"
+            className="ml-20"
             aria-label="Alterar foto"
-            icon={<AiFillCamera size={20} color="white" />}
-            bg="#2A6FDB"
+            icon={<AiFillCamera size={20} color="#272727" />}
+            bg="#AFFC41"
             rounded="full"
             position="absolute"
             onClick={onOpen}
           />
         </div>
-        <div className="mt-2">
+        <div className="mt-2 flex justify-center items-center relative">
           <Input
             width="w-1/2"
             className="text-center font-sans text-xl font-semibold"
@@ -459,13 +470,13 @@ function Profile() {
           ></Input>
           {editName ? (
             <IconButton
-              className="ml-4"
+              className="right-0"
               position="absolute"
               aria-label="Mudar nome"
               rounded="full"
-              bg="#2A6FDB"
+              bg="#AFFC41"
               size="sm"
-              icon={<FaCheck color="white" />}
+              icon={<FaCheck color="#272727" />}
               onClick={() => {
                 changeUsername();
                 setEditName(false);
@@ -473,13 +484,13 @@ function Profile() {
             />
           ) : (
             <IconButton
-              className="ml-4"
+              className="right-0"
               position="absolute"
               aria-label="Mudar nome"
               rounded="full"
-              bg="#2A6FDB"
+              bg="#AFFC41"
               size="sm"
-              icon={<BsPencilFill color="white" />}
+              icon={<BsPencilFill color="#272727" />}
               onClick={() => setEditName(true)}
             />
           )}

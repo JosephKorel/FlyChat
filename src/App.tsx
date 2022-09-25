@@ -26,9 +26,9 @@ function App() {
     navigate("/");
   }, [isMobile]);
 
-  useEffect(() => {
+  /*   useEffect(() => {
     document.body.style.background = isAuth ? 'url("./Meteor.svg")' : "#A4EFED";
-  }, [isAuth]);
+  }, [isAuth]); */
 
   return (
     <ChakraProvider>

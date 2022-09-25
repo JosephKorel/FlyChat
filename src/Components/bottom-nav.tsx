@@ -5,10 +5,15 @@ import { AiFillWechat } from "react-icons/ai";
 import { useLocation, useNavigate } from "react-router";
 import { IoMdPersonAdd } from "react-icons/io";
 import { auth } from "../firebase-config";
+import { BsFillPersonFill } from "react-icons/bs";
 
 function BottomNav() {
   let location = useLocation().pathname;
   let navigate = useNavigate();
+
+  const onThisPage = (page: string) => {
+    return location == page ? true : false;
+  };
   return (
     <>
       {location == "/chat" ||
@@ -16,48 +21,64 @@ function BottomNav() {
       location == "/group-config" ? (
         <></>
       ) : (
-        <>
-          <div className="flex align-center justify-around p3 bg-stone-100 border-t-[1px] border-skyblue fixed bottom-0 w-full">
+        <div className="px-2 fixed bottom-4 w-full">
+          <div className="flex align-center justify-around bg-lime rounded-lg">
             <div>
-              <IconButton
-                aria-label="chats"
-                variant="flushed"
-                color={location == "/" ? "#2a6fdb" : "blackAlpha.800"}
-                icon={<AiFillWechat size={25} />}
-                size="md"
-                onClick={() => navigate("/")}
-              ></IconButton>
+              <button
+                onClick={() => navigate("/chats")}
+                className={`p-1 rounded-full ${
+                  onThisPage("/chats")
+                    ? "bg-lime text-dark -translate-y-4"
+                    : "text-dark"
+                }`}
+              >
+                <AiFillWechat size={25} />
+              </button>
             </div>
             <div>
-              <IconButton
-                aria-label="friends"
-                variant="flushed"
-                color={location == "/friends" ? "#2a6fdb" : "blackAlpha.800"}
-                icon={<FaUserFriends size={25} />}
-                size="md"
+              <button
                 onClick={() => navigate("/friends")}
-              ></IconButton>
+                className={`p-1 rounded-full ${
+                  onThisPage("/friends")
+                    ? "bg-lime text-dark -translate-y-4"
+                    : "text-dark"
+                }`}
+              >
+                <FaUserFriends size={25} />
+              </button>
             </div>
             <div>
-              <IconButton
-                aria-label="friends"
-                variant="flushed"
-                color={location == "/add-friend" ? "#2a6fdb" : "blackAlpha.800"}
-                icon={<IoMdPersonAdd size={25} />}
-                size="md"
+              <button
                 onClick={() => navigate("/add-friend")}
-              ></IconButton>
+                className={`p-1 rounded-full ${
+                  onThisPage("/add-friend")
+                    ? "bg-lime text-dark -translate-y-4"
+                    : "text-dark"
+                }`}
+              >
+                <IoMdPersonAdd size={25} />
+              </button>
             </div>
             <div>
-              <Avatar
+              {/* <Avatar
                 src={auth.currentUser?.photoURL!}
                 size="sm"
                 className="mt-1"
                 onClick={() => navigate("/profile")}
-              />
+              /> */}
+              <button
+                onClick={() => navigate("/profile")}
+                className={`p-1 rounded-full ${
+                  onThisPage("/profile")
+                    ? "bg-lime text-dark -translate-y-4"
+                    : "text-dark"
+                }`}
+              >
+                <BsFillPersonFill size={25} />
+              </button>
             </div>
           </div>
-        </>
+        </div>
       )}
     </>
   );
