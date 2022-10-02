@@ -26,10 +26,6 @@ function App() {
     navigate("/");
   }, [isMobile]);
 
-  /*   useEffect(() => {
-    document.body.style.background = isAuth ? 'url("./Meteor.svg")' : "#A4EFED";
-  }, [isAuth]); */
-
   return (
     <ChakraProvider>
       {isAuth && isMobile && <Navbar />}

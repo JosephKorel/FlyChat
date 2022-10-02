@@ -13,7 +13,7 @@ function Navbar() {
         <></>
       ) : (
         <>
-          <div className="fixed top-0 w-full z-10">
+          <div className="sticky top-0 w-full z-10 bg-dark">
             {/* <h1 className="p-2 text-4xl font-extrabold text-dark font-dancing bg-lime">
               <span className="text-2xl italic text-skyblue font-sans font-bold">
                 Fly

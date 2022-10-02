@@ -22,17 +22,12 @@ import { FaTelegramPlane } from "react-icons/fa";
 import { IoPersonRemove } from "react-icons/io5";
 import { TiDelete } from "react-icons/ti";
 import ChatPage from "./chat";
-import AddFriend from "./add-friend";
 
 function FriendList() {
   let navigate = useNavigate();
   const { eachUser, setEachUser, setPartner, isMobile, setChatPage } =
     useContext(AppContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  useEffect(() => {
-    document.body.style.background = "url(./Meteor.svg)";
-  }, []);
 
   useEffect(() => {
     onAuthStateChanged(auth, async (user) => {
@@ -137,28 +132,23 @@ function FriendList() {
 
   return (
     <>
-      <div className="overflow-auto">
+      <div className="overflow-auto bg-dark h-screen font-sans">
         {eachUser ? (
           <>
             {eachUser?.friends.length > 0 ? (
               <>
-                <div className="w-[98%] sm:w-2/3 lg:w-[95%] m-auto py-1 h-[80vh] overflow-auto">
-                  {eachUser?.friends.map((user, index) => (
-                    <div className="flex align-center justify-between mt-4 p-1 shadow-lg bg-stone-200 rounded-xl border-x-2 border-stone-800 text-stone-900">
+                <div className="w-full p-4 sm:w-2/3 lg:w-[95%] m-auto py-1 h-screen overflow-auto">
+                  {eachUser!.friends.map((user, index) => (
+                    <div className="flex items-center justify-between mt-4 p-2 px-4 rounded-xl bg-gradient-to-r from-dark-800 to-dark">
                       <div className="">
-                        <Avatar src={user.avatar} />
+                        <Avatar src={user.avatar} size="sm" />
                       </div>
-                      <p className="text-lg font-sans font-semibold px-10 leading-[45px]">
+                      <p className="font-bold uppercase text-lime px-10">
                         {user.name}
                       </p>
-                      <IconButton
-                        className="mt-1"
-                        aria-label="Enviar mensagem"
-                        icon={<FaTelegramPlane size={32} color="#48D6D2" />}
-                        bg="transparent"
-                        rounded="full"
-                        onClick={() => startChat(index)}
-                      />
+                      <button className="" onClick={() => startChat(index)}>
+                        <FaTelegramPlane className="text-lime text-2xl" />
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -181,19 +171,18 @@ function FriendList() {
               <>
                 {isMobile && (
                   <div className="text-center">
-                    <h1 className="font-sans p-2 text-2xl font-medium text-center mt-5 text-stone-100">
+                    <h1 className="p-2 text-2xl font-medium text-center mt-5 text-stone-100">
                       Parece que você ainda não tem nenhum amigo.
                     </h1>
-                    <Button
-                      className="m-auto mt-8 w-5/6"
-                      leftIcon={<AiOutlineUserAdd size={25} />}
-                      colorScheme="messenger"
+                    <button
+                      className="m-auto mt-8 w-5/6 p-2 rounded-md flex justify-center items-center gap-2 bg-lime text-dark"
                       onClick={() => navigate("/add-friend")}
                     >
-                      Adicionar amigo
-                    </Button>
+                      <AiOutlineUserAdd className="text-xl" />
+                      <p className="font-semibold">ADICIONAR AMIGO</p>
+                    </button>
                   </div>
-                )}{" "}
+                )}
               </>
             )}
           </>

@@ -22,10 +22,6 @@ function ChatPage() {
   const [currChat, setCurrChat] = useState<eachChat | null>(null);
   let navigate = useNavigate();
 
-  useEffect(() => {
-    isMobile && (document.body.style.background = 'url("./default_svg.png")');
-  }, []);
-
   const retrieveDoc = async () => {
     const userDoc = doc(db, "eachUser", `${auth.currentUser?.uid}`);
     const data: DocumentData = await getDoc(userDoc);

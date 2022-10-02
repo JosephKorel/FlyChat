@@ -424,26 +424,20 @@ function Profile() {
     );
   };
 
-  /*   useEffect(() => {
-    document.body.style.background = "url(./Meteor.svg)";
-  }, []); */
-
-  console.log(eachUser?.avatar);
-
   return (
     <div className="h-screen bg-dark flex flex-col justify-around items-center">
-      <div className="w-5/6 mb-16 text-center">
+      <div className="w-5/6 mb-10 text-center">
         <div className="flex justify-center relative">
-          <Avatar
+          {/* <Avatar
             src={eachUser?.avatar || ""}
             size="xl"
             referrerPolicy="no-referrer"
-          ></Avatar>
-          {/* <img
+          ></Avatar> */}
+          <img
             src={eachUser?.avatar}
-            className="w-20"
+            className="w-24 rounded-full"
             referrerPolicy="no-referrer"
-          ></img> */}
+          ></img>
           <IconButton
             className="ml-20"
             aria-label="Alterar foto"
@@ -496,7 +490,7 @@ function Profile() {
           )}
         </div>
       </div>
-      <div className="text-center mt-4 md:mt-20">
+      <div className="text-center md:mt-20">
         <Button colorScheme="red" onClick={logOut}>
           Sair
         </Button>

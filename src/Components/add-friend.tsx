@@ -8,27 +8,17 @@ import {
 import React, { useState, useEffect, useContext } from "react";
 import { AppContext, eachUserInt, userInterface } from "../Context/AuthContext";
 import { auth, db } from "../firebase-config";
-import {
-  Avatar,
-  Icon,
-  IconButton,
-  Input,
-  InputGroup,
-  InputRightElement,
-} from "@chakra-ui/react";
+import { Avatar } from "@chakra-ui/react";
 import { AiOutlineSearch } from "react-icons/ai";
 import { IoMdPersonAdd } from "react-icons/io";
-import { BsPlusLg, BsCheckSquareFill } from "react-icons/bs";
-import { ImCross } from "react-icons/im";
+import { BsPlusLg, BsCheckLg } from "react-icons/bs";
 import moment from "moment";
 import { useDocumentData } from "react-firebase-hooks/firestore";
-import { useNavigate } from "react-router";
+import { TiCancel } from "react-icons/ti";
 
 function AddFriend() {
-  const [searchFriend, setSearchFriend] = useState<string>("");
-  const [searchRes, setSearchRes] = useState<userInterface[]>([]);
+  const [search, setSearch] = useState("");
   const { users, eachUser, setEachUser, isMobile } = useContext(AppContext);
-  let navigate = useNavigate();
 
   const [eachUserDoc] = useDocumentData(
     doc(db, "eachUser", `${auth.currentUser?.uid}`)
@@ -44,44 +34,42 @@ function AddFriend() {
     docUpdate();
   }, [eachUserDoc]);
 
-  useEffect(() => {
-    const otherUsers = users.filter(
-      (item) => item.uid !== auth.currentUser?.uid
+  const otherUsers = users.filter((item) => item.uid !== auth.currentUser?.uid);
+  const notFriends = otherUsers.filter((item) => {
+    const isFriend = eachUser!.friends.filter(
+      (friend) => friend.uid == item.uid
     );
+    return !isFriend.length ? true : false;
+  });
 
-    const search: userInterface[] = otherUsers.filter((item) =>
-      item.name.toLowerCase().includes(searchFriend.toLowerCase())
-    );
+  const searchResult = search.length
+    ? notFriends.filter((friend) =>
+        friend.name.toLowerCase().includes(search.toLowerCase())
+      )
+    : notFriends;
 
-    const results = search.reduce<userInterface[]>((acc, curr) => {
-      const filter = eachUser?.friends.filter(
-        (friend) => friend.uid == curr.uid
-      );
-      filter?.length == 0 && acc.push(curr);
+  const hasSentRequest = (uid: string): boolean => {
+    const filter = eachUser!.sentReq.filter((obj) => obj.uid == uid);
+    return filter.length ? true : false;
+  };
 
-      return acc;
-    }, []);
-
-    setSearchRes(results);
-  }, [searchFriend]);
-
-  const addFriend = async (index: number) => {
-    const friendId = searchRes[index].uid;
-    const myDoc = doc(db, "eachUser", `${auth.currentUser?.uid}`);
-    const friendDoc = doc(db, "eachUser", `${friendId}`);
+  const addFriend = async (index: number): Promise<void> => {
+    const friend = searchResult[index];
+    const myDoc = doc(db, "eachUser", `${auth.currentUser!.uid}`);
+    const friendDoc = doc(db, "eachUser", `${friend.uid}`);
 
     await updateDoc(friendDoc, {
       requests: arrayUnion({
-        name: auth.currentUser?.displayName,
-        uid: auth.currentUser?.uid,
-        avatar: auth.currentUser?.photoURL,
+        name: auth.currentUser!.displayName,
+        uid: auth.currentUser!.uid,
+        avatar: auth.currentUser!.photoURL,
       }),
     });
     await updateDoc(myDoc, {
       sentReq: arrayUnion({
-        name: searchRes[index].name,
-        avatar: searchRes[index].avatar,
-        uid: searchRes[index].uid,
+        name: friend.name,
+        avatar: friend.avatar,
+        uid: friend.uid,
       }),
     });
   };
@@ -95,6 +83,7 @@ function AddFriend() {
     const friendDocSnap: DocumentData = await getDoc(friendDoc);
     const frdDocData = friendDocSnap.data();
     const id: number = Date.now();
+    const at = Date.now();
 
     const filteredReq = currentDoc?.requests.filter(
       (item: userInterface) => item.uid !== friend?.uid
@@ -114,11 +103,11 @@ function AddFriend() {
       chats: arrayUnion({
         users: [
           {
-            name: eachUser?.name,
-            avatar: eachUser?.avatar,
-            uid: eachUser?.uid,
+            name: eachUser!.name,
+            avatar: eachUser!.avatar,
+            uid: eachUser!.uid,
           },
-          { name: friend?.name, avatar: friend?.avatar, uid: friend?.uid },
+          { name: friend!.name, avatar: friend!.avatar, uid: friend!.uid },
         ],
         messages: [],
         background: "./default_svg.png",
@@ -146,7 +135,7 @@ function AddFriend() {
         messages: [],
         background: "./default_svg.png",
         id,
-        at: moment().format(),
+        at,
       }),
     });
 
@@ -179,98 +168,84 @@ function AddFriend() {
 
   return (
     <>
-      <div className="w-5/6 sm:w-2/3 lg:w-[95%] m-auto pt-4 h-[80vh] lg:h-[90vh] overflow-auto text-stone-100">
+      <div className="w-full p-4 sm:w-2/3 lg:w-[95%] m-auto pt-4 h-screen lg:h-[90vh] overflow-auto text-stone-100 bg-dark font-sans">
         <h1 className="text-2xl font-semibold font-sans mt-8">
           Procurar amigo
         </h1>
-        <InputGroup className="mt-4">
-          <Input
-            color="black"
-            bg="white"
-            type="text"
+        <div className="mt-4 flex items-center p-2 gap-1 bg-white rounded-md text-stone-800 border border-transparent hover:border-lime focus:border-lime focus:ring-lime focus:outline-none">
+          <AiOutlineSearch className="text-2xl" />
+          <input
+            className="w-full outline-none text-dark border border-transparent hover:border-lime focus:border-transparent focus:ring-transparent focus:outline-none"
             placeholder="Nome"
-            value={searchFriend}
-            onChange={(e: React.FormEvent<HTMLInputElement>) =>
-              setSearchFriend(e.currentTarget.value)
-            }
-          ></Input>
-          <InputRightElement children={<AiOutlineSearch size={20} />} />
-        </InputGroup>
+            value={search}
+            onChange={(e) => setSearch(e.currentTarget.value)}
+          />
+        </div>
         <div className="max-h-[50vh] overflow-auto">
-          {searchFriend &&
-            searchRes.map((item, index) => (
+          {search &&
+            searchResult.map((item, index) => (
               <>
-                <div className="flex align-center justify-between mt-3">
+                <div
+                  key={index}
+                  className="flex items-center justify-between mt-3"
+                >
                   <Avatar src={item.avatar} name={item.name} />
                   <p
                     className={`${
-                      item.name.length > 14
-                        ? "text-md leading-6"
-                        : "text-xl leading-[45px]"
-                    }  font-sans font-semibold px-8 whitespace-nowrap`}
+                      item.name.length > 14 ? "text-md" : "text-lg"
+                    }  font-semibold px-8 whitespace-nowrap`}
                   >
                     {item.name}
                   </p>
-                  {eachUser?.sentReq.filter((obj) => obj.uid == item.uid)
-                    .length == 1 ? (
-                    <Icon
-                      as={BsCheckSquareFill}
-                      w={10}
-                      h={10}
-                      color="blue.500"
-                    />
+                  {hasSentRequest(item.uid) ? (
+                    <div className="p-2 text-lime rounded-md">
+                      <BsCheckLg className="text-xl" />
+                    </div>
                   ) : (
-                    <IconButton
-                      aria-label="Adicionar"
-                      icon={<BsPlusLg color="white" />}
+                    <button
                       onClick={() => addFriend(index)}
-                      size="md"
-                      bg="#48D6D2"
-                      className="mt-1"
-                    />
+                      className="p-2 rounded-md bg-gradient-to-b from-lime-300 to-lime-600"
+                    >
+                      <BsPlusLg className="text-dark text-xl" />
+                    </button>
                   )}
                 </div>
               </>
             ))}
         </div>
-        {eachUser?.sentReq.length !== 0 && (
+        {eachUser!.sentReq.length > 0 && (
           <div className="mt-10 text-2xl font-semibold font-sans">
             <h1>Solicitações enviadas</h1>
             {eachUser?.sentReq.map((user) => (
               <div className="flex align-center mt-4">
                 <Avatar src={user.avatar} />
-                <p className="text-xl font-sans font-semibold px-10 leading-[45px]">
+                <p className="text-lg font-sans font-semibold px-10 leading-[45px]">
                   {user.name}
                 </p>
               </div>
             ))}
           </div>
         )}
-        {eachUser?.requests.length !== 0 && (
-          <div className="mt-10 text-2xl font-semibold font-sans">
-            <h1>Pedidos de amizade</h1>
+        {eachUser!.requests.length > 0 && (
+          <div className="mt-10">
+            <h1 className="text-2xl font-semibold">Pedidos de amizade</h1>
             {eachUser?.requests.map((user, index) => (
-              <div className="flex align-center justify-between mt-4">
+              <div className="flex items-center justify-between mt-4">
                 <Avatar src={user.avatar} />
-                <p className="text-xl font-sans font-semibold leading-[45px]">
-                  {user.name}
-                </p>
-                <div className="flex justify-between">
-                  <IconButton
-                    icon={<IoMdPersonAdd color="white" size={20} />}
-                    aria-label="Aceitar"
-                    rounded="full"
-                    bg="#2A6FDB"
+                <p className="text-xl font-semibold">{user.name}</p>
+                <div className="flex items-center gap-4">
+                  <button
+                    className="p-1 rounded-md bg-lime"
                     onClick={() => acceptFriend(index)}
-                  />
-                  <IconButton
-                    icon={<ImCross color="white" />}
-                    className="ml-1"
-                    aria-label="Recusar"
-                    rounded="full"
-                    bg="red.500"
+                  >
+                    <IoMdPersonAdd className="text-dark text-xl" />
+                  </button>
+                  <button
                     onClick={() => refuseRequest(index)}
-                  />
+                    className="p-1 rounded-md bg-red-500"
+                  >
+                    <TiCancel className="text-xl text-white" />
+                  </button>
                 </div>
               </div>
             ))}

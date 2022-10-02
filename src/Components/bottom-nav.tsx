@@ -11,6 +11,7 @@ function BottomNav() {
   const onThisPage = (page: string) => {
     return location == page ? true : false;
   };
+
   return (
     <>
       {location == "/chat" ||
@@ -22,9 +23,9 @@ function BottomNav() {
           <div className="flex items-center justify-around text-dark bg-gray-100 rounded-lg">
             <div>
               <button
-                onClick={() => navigate("/chats")}
+                onClick={() => navigate("/")}
                 className={`p-1 rounded-md ${
-                  onThisPage("/chats")
+                  onThisPage("/")
                     ? "bg-gradient-to-b from-dark to-dark text-lime goup"
                     : ""
                 }`}
