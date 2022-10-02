@@ -33,4 +33,20 @@ body{
     transform: translateX(-100%);
   }
 }
+
+.goup{
+  animation: goup;
+  animation-duration: .2s;
+  animation-fill-mode: forwards;
+  animation-timing-function: ease-out;
+}
+
+@keyframes goup {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-1rem);
+  }
+}
     

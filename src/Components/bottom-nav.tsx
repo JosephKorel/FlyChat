@@ -1,10 +1,7 @@
-import { Avatar, IconButton } from "@chakra-ui/react";
-import React from "react";
 import { FaUserFriends } from "react-icons/fa";
 import { AiFillWechat } from "react-icons/ai";
 import { useLocation, useNavigate } from "react-router";
 import { IoMdPersonAdd } from "react-icons/io";
-import { auth } from "../firebase-config";
 import { BsFillPersonFill } from "react-icons/bs";
 
 function BottomNav() {
@@ -22,14 +19,14 @@ function BottomNav() {
         <></>
       ) : (
         <div className="px-2 fixed bottom-4 w-full">
-          <div className="flex align-center justify-around bg-lime rounded-lg">
+          <div className="flex items-center justify-around text-dark bg-gray-100 rounded-lg">
             <div>
               <button
                 onClick={() => navigate("/chats")}
-                className={`p-1 rounded-full ${
+                className={`p-1 rounded-md ${
                   onThisPage("/chats")
-                    ? "bg-lime text-dark -translate-y-4"
-                    : "text-dark"
+                    ? "bg-gradient-to-b from-dark to-dark text-lime goup"
+                    : ""
                 }`}
               >
                 <AiFillWechat size={25} />
@@ -38,10 +35,10 @@ function BottomNav() {
             <div>
               <button
                 onClick={() => navigate("/friends")}
-                className={`p-1 rounded-full ${
+                className={`p-1 rounded-md ${
                   onThisPage("/friends")
-                    ? "bg-lime text-dark -translate-y-4"
-                    : "text-dark"
+                    ? "bg-gradient-to-b from-dark to-dark text-lime goup"
+                    : ""
                 }`}
               >
                 <FaUserFriends size={25} />
@@ -50,28 +47,22 @@ function BottomNav() {
             <div>
               <button
                 onClick={() => navigate("/add-friend")}
-                className={`p-1 rounded-full ${
+                className={`p-1 rounded-md ${
                   onThisPage("/add-friend")
-                    ? "bg-lime text-dark -translate-y-4"
-                    : "text-dark"
+                    ? "bg-gradient-to-b from-dark to-dark text-lime goup"
+                    : ""
                 }`}
               >
                 <IoMdPersonAdd size={25} />
               </button>
             </div>
             <div>
-              {/* <Avatar
-                src={auth.currentUser?.photoURL!}
-                size="sm"
-                className="mt-1"
-                onClick={() => navigate("/profile")}
-              /> */}
               <button
                 onClick={() => navigate("/profile")}
-                className={`p-1 rounded-full ${
+                className={`p-1 rounded-md ${
                   onThisPage("/profile")
-                    ? "bg-lime text-dark -translate-y-4"
-                    : "text-dark"
+                    ? "bg-gradient-to-b from-dark to-dark text-lime goup"
+                    : ""
                 }`}
               >
                 <BsFillPersonFill size={25} />
