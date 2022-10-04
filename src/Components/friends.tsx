@@ -1,33 +1,22 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AppContext, eachUserInt, userInterface } from "../Context/AuthContext";
 import { doc, DocumentData, getDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../firebase-config";
 import { useNavigate } from "react-router-dom";
-import {
-  Avatar,
-  IconButton,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Button,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { Avatar } from "@chakra-ui/react";
 import { onAuthStateChanged } from "firebase/auth";
-import { AiOutlineUserAdd } from "react-icons/ai";
+import { AiOutlineClose, AiOutlineUserAdd } from "react-icons/ai";
 import { FaTelegramPlane } from "react-icons/fa";
 import { IoPersonRemove } from "react-icons/io5";
 import { TiDelete } from "react-icons/ti";
 import ChatPage from "./chat";
+import Modal from "../Styled-components/modal";
 
 function FriendList() {
+  const [show, setShow] = useState(false);
   let navigate = useNavigate();
   const { eachUser, setEachUser, setPartner, isMobile, setChatPage } =
     useContext(AppContext);
-  const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     onAuthStateChanged(auth, async (user) => {
@@ -81,67 +70,54 @@ function FriendList() {
     !isMobile && window.location.reload();
   };
 
-  const ModalComponent = (component: React.ReactNode) => {
-    return (
-      <>
-        <Modal isOpen={isOpen} onClose={onClose}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Remover amigos</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>{component}</ModalBody>
-            <ModalFooter>
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  onClose();
-                }}
-                bg="gray.200"
-              >
-                Cancelar
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-      </>
-    );
-  };
+  const RemoveFriends = (
+    <div
+      onClick={(e) => e.stopPropagation()}
+      className="rounded-md bg-dark-400 p-2"
+    >
+      <div className="flex justify-between items-center">
+        <h1 className="text-lg text-gray-100">Remover amigos</h1>
+        <button onClick={() => setShow(false)}>
+          <AiOutlineClose className="text-gray-100 text-lg" />
+        </button>
+      </div>
 
-  const removeFriends = (
-    <>
       {eachUser?.friends.map((user, index) => (
-        <div className="flex align-center justify-between mt-4 p-1">
+        <div className="flex items-center justify-between mt-4 p-1">
           <div>
-            <Avatar src={user.avatar} />
+            <Avatar src={user.avatar} size="sm" />
           </div>
-          <p className="text-lg font-sans font-semibold px-10 leading-[45px]">
+          <p className="text-lg uppercase font-semibold text-gray-100">
             {user.name}
           </p>
-          <IconButton
-            className="mt-1"
-            aria-label="Excluir amigo"
-            icon={<TiDelete size={32} color="#e63946" />}
-            bg="transparent"
-            rounded="full"
+          <button
+            className="px-2 py-1 bg-red-500 rounded-md"
             onClick={() => removeFriend(index)}
-          />
+          >
+            <p className="text-white text-sm">EXCLUIR</p>
+          </button>
         </div>
       ))}
-    </>
+    </div>
   );
 
   return (
     <>
       <div className="overflow-auto bg-dark h-screen font-sans">
+        {show && <Modal children={RemoveFriends} setShow={setShow} />}
         {eachUser ? (
           <>
             {eachUser?.friends.length > 0 ? (
               <>
                 <div className="w-full p-4 sm:w-2/3 lg:w-[95%] m-auto py-1 h-screen overflow-auto">
                   {eachUser!.friends.map((user, index) => (
-                    <div className="flex items-center justify-between mt-4 p-2 px-4 rounded-xl bg-gradient-to-r from-dark-800 to-dark">
+                    <div className="flex items-center justify-between mt-4 py-1 px-4 rounded-xl bg-gradient-to-r from-dark-800 to-dark">
                       <div className="">
-                        <Avatar src={user.avatar} size="sm" />
+                        <img
+                          src={user.avatar}
+                          referrerPolicy="no-referrer"
+                          className="w-8 rounded-full"
+                        ></img>
                       </div>
                       <p className="font-bold uppercase text-lime px-10">
                         {user.name}
@@ -157,15 +133,13 @@ function FriendList() {
                     isMobile ? "right-4 bottom-16" : "left-0 bottom-1/4"
                   }`}
                 >
-                  <IconButton
-                    aria-label="Gerenciar amigos"
-                    icon={<IoPersonRemove color="white" />}
-                    bg="#e63946"
-                    rounded="full"
-                    onClick={onOpen}
-                  />
+                  <button
+                    className="p-2 rounded-md bg-red-500"
+                    onClick={() => setShow(true)}
+                  >
+                    <IoPersonRemove className="text-white text-xl" />
+                  </button>
                 </div>
-                {ModalComponent(removeFriends)}
               </>
             ) : (
               <>

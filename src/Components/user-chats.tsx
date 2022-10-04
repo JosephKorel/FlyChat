@@ -5,12 +5,14 @@ import { auth, db } from "../firebase-config";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
-import { Avatar, Button } from "@chakra-ui/react";
+import { Avatar } from "@chakra-ui/react";
 import { onAuthStateChanged } from "firebase/auth";
 import { AiOutlineUserAdd } from "react-icons/ai";
-import GroupModal from "../Styled-components/new-group-modal";
 import GroupChat from "./group-chat";
 import ChatPage from "./chat";
+import Modal from "../Styled-components/modal";
+import NewGroup from "./new-group";
+import { HiUserGroup } from "react-icons/hi";
 
 function UserChats() {
   const {
@@ -23,6 +25,7 @@ function UserChats() {
     setChatPage,
   } = useContext(AppContext);
   const [chatList, setChatList] = useState<any[]>([]);
+  const [show, setShow] = useState(false);
 
   let navigate = useNavigate();
 
@@ -89,24 +92,26 @@ function UserChats() {
   };
 
   return (
-    <div className="overflow-auto bg-dark h-screen font-sans ">
-      {eachUser && (
-        <>
-          {eachUser.friends.length > 0 && (
-            <div
-              className={`fixed z-10  ${
-                isMobile ? "right-4 bottom-16" : "left-0 bottom-1/4"
-              }`}
-            >
-              <GroupModal />
-            </div>
-          )}
-        </>
+    <div className="overflow-auto bg-dark h-screen font-sans">
+      {show && <Modal children={<NewGroup />} setShow={setShow} />}
+      {eachUser!.friends.length > 0 && (
+        <div
+          className={`fixed z-10  ${
+            isMobile ? "right-4 bottom-16" : "left-0 bottom-1/4"
+          }`}
+        >
+          <button
+            className="p-1 bg-lime text-dark rounded-md text-2xl"
+            onClick={() => setShow(true)}
+          >
+            <HiUserGroup />
+          </button>
+        </div>
       )}
       {eachUser ? (
         <>
           {eachUser?.friends.length > 0 ? (
-            <div className="w-[98%] sm:w-2/3 lg:w-[98%] m-auto py-1 h-[75vh] lg:h-[85vh]">
+            <div className="w-full px-4 sm:w-2/3 lg:w-[98%] m-auto py-1 h-[75vh] lg:h-[85vh] font-sans">
               {chatList.map((chat, index) => (
                 <div>
                   {chat.title ? (
@@ -131,14 +136,18 @@ function UserChats() {
                   ) : (
                     <>
                       <div
-                        className="flex align-center mt-4 p-1 shadow-lg bg-stone-200 rounded-xl border-x-2 border-stone-800 cursor-pointer text-stone-900"
+                        className="flex align-center mt-4 py-2 px-4 rounded-xl bg-dark-600 cursor-pointer text-gray-100"
                         onClick={() => startChat(index)}
                       >
                         <div>
-                          <Avatar src={chat.users[1].avatar} />
+                          <img
+                            src={chat.users[1].avatar}
+                            referrerPolicy="no-referrer"
+                            className="w-8 rounded-full"
+                          ></img>
                         </div>
                         <div className="ml-2">
-                          <p className="text-lg font-sans font-semibold">
+                          <p className="text-base font-semibold uppercase">
                             {chat.users[1].name}
                           </p>
                           <p className="text-sm text-stone-500">
@@ -178,5 +187,3 @@ function UserChats() {
 }
 
 export default UserChats;
-
-/* className="flex align-center mt-4 p-1 shadow-lg bg-[#FDFDFC] rounded-full rounded-l-full border-b border-l border-skyblue cursor-pointer" */

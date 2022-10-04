@@ -3,45 +3,46 @@ import { arrayUnion, doc, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import moment from "moment";
 import React, { useContext, useState } from "react";
-import { BiAddToQueue, BiMinus } from "react-icons/bi";
-import { AppContext } from "../Context/AuthContext";
-import { auth, db, storage } from "../firebase-config";
+import { AppContext, eachUserInt, userInterface } from "../Context/AuthContext";
+import { db, storage } from "../firebase-config";
 import { MdCancel, MdOutlineAdd } from "react-icons/md";
 import { AiOutlineUpload } from "react-icons/ai";
 import { useNavigate } from "react-router";
-import GroupChat from "./group-chat";
 
 function NewGroup() {
-  const { eachUser, isMobile, setChatPage } = useContext(AppContext);
+  const { eachUser } = useContext(AppContext);
   const [title, setTitle] = useState<string>("");
   const [groupImg, setGroupImg] = useState<any | null>(null);
-  const [groupUsers, setGroupUsers] = useState<
-    { name: string; avatar: string; uid: string }[]
-  >([
+  const [groupUsers, setGroupUsers] = useState<userInterface[]>([
     {
-      name: eachUser?.name!,
-      avatar: eachUser?.avatar!,
-      uid: eachUser?.uid!,
+      name: eachUser!.name,
+      avatar: eachUser!.avatar,
+      uid: eachUser!.uid,
     },
   ]);
   let navigate = useNavigate();
 
-  const addFriend = (index: number) => {
+  const isIn = (index: number): boolean => {
     const friend = eachUser?.friends[index];
-    if (groupUsers.filter((item) => item.name == friend?.name).length == 0) {
-      setGroupUsers([
-        ...groupUsers,
-        { name: friend?.name!, avatar: friend?.avatar!, uid: friend?.uid! },
-      ]);
-    }
+    return groupUsers.filter((item) => item.name == friend!.name).length
+      ? true
+      : false;
   };
 
-  const removeFriend = (index: number) => {
+  const addFriend = (index: number) => {
     const friend = eachUser?.friends[index];
-    const removedFriend = groupUsers.filter(
-      (item) => item.name !== friend?.name
-    );
-    setGroupUsers(removedFriend);
+
+    if (isIn(index)) {
+      const removedFriend = groupUsers.filter(
+        (item) => item.name !== friend?.name
+      );
+      setGroupUsers(removedFriend);
+      return;
+    }
+    setGroupUsers([
+      ...groupUsers,
+      { name: friend?.name!, avatar: friend?.avatar!, uid: friend?.uid! },
+    ]);
   };
 
   const createGroup = async () => {
@@ -76,62 +77,35 @@ function NewGroup() {
   };
 
   return (
-    <div>
-      <h1 className="text-lg font-semibold font-sans">Amigos:</h1>
-      <div className="h-[300px] overflow-y-auto bg-[#F0EFEB] rounded-xl px-2">
+    <div
+      className="font-sans bg-dark-400 p-2 rounded-md"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <h1 className="text-xl text-gray-100">{title ? title : "Novo grupo"}</h1>
+      <div className="flex items-center gap-2">
         {eachUser?.friends.map((user, index) => (
-          <div className="flex justify-between mt-2 p-1 shadow-lg bg-[#FDFDFC] rounded-full rounded-l-full border-b border-l border-skyblue">
-            <Avatar src={user.avatar} size="sm" />
-            <p className="text-base font-sans font-semibold px-10">
-              {user.name}
-            </p>
-            <IconButton
-              aria-label="Adicionar ao grupo"
-              icon={<MdOutlineAdd size={24} color="white" />}
-              bg="blue.500"
-              rounded="full"
-              size="sm"
-              onClick={() => addFriend(index)}
-            />
-          </div>
+          <button
+            key={index}
+            onClick={() => addFriend(index)}
+            className={`w-fit mt-2 rounded-md border duration-200 py-1 px-2 ${
+              isIn(index)
+                ? "border-transparent bg-lime text-dark font-semibold"
+                : "border-lime text-gray-100"
+            }`}
+          >
+            <p className="text-xs uppercase">{user.name}</p>
+          </button>
         ))}
       </div>
-      {groupUsers.length > 1 && (
-        <div className="mt-24">
-          <h1 className="text-lg font-semibold font-sans">Membros</h1>
-          <div className="flex flex-wrap mt-1 ">
-            {groupUsers.slice(1).map((item, index) => (
-              <>
-                <p className="py-1 rounded-lg text-base font-sans bg-stone-300">
-                  {item.name}
-                </p>
-                <IconButton
-                  className="mt-1"
-                  aria-label="remover"
-                  icon={<MdCancel size={18} color="#C53030" />}
-                  onClick={() => removeFriend(index)}
-                  size="xs"
-                  bg="none"
-                  rounded="full"
-                />
-              </>
-            ))}
-          </div>
-        </div>
-      )}
       <div>
-        <Input
-          className="mt-4"
-          rounded="full"
-          type="text"
+        <input
+          className="mt-4 rounded-md w-full py-1 px-3 outline-none text-dark border border-transparent hover:border-lime focus:border-lime focus:ring-lime focus:outline-none"
           placeholder="Dê um nome ao grupo"
-          onChange={(e: React.FormEvent<HTMLInputElement>) =>
-            setTitle(e.currentTarget.value)
-          }
+          onChange={(e) => setTitle(e.currentTarget.value)}
           value={title}
-        ></Input>
+        />
         <div className="flex justify-between mt-4">
-          <p className="font-sans text-lg font-medium leading-[45px]">
+          <p className=" text-lg font-medium leading-[45px]">
             Qual será a foto do grupo?
           </p>
           <IconButton
