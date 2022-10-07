@@ -37,6 +37,7 @@ import { BsPencilFill } from "react-icons/bs";
 import { AiFillCamera, AiOutlineUpload } from "react-icons/ai";
 import { FaCheck } from "react-icons/fa";
 import { useNavigate } from "react-router";
+import { GoSignOut } from "react-icons/go";
 
 function Profile() {
   const { setUsers, eachUser, setEachUser, setIsAuth, isMobile } =
@@ -425,8 +426,8 @@ function Profile() {
   };
 
   return (
-    <div className="h-screen bg-dark flex flex-col justify-around items-center">
-      <div className="w-5/6 mb-10 text-center">
+    <div className="h-screen bg-dark text-center">
+      <div className="w-5/6 m-auto text-center translate-y-1/3">
         <div className="flex justify-center relative">
           {/* <Avatar
             src={eachUser?.avatar || ""}
@@ -490,10 +491,14 @@ function Profile() {
           )}
         </div>
       </div>
-      <div className="text-center md:mt-20">
-        <Button colorScheme="red" onClick={logOut}>
-          Sair
-        </Button>
+      <div className="fixed right-4 bottom-[4.5rem] md:mt-20">
+        <button
+          className="bg-red-500 p-2 rounded-md text-gray-100"
+          onClick={logOut}
+        >
+          <GoSignOut className="text-lg" />
+          {/* <p className="text-sm">SAIR</p> */}
+        </button>
       </div>
       {ModalComponent(changeProfileImgComponent)}
     </div>
