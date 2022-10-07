@@ -138,7 +138,7 @@ function ChatPage() {
   return (
     <>
       <div
-        className={`h-[96vh] flex flex-col overflow-hidden lg:h-screen w-full svgbackground font-sans pb-2`}
+        className={`h-[100vh] flex flex-col overflow-hidden lg:h-screen w-full svgbackground font-sans pb-2`}
       >
         <div className="w-full py-2 flex items-center gap-4 uppercase bg-dark px-1">
           <div className="flex items-center gap-2">
@@ -153,7 +153,7 @@ function ChatPage() {
             {currFriend?.name}
           </p>
         </div>
-        <div className="flex-1 overflow-y-auto pb-1">
+        <div className="flex-1 max-h-[96vh] overflow-y-auto pb-1">
           <div className="h-full overflow-y-auto">
             {currChat !== null && (
               <>
