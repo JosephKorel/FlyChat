@@ -19,33 +19,22 @@ import { auth, db, storage } from "../firebase-config";
 import { useDocumentData } from "react-firebase-hooks/firestore";
 import { signOut, updateProfile } from "firebase/auth";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import {
-  Avatar,
-  IconButton,
-  Input,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Button,
-  useDisclosure,
-} from "@chakra-ui/react";
+import { Avatar, IconButton, Button, useDisclosure } from "@chakra-ui/react";
 import { BsPencilFill } from "react-icons/bs";
 import { AiFillCamera, AiOutlineUpload } from "react-icons/ai";
 import { FaCheck } from "react-icons/fa";
 import { useNavigate } from "react-router";
 import { GoSignOut } from "react-icons/go";
+import Modal from "../Styled-components/modal";
 
 function Profile() {
   const { setUsers, eachUser, setEachUser, setIsAuth, isMobile } =
     useContext(AppContext);
-  const [username, setUsername] = useState<string>("");
+  const [username, setUsername] = useState(eachUser!.name);
   const [profileImg, setProfileImg] = useState<any | null>(null);
   const [bgImg, setBgImg] = useState<any | null>(null);
   const [editName, setEditName] = useState<boolean>(false);
+  const [show, setShow] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   let navigate = useNavigate();
 
@@ -88,7 +77,7 @@ function Profile() {
 
   const changeUsername = async () => {
     if (auth.currentUser) {
-      if (username == "") {
+      if (!username) {
         setEditName(false);
         return;
       }
@@ -132,24 +121,22 @@ function Profile() {
         chats: myChats,
         groupChat: myGroupChat,
       });
-      setUsername("");
 
       //Alterar no documento allUsers
       const allUsersDoc = doc(db, "allUsers", "list");
       const docData = await getDoc(allUsersDoc);
       const docResult: DocumentData | undefined = docData.data();
       const usersList: userInterface[] = docResult?.users;
-      const userIndex = usersList.findIndex(
-        (item) => item.uid == eachUser?.uid
-      );
-      const newUsers = usersList.slice();
-      newUsers[userIndex].name = username;
 
-      await updateDoc(allUsersDoc, {
-        users: newUsers,
+      const usersMap = usersList.map((user) => {
+        return user.uid == eachUser?.uid ? { ...user, name: username } : user;
       });
 
-      //Alterar no documento de cada usuário
+      await updateDoc(allUsersDoc, {
+        users: usersMap,
+      });
+
+      //Alterar no documento de cada outro usuário
       let eachUserList: eachUserInt[] = [];
 
       const colQuery = query(collection(db, "eachUser"));
@@ -157,11 +144,11 @@ function Profile() {
       queryData.forEach((doc: DocumentData) => eachUserList.push(doc.data()));
 
       const filteredUserList = eachUserList.filter(
-        (item) => item.uid !== auth.currentUser?.uid
+        (item) => item.uid != auth.currentUser?.uid
       );
 
       //Alterar nos campos de cada usuário
-      filteredUserList.forEach(async (item) => {
+      filteredUserList.forEach((item) => {
         const docRef = doc(db, "eachUser", `${item.uid}`);
 
         //Alterar nos amigos de cada usuário
@@ -212,7 +199,7 @@ function Profile() {
           }
         });
 
-        await updateDoc(docRef, {
+        updateDoc(docRef, {
           friends: item.friends,
           requests: item.requests,
           sentReq: item.sentReq,
@@ -248,12 +235,94 @@ function Profile() {
 
       if (profileImg == null) return;
 
-      //Upload de imagem
-      await uploadBytes(storageRef, profileImg).then((res) =>
-        console.log("success")
-      );
+      try {
+        //Upload de imagem
+        await uploadBytes(storageRef, profileImg);
 
-      //Pegar o URL da imagem
+        const imgURL = await getDownloadURL(
+          ref(storage, `profileImg/${auth.currentUser.uid}`)
+        );
+
+        //Atualizar em allUsers
+        usersList.forEach((item) => {
+          if (item.uid == auth.currentUser?.uid) {
+            item.avatar = imgURL;
+          }
+        });
+
+        myChats.forEach((item) =>
+          item.users.forEach((user) => {
+            if (user.uid == auth.currentUser?.uid) {
+              user.avatar = imgURL;
+            }
+          })
+        );
+
+        myGroupChat.forEach((item) => {
+          item.users.forEach((user) => {
+            if (user.uid == auth.currentUser?.uid) {
+              user.avatar = imgURL;
+            }
+          });
+        });
+
+        //Atualiza em eachUser dos outros usuários
+        filteredUserList.forEach((item) => {
+          const otherUsersDoc = doc(db, "eachUser", `${item.uid}`);
+          item.friends.forEach((friend) => {
+            if (friend.uid == auth.currentUser?.uid) {
+              friend.avatar = imgURL;
+            }
+          });
+          item.chats.forEach((chat) => {
+            chat.users.forEach((user) => {
+              if (user.uid == auth.currentUser?.uid) {
+                user.avatar = imgURL;
+              }
+            });
+            item.requests.forEach((req) => {
+              if (req.uid == auth.currentUser?.uid) {
+                req.avatar = imgURL;
+              }
+            });
+          });
+
+          item.groupChat.forEach((chat) =>
+            chat.users.forEach((user) => {
+              if (user.uid == auth.currentUser?.uid) {
+                user.avatar = imgURL;
+              }
+            })
+          );
+
+          item.sentReq.forEach((sentreq) => {
+            if (sentreq.uid == auth.currentUser?.uid) {
+              sentreq.avatar = imgURL;
+            }
+          });
+          updateDoc(otherUsersDoc, {
+            friends: item.friends,
+            chats: item.chats,
+            groupChat: item.groupChat,
+            requests: item.requests,
+            sentReq: item.sentReq,
+          });
+          onClose();
+        });
+
+        await updateDoc(allUsersDoc, { users: usersList });
+
+        //Atualiza o perfil do usuário
+        await updateProfile(auth.currentUser!, { photoURL: imgURL });
+
+        await updateDoc(myDocRef, {
+          avatar: imgURL,
+          chats: myChats,
+          groupChat: myGroupChat,
+        });
+      } catch (error) {}
+
+      /* //Pegar o URL da imagem
       getDownloadURL(ref(storage, `profileImg/${auth.currentUser.uid}`)).then(
         async (url) => {
           //Atualizar em allUsers
@@ -289,52 +358,8 @@ function Profile() {
             chats: myChats,
             groupChat: myGroupChat,
           });
-
-          //Atualiza em eachUser dos outros usuários
-          filteredUserList.forEach(async (item) => {
-            const otherUsersDoc = doc(db, "eachUser", `${item.uid}`);
-            item.friends.forEach((friend) => {
-              if (friend.uid == auth.currentUser?.uid) {
-                friend.avatar = url;
-              }
-            });
-            item.chats.forEach((chat) => {
-              chat.users.forEach((user) => {
-                if (user.uid == auth.currentUser?.uid) {
-                  user.avatar = url;
-                }
-              });
-              item.requests.forEach((req) => {
-                if (req.uid == auth.currentUser?.uid) {
-                  req.avatar = url;
-                }
-              });
-            });
-
-            item.groupChat.forEach((chat) =>
-              chat.users.forEach((user) => {
-                if (user.uid == auth.currentUser?.uid) {
-                  user.avatar = url;
-                }
-              })
-            );
-
-            item.sentReq.forEach((sentreq) => {
-              if (sentreq.uid == auth.currentUser?.uid) {
-                sentreq.avatar = url;
-              }
-            });
-            await updateDoc(otherUsersDoc, {
-              friends: item.friends,
-              chats: item.chats,
-              groupChat: item.groupChat,
-              requests: item.requests,
-              sentReq: item.sentReq,
-            });
-            onClose();
-          });
         }
-      );
+      ); */
     }
   };
 
@@ -365,21 +390,20 @@ function Profile() {
   };
 
   const changeProfileImgComponent = (
-    <>
-      <div className="flex justify-between mt-4">
-        <p className="font-sans text-base font-medium leading-[45px]">
-          Qual será sua nova foto?
-        </p>
-        <IconButton
-          icon={<AiOutlineUpload />}
-          aria-label="Search database"
-          rounded="50%"
-          size="lg"
-          colorScheme="messenger"
+    <div
+      className="bg-dark-400 font-sans p-2 px-4 rounded-md flex flex-col items-start"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="flex items-center justify-between mt-4 w-full">
+        <p className="text-gray-100 font-medium">Qual será sua nova foto?</p>
+        <button
           onClick={() => {
             document.getElementById("profile-img")?.click();
           }}
-        />
+          className="p-2 text-lg text-dark bg-lime rounded-full"
+        >
+          <AiOutlineUpload />
+        </button>
         <input
           className="hidden"
           type="file"
@@ -387,48 +411,25 @@ function Profile() {
           onChange={(e) => setProfileImg(e.target.files?.[0])}
         ></input>
       </div>
-      {profileImg ? <p>{profileImg.name}</p> : <></>}
-      <Button
+      {profileImg ? (
+        <p className="text-gray-300 text-sm">{profileImg.name}</p>
+      ) : (
+        <></>
+      )}
+      <button
         onClick={changeProfileImg}
-        colorScheme="messenger"
-        className="mt-5"
+        className="mt-5 text-right rounded-md text-dark bg-lime py-1 px-3 text-sm"
       >
         Confirmar
-      </Button>
-    </>
+      </button>
+    </div>
   );
-
-  const ModalComponent = (component: React.ReactNode) => {
-    return (
-      <>
-        <Modal isOpen={isOpen} onClose={onClose}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Alterar foto de perfil</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>{component}</ModalBody>
-            <ModalFooter>
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  onClose();
-                  setProfileImg(null);
-                }}
-                bg="gray.200"
-              >
-                Cancelar
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-      </>
-    );
-  };
 
   return (
     <div className="h-screen bg-dark text-center">
+      {show && <Modal children={changeProfileImgComponent} setShow={setShow} />}
       <div className="w-5/6 m-auto text-center translate-y-1/3">
-        <div className="flex justify-center relative">
+        <div className="flex justify-center relative w-1/2 m-auto">
           {/* <Avatar
             src={eachUser?.avatar || ""}
             size="xl"
@@ -439,55 +440,37 @@ function Profile() {
             className="w-24 rounded-full"
             referrerPolicy="no-referrer"
           ></img>
-          <IconButton
-            className="ml-20"
-            aria-label="Alterar foto"
-            icon={<AiFillCamera size={20} color="#272727" />}
-            bg="#AFFC41"
-            rounded="full"
-            position="absolute"
-            onClick={onOpen}
-          />
+          <button
+            onClick={() => setShow(true)}
+            className="absolute right-4 p-2 bg-lime text-dark text-lg rounded-full"
+          >
+            <AiFillCamera />
+          </button>
         </div>
         <div className="mt-2 flex justify-center items-center relative">
-          <Input
-            width="w-1/2"
-            className="text-center font-sans text-xl font-semibold"
+          <input
+            className="rounded-md w-2/3 text-center font-semibold py-1 px-3 outline-none bg-gray-100 text-dark border border-transparent hover:border-lime focus:border-lime focus:ring-lime focus:outline-none"
             value={editName ? username : eachUser?.name}
             disabled={editName ? false : true}
-            variant="filled"
-            _disabled={{ background: "white" }}
-            _active={{ background: "white" }}
-            _focus={{ background: "white" }}
-            onChange={(e: React.FormEvent<HTMLInputElement>) =>
-              setUsername(e.currentTarget.value)
-            }
-          ></Input>
+            onChange={(e) => setUsername(e.currentTarget.value)}
+          />
           {editName ? (
-            <IconButton
-              className="right-0"
-              position="absolute"
-              aria-label="Mudar nome"
-              rounded="full"
-              bg="#AFFC41"
-              size="sm"
-              icon={<FaCheck color="#272727" />}
+            <button
+              className="absolute right-0 rounded-full p-2 text-dark bg-lime"
               onClick={() => {
                 changeUsername();
                 setEditName(false);
               }}
-            />
+            >
+              <FaCheck />
+            </button>
           ) : (
-            <IconButton
-              className="right-0"
-              position="absolute"
-              aria-label="Mudar nome"
-              rounded="full"
-              bg="#AFFC41"
-              size="sm"
-              icon={<BsPencilFill color="#272727" />}
+            <button
+              className="absolute right-0 rounded-full p-2 text-dark bg-lime"
               onClick={() => setEditName(true)}
-            />
+            >
+              <BsPencilFill />
+            </button>
           )}
         </div>
       </div>
@@ -500,7 +483,6 @@ function Profile() {
           {/* <p className="text-sm">SAIR</p> */}
         </button>
       </div>
-      {ModalComponent(changeProfileImgComponent)}
     </div>
   );
 }
