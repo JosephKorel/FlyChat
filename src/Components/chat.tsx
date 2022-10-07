@@ -153,7 +153,7 @@ function ChatPage() {
             {currFriend?.name}
           </p>
         </div>
-        <div className="flex-1 max-h-[96vh] overflow-y-auto pb-1">
+        <div className="flex-1 overflow-y-auto pb-1">
           <div className="h-full overflow-y-auto">
             {currChat !== null && (
               <>
