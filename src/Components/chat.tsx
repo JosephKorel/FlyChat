@@ -192,7 +192,7 @@ function ChatPage() {
             <div className="h-40 w-full bg-deepblue"></div> */}
           </div>
         </div>
-        <div className="w-11/12 m-auto flex justify-center items-center gap-2 lg:relative lg:top-0 xl:top-2">
+        <div className="w-full px-2 fixed bottom-2 text-center flex justify-center items-center gap-2 lg:relative lg:top-0 xl:top-2">
           <form
             className="w-full"
             onSubmit={(e) => {
