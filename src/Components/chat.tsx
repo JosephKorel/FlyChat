@@ -138,7 +138,7 @@ function ChatPage() {
   return (
     <>
       <div
-        className={`h-[100vh] flex flex-col overflow-hidden lg:h-screen w-full svgbackground font-sans pb-2`}
+        className={`h-[96vh] flex flex-col overflow-hidden lg:h-screen w-full svgbackground font-sans pb-2`}
       >
         <div className="w-full py-2 flex items-center gap-4 uppercase bg-dark px-1">
           <div className="flex items-center gap-2">
