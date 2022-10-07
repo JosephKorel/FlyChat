@@ -16,15 +16,25 @@ import FriendList from "./Components/friends";
 import AddFriend from "./Components/add-friend";
 import GroupConfig from "./Components/group-config";
 import WebPage from "./Components/web-page";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase-config";
 
 function App() {
-  const { isAuth, isMobile, setIsMobile } = useContext(AppContext);
+  const { isAuth, setIsAuth, isMobile, setIsMobile } = useContext(AppContext);
   let navigate = useNavigate();
 
   useEffect(() => {
     window.innerWidth < 1024 ? setIsMobile(true) : setIsMobile(false);
     navigate("/");
   }, [isMobile]);
+
+  useEffect(() => {
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setIsAuth(true);
+      } else setIsAuth(false);
+    });
+  }, [onAuthStateChanged]);
 
   return (
     <ChakraProvider>

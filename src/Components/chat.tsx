@@ -88,17 +88,17 @@ function ChatPage() {
     const minutes = String(new Date().getMinutes()).padStart(2, "0");
     const time = new Date().getHours() + ":" + minutes;
 
-    if (message == "") return;
+    if (!message) return;
 
     myChats.forEach((chat) => {
       if (chat.users[1].uid == partner) {
         chat.messages.push({
-          sender: currentUser?.displayName!,
-          senderuid: currentUser?.uid!,
+          sender: currentUser!.displayName!,
+          senderuid: currentUser!.uid,
           content: message,
           time,
         });
-        chat.at = moment().format();
+        /*   chat.at = moment().format(); */
       }
     });
     await updateDoc(myDocRef, { chats: myChats });
@@ -111,7 +111,7 @@ function ChatPage() {
           content: message,
           time,
         });
-        chat.at = moment().format();
+        /*   chat.at = moment().format(); */
       }
     });
     await updateDoc(friendDoc, { chats: friendChats });
@@ -120,13 +120,13 @@ function ChatPage() {
   };
 
   const msgPlace = (msg: chatInterface) => {
-    return msg.senderuid == eachUser?.uid ? "flex-row-reverse mr-1" : "ml-1";
+    return msg.senderuid == eachUser?.uid ? "flex-row-reverse" : "";
   };
 
   const msgShape = (msg: chatInterface) => {
     return msg.senderuid == eachUser?.uid
-      ? "rounded-tl-3xl rounded-br-3xl px-3 bg-skyblue text-stone-100"
-      : "rounded-tr-3xl rounded-bl-3xl px-3 bg-stone-300 text-stone-900";
+      ? "rounded-tl-3xl rounded-br-3xl px-3 bg-gray-200 text-stone-900"
+      : "rounded-tr-3xl rounded-bl-3xl px-3 bg-dark text-gray-100";
   };
 
   const myMsg = (msg: chatInterface) => {
@@ -137,30 +137,31 @@ function ChatPage() {
 
   return (
     <>
-      <div className={`h-[90vh] overflow-hidden lg:h-screen w-full`}>
-        <div className="w-full py-1 sticky top-0 z-10 flex align-center bg-water-700">
-          <div className={`${!isMobile && "ml-4"}`}>
+      <div
+        className={`h-[100vh] flex flex-col overflow-hidden lg:h-screen w-full svgbackground font-sans pb-2`}
+      >
+        <div className="w-full py-2 flex items-center gap-4 uppercase bg-dark px-1">
+          <div className="flex items-center gap-2">
             {isMobile && (
-              <IconButton
-                className="mt-1"
-                aria-label="Voltar"
-                icon={<BiArrowBack size={20} color="white" />}
-                bg="none"
-                onClick={() => navigate("/")}
-              />
+              <button onClick={() => navigate("/")} className="text-gray-100">
+                <BiArrowBack />
+              </button>
             )}
-            <Avatar src={currFriend?.avatar} />
+            <Avatar src={currFriend?.avatar} size="sm" />
           </div>
-          <p className="text-lg mt-1 font-sans leading-10 pl-6 font-semibold text-stone-100">
+          <p className="text-lg font-semibold text-gray-100">
             {currFriend?.name}
           </p>
         </div>
-        <div className="h-[98%] lg:h-[85%]">
+        <div className="flex-1 overflow-y-auto pb-1">
           <div className="h-full overflow-y-auto">
             {currChat !== null && (
               <>
-                {currChat?.messages.map((msg) => (
-                  <div className={`flex ${msgPlace(msg)} mt-2 `}>
+                {currChat?.messages.map((msg, index) => (
+                  <div
+                    className={`flex ${msgPlace(msg)} mt-2 px-1`}
+                    key={index}
+                  >
                     <div
                       className={`flex flex-col max-w-[70%] ${msgShape(msg)}`}
                     >
@@ -168,7 +169,7 @@ function ChatPage() {
                       <p
                         className={`text-xs ${
                           myMsg(msg)
-                            ? "text-stone-300"
+                            ? "text-gray-500"
                             : "text-stone-700 flex flex-row-reverse"
                         }`}
                       >
@@ -179,7 +180,7 @@ function ChatPage() {
                 ))}
               </>
             )}
-            {/*   <div className="h-20 w-full bg-deepblue"></div>
+            {/* <div className="h-20 w-full bg-deepblue"></div>
             <div className="h-20 w-full bg-deepblue"></div>
             <div className="h-20 w-full bg-deepblue"></div>
             <div className="h-20 w-full bg-deepblue"></div>
@@ -191,26 +192,28 @@ function ChatPage() {
             <div className="h-40 w-full bg-deepblue"></div> */}
           </div>
         </div>
-        <div className="w-full flex justify-center fixed lg:relative bottom-2 lg:top-0 xl:top-2">
-          <Input
-            bg="white"
-            rounded="full"
-            width="80%"
-            type="text"
-            placeholder="Digite sua mensagem"
-            value={message}
-            onChange={(e: React.FormEvent<HTMLInputElement>) =>
-              setMessage(e.currentTarget.value)
-            }
-          ></Input>
-          <IconButton
-            aria-label="Enviar"
-            icon={<RiSendPlane2Fill size={20} color="white" />}
-            bg="blue.500"
-            rounded="full"
-            className="ml-2"
+        <div className="w-11/12 m-auto flex justify-center items-center gap-2 lg:relative lg:top-0 xl:top-2">
+          <form
+            className="w-full"
+            onSubmit={(e) => {
+              e.preventDefault();
+              sendMsg();
+            }}
+          >
+            <input
+              className="rounded-md w-full py-1 px-3 outline-none bg-dark text-gray-100 border border-transparent hover:border-lime focus:border-lime focus:ring-lime focus:outline-none"
+              type="text"
+              placeholder="Digite sua mensagem"
+              value={message}
+              onChange={(e) => setMessage(e.currentTarget.value)}
+            />
+          </form>
+          <button
             onClick={sendMsg}
-          />
+            className="text-lg text-lime bg-dark rounded-lg p-2"
+          >
+            <RiSendPlane2Fill />
+          </button>
         </div>
       </div>
     </>

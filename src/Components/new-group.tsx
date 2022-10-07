@@ -52,12 +52,13 @@ function NewGroup() {
 
     if (groupUsers.length == 1 || !title) return;
 
-    await uploadBytes(storageRef, groupImg).then((res) =>
-      console.log("success")
-    );
+    try {
+      await uploadBytes(storageRef, groupImg);
 
-    getDownloadURL(ref(storage, `groupIcon/${uniqueId}`)).then(async (url) => {
-      //Adiciona o grupo em cada usuário
+      const imgURL = await getDownloadURL(
+        ref(storage, `groupIcon/${uniqueId}`)
+      );
+
       groupUsers.forEach(async (item) => {
         const groupDoc = doc(db, "eachUser", `${item.uid}`);
         await updateDoc(groupDoc, {
@@ -66,14 +67,17 @@ function NewGroup() {
             title: title,
             messages: [],
             background: "./default_svg.png",
-            groupIcon: url,
+            groupIcon: imgURL,
             id: uniqueId,
             at: moment().format(),
           }),
         });
       });
-    });
-    navigate("/");
+
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -81,7 +85,13 @@ function NewGroup() {
       className="font-sans bg-dark-400 p-2 rounded-md"
       onClick={(e) => e.stopPropagation()}
     >
-      <h1 className="text-xl text-gray-100">{title ? title : "Novo grupo"}</h1>
+      <h1 className="text-2xl text-gray-100">{title ? title : "Novo grupo"}</h1>
+      <input
+        className="mt-2 rounded-md w-full py-1 px-3 outline-none text-dark border border-transparent hover:border-lime focus:border-lime focus:ring-lime focus:outline-none"
+        placeholder="Dê um nome ao grupo"
+        onChange={(e) => setTitle(e.currentTarget.value)}
+        value={title}
+      />
       <div className="flex items-center gap-2">
         {eachUser?.friends.map((user, index) => (
           <button
@@ -98,26 +108,16 @@ function NewGroup() {
         ))}
       </div>
       <div>
-        <input
-          className="mt-4 rounded-md w-full py-1 px-3 outline-none text-dark border border-transparent hover:border-lime focus:border-lime focus:ring-lime focus:outline-none"
-          placeholder="Dê um nome ao grupo"
-          onChange={(e) => setTitle(e.currentTarget.value)}
-          value={title}
-        />
-        <div className="flex justify-between mt-4">
-          <p className=" text-lg font-medium leading-[45px]">
-            Qual será a foto do grupo?
-          </p>
-          <IconButton
-            icon={<AiOutlineUpload />}
-            aria-label="Search database"
-            rounded="50%"
-            size="lg"
-            colorScheme="messenger"
+        <div className="flex items-center gap-4 mt-4">
+          <p className="text-gray-100">Qual será a foto do grupo?</p>
+          <button
             onClick={() => {
               document.getElementById("group-img")?.click();
             }}
-          />
+            className="p-1 bg-lime text-dark rounded-full"
+          >
+            <AiOutlineUpload />
+          </button>
           <input
             className="hidden"
             type="file"
@@ -126,9 +126,12 @@ function NewGroup() {
           ></input>
         </div>
         {groupImg !== null ? <p>{groupImg.name}</p> : <></>}
-        <Button onClick={createGroup} colorScheme="messenger" className="mt-5">
-          Criar grupo
-        </Button>
+        <button
+          onClick={createGroup}
+          className="mt-5 bg-lime font-semibold text-sm rounded-md py-1 px-3 text-dark"
+        >
+          CRIAR GRUPO
+        </button>
       </div>
     </div>
   );

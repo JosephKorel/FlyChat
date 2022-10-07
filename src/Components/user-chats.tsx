@@ -94,7 +94,7 @@ function UserChats() {
   return (
     <div className="overflow-auto bg-dark h-screen font-sans">
       {show && <Modal children={<NewGroup />} setShow={setShow} />}
-      {eachUser!.friends.length > 0 && (
+      {eachUser?.friends.length ? (
         <div
           className={`fixed z-10  ${
             isMobile ? "right-4 bottom-16" : "left-0 bottom-1/4"
@@ -107,23 +107,25 @@ function UserChats() {
             <HiUserGroup />
           </button>
         </div>
+      ) : (
+        <></>
       )}
       {eachUser ? (
         <>
           {eachUser?.friends.length > 0 ? (
-            <div className="w-full px-4 sm:w-2/3 lg:w-[98%] m-auto py-1 h-[75vh] lg:h-[85vh] font-sans">
+            <div className="w-full px-4 sm:w-2/3 lg:w-[98%] m-auto py-1 h-[75vh] lg:h-[85vh]">
               {chatList.map((chat, index) => (
-                <div>
+                <div key={index}>
                   {chat.title ? (
                     <>
                       <div
-                        className="flex align-center mt-4 p-1 shadow-lg bg-stone-200 rounded-xl border-x-2 border-stone-800 cursor-pointer "
+                        className="flex items-center mt-4 p-1 shadow-lg bg-stone-200 rounded-xl border-x-2 border-stone-800 cursor-pointer "
                         onClick={() => groupTalk(index)}
                       >
                         <div>
                           <Avatar src={chat.groupIcon} />
                         </div>
-                        <div className="ml-2">
+                        <div className="ml-2 flex flex-col">
                           <p className="text-lg font-sans font-semibold ">
                             {chat.title}
                           </p>
@@ -136,21 +138,20 @@ function UserChats() {
                   ) : (
                     <>
                       <div
-                        className="flex align-center mt-4 py-2 px-4 rounded-xl bg-dark-600 cursor-pointer text-gray-100"
+                        className="flex items-start gap-2 mt-4 py-1 px-2 rounded-xl bg-dark-600 cursor-pointer text-gray-100"
                         onClick={() => startChat(index)}
                       >
-                        <div>
-                          <img
-                            src={chat.users[1].avatar}
-                            referrerPolicy="no-referrer"
-                            className="w-8 rounded-full"
-                          ></img>
-                        </div>
-                        <div className="ml-2">
-                          <p className="text-base font-semibold uppercase">
+                        <img
+                          src={chat.users[1].avatar}
+                          referrerPolicy="no-referrer"
+                          className="w-8 rounded-full"
+                        ></img>
+
+                        <div className="flex flex-col">
+                          <p className="font-semibold uppercase">
                             {chat.users[1].name}
                           </p>
-                          <p className="text-sm text-stone-500">
+                          <p className="text-sm text-stone-500 -translate-y-1">
                             {lastMsg(chat)}
                           </p>
                         </div>

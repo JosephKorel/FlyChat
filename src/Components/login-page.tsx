@@ -18,7 +18,7 @@ import { RiLoginBoxLine } from "react-icons/ri";
 import Alert from "../Styled-components/alert";
 
 function Login() {
-  const { setIsAuth, setEachUser, isMobile } = useContext(AppContext);
+  const { setIsAuth, isMobile } = useContext(AppContext);
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [phoneLogin, setPhoneLogin] = useState(false);
